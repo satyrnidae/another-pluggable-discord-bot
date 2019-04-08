@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "target": "es2017",
+        "outDir": "./bin",
+        "sourceMap": true,
+        "module": "commonjs",
+        "experimentalDecorators": true
+    },
+    "include": [
+        "api/**/*.ts",
+        "src/**/*.ts",
+        "config/**/*.json",
+        "locale/*.json",
+        "plugins/**"
+    ],
+    "exclude": [
+        "node_modules",
+        "bin",
+        "config/config.init.json"
+    ]
+}

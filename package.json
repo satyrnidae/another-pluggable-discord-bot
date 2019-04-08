@@ -1,0 +1,32 @@
+{
+  "name": "another-pluggable-discord-bot",
+  "version": "1.0.0",
+  "description": "Yet another discord bot with plugins",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/centurionfox/another-pluggable-discord-bot.git"
+  },
+  "keywords": [
+    "plugins",
+    "discord",
+    "bot"
+  ],
+  "author": "satyrnidae",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/centurionfox/another-pluggable-discord-bot/issues"
+  },
+  "homepage": "https://github.com/centurionfox/another-pluggable-discord-bot#readme",
+  "dependencies": {
+    "@types/i18n": "^0.8.5",
+    "@types/node": "^11.13.1",
+    "discord.js": "^11.4.2",
+    "i18n": "^0.8.3",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.4.2"
+  }
+}
