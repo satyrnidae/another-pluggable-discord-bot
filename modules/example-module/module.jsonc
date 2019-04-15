@@ -1,0 +1,13 @@
+{
+    "name": "Example Module", //The name of the plugin
+    "version": "1.0.0", // The plugin version
+    "id": "example-module", // The ID of the plugin.  If unset, uses the folder name.
+    "authors": [
+        "satyrnidae"
+    ], // A list of all the plugin authors
+    "details": {
+        "language": "typescript", // The plugin language (typescript, javascript)
+        "apiVersion": "r1", // API level on which the plugin was built
+        "entryPoint": "example-module.ts" // The entrypoint (must export a default impl. of Plugin)
+    }
+}

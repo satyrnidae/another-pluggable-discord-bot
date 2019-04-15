@@ -1,0 +1,5 @@
+const SERVICE_IDENTIFIERS = {
+    COMMAND_REGISTRY: Symbol.for('COMMAND_REGISTRY')
+}
+
+export default SERVICE_IDENTIFIERS;
