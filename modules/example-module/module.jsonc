@@ -8,6 +8,6 @@
     "details": {
         "language": "typescript", // The plugin language (typescript, javascript)
         "apiVersion": "r1", // API level on which the plugin was built
-        "entryPoint": "example-module.ts" // The entrypoint (must export a default impl. of Plugin)
+        "entryPoint": "./example-module" // The entrypoint (must export a default impl. of Plugin)
     }
 }

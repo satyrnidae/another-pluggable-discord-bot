@@ -1,0 +1,13 @@
+{
+    "name": "Example Module",
+    "version": "1.0.0",
+    "id": "example-module",
+    "authors": [
+        "satyrnidae"
+    ],
+    "details": {
+        "language": "typescript",
+        "apiVersion": "r1",
+        "entryPoint": "example-module"
+    }
+}
