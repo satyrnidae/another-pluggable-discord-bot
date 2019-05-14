@@ -50,7 +50,12 @@ export default class ModuleRegistryArchetype implements ModuleRegistry {
         return modules;
     }
 
-    initializeModules(client: Client, commandRegistry: CommandRegistry, modules: Module[]): void {
+    preInitializeModules(modules: Module[]): Module[] {
+        modules.forEach(module => module.preInitialize());
+        return modules;
+    }
+
+    initializeModules(client: Client, commandRegistry: CommandRegistry, modules: Module[]): Module[] {
         modules.forEach(module => {
             module.initialize();
             if (module.events) {
@@ -60,7 +65,12 @@ export default class ModuleRegistryArchetype implements ModuleRegistry {
                 module.commands.forEach(command => commandRegistry.register(module, command))
             }
         });
+        return modules;
     }
 
+    postInitializeModules(client: Client, modules: Module[]): Module[] {
+        modules.forEach(module => module.postInitialize(client));
+        return modules;
+    }
 
 }

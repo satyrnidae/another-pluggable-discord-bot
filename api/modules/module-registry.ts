@@ -6,5 +6,9 @@ export default interface ModuleRegistry {
 
     loadModules(): Promise<Module[]>;
 
-    initializeModules(client: Client, commandRegistry: CommandRegistry, module: Module[]): void;
+    preInitializeModules(modules: Module[]): Module[];
+
+    initializeModules(client: Client, commandRegistry: CommandRegistry, modules: Module[]): Module[];
+
+    postInitializeModules(client: Client, modules: Module[]): Module[];
 }

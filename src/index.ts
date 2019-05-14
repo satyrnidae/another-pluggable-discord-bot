@@ -19,8 +19,14 @@ var commandRegistry = Container.get<CommandRegistry>(SERVICE_IDENTIFIERS.COMMAND
 var moduleRegistry = Container.get<ModuleRegistry>(SERVICE_IDENTIFIERS.MODULE_REGISTRY);
 var configuration = Container.get<Configuration>(SERVICE_IDENTIFIERS.CONFIGURATION);
 
-moduleRegistry.loadModules().then(modules => {
-    moduleRegistry.initializeModules(client, commandRegistry, modules);
-});
+moduleRegistry.loadModules()
+    .then(modules => moduleRegistry.preInitializeModules(modules))
+    .then(modules => moduleRegistry.initializeModules(client, commandRegistry, modules))
+    .then(modules => {
 
-client.login(configuration.token).then(() => console.log("Login Successful"));
+        //TODO: Init Core
+
+        return modules;
+    })
+    .then(modules => client.login(configuration.token)
+                        .then(() => moduleRegistry.postInitializeModules(client, modules)));
