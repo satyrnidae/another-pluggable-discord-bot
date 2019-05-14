@@ -3,10 +3,11 @@ import * as api from '../../api';
 import { ModuleRegistry, Module, ModuleInfo } from "../../api/modules";
 import { injectable } from "inversify";
 import { Client } from 'discord.js';
+import { CommandRegistry } from '../../api/entity';
 
 @injectable()
 export default class ModuleRegistryArchetype implements ModuleRegistry {
-        moduleDirectory: string = `${__dirname}/../../modules`;
+    moduleDirectory: string = `${__dirname}/../../modules`;
 
     async loadModules(): Promise<Module[]> {
         const modules: Module[] = [];
@@ -49,8 +50,16 @@ export default class ModuleRegistryArchetype implements ModuleRegistry {
         return modules;
     }
 
-    initializeModules(client: Client, modules: Module[]) {
-        modules.forEach(module => module.initialize(client));
+    initializeModules(client: Client, commandRegistry: CommandRegistry, modules: Module[]): void {
+        modules.forEach(module => {
+            module.initialize();
+            if (module.events) {
+                module.events.forEach(event => client.addListener(event.name, event.handle));
+            }
+            if (module.commands) {
+                module.commands.forEach(command => commandRegistry.register(module, command))
+            }
+        });
     }
 
 

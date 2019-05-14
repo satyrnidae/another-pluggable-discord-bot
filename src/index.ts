@@ -1,6 +1,6 @@
 import i18n = require('i18n');
 import { Client } from 'discord.js';
-import { CommandRegistry, Configuration } from '../api/entity';
+import { CommandRegistry, Configuration, Command } from '../api/entity';
 import { ModuleRegistry } from '../api/modules';
 import { Container, SERVICE_IDENTIFIERS } from '../api/inversion';
 
@@ -20,6 +20,7 @@ var moduleRegistry = Container.get<ModuleRegistry>(SERVICE_IDENTIFIERS.MODULE_RE
 var configuration = Container.get<Configuration>(SERVICE_IDENTIFIERS.CONFIGURATION);
 
 moduleRegistry.loadModules().then(modules => {
-    moduleRegistry.initializeModules(client, modules);
-    client.login(configuration.token)
+    moduleRegistry.initializeModules(client, commandRegistry, modules);
 });
+
+client.login(configuration.token).then(() => console.log("Login Successful"));

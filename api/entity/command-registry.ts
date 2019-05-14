@@ -1,12 +1,13 @@
 import Enmap from 'enmap';
 import { Command } from '.';
+import { Module } from '../modules';
 
 export default interface CommandRegistry {
-    commands: Enmap<string, Command>;
+    registry: Enmap<string, Enmap<string, Command>>;
 
-    register(command: Command) : Enmap<string, Command>;
+    register(parentModule: Module, command: Command): boolean;
 
-    get(name: string): Command;
+    get(name: string, moduleId?: string): Command[];
 
-    getAll(): Command[];
+    getAll(moduleId?: string): Command[];
 }
