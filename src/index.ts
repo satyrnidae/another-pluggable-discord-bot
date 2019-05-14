@@ -22,11 +22,4 @@ var configuration = Container.get<Configuration>(SERVICE_IDENTIFIERS.CONFIGURATI
 moduleRegistry.loadModules()
     .then(modules => moduleRegistry.preInitializeModules(modules))
     .then(modules => moduleRegistry.initializeModules(client, commandRegistry, modules))
-    .then(modules => {
-
-        //TODO: Init Core
-
-        return modules;
-    })
-    .then(modules => client.login(configuration.token)
-                        .then(() => moduleRegistry.postInitializeModules(client, modules)));
+    .then(modules => client.login(configuration.token).then(() => moduleRegistry.postInitializeModules(client, modules)));

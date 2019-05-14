@@ -38,7 +38,7 @@ export default class ModuleRegistryArchetype implements ModuleRegistry {
                     }
                 }
                 const moduleEntryPoint = require(entryPoint);
-                const moduleInstance = new moduleEntryPoint.default() as Module;
+                const moduleInstance = new moduleEntryPoint.default(moduleInfo) as Module;
                 if(!moduleInstance) {
                     return console.warn(i18n.__('Failed to load module "%s" instance', item));
                 }

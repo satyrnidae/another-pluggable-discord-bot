@@ -3,14 +3,14 @@ import { Command, EventHandler } from '../entity';
 import { Client } from 'discord.js';
 
 
-export default interface Module {
-    moduleInfo: ModuleInfo;
+export default abstract class Module {
+    constructor(public moduleInfo: ModuleInfo) {}
 
-    preInitialize(): any;
+    abstract preInitialize(): any;
 
-    initialize(): any;
+    abstract initialize(): any;
 
-    postInitialize(client: Client): any;
+    abstract postInitialize(client: Client): any;
 
     readonly commands: Command[];
 

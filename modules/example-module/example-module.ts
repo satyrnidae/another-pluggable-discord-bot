@@ -3,12 +3,7 @@ import { Client } from 'discord.js';
 import { Module, ModuleInfo } from '../../api/modules';
 import { Command, EventHandler } from '../../api/entity';
 
-export default class ExampleModule implements Module {
-    moduleInfo: ModuleInfo;
-
-    constructor() {
-        this.moduleInfo = <ModuleInfo>JSON.parse(fs.readFileSync(`${__dirname}/module.json`).toString());
-    }
+export default class ExampleModule extends Module {
 
     preInitialize() {
         console.info("PreInit for ExampleModule started.");
