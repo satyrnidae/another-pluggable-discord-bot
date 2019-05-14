@@ -5,7 +5,7 @@ import { Module } from '../../api/modules';
 
 @injectable()
 export default class CommandRegistryArchetype implements CommandRegistry {
-    registry: Enmap<string, Enmap<string, Command>>;
+    readonly registry: Enmap<string, Enmap<string, Command>> = new Enmap();
 
     register(parentModule: Module, command: Command): boolean {
         const commandName: string = command.name.toLowerCase().trim();
