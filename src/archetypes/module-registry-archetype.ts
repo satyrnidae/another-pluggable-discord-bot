@@ -58,11 +58,11 @@ export default class ModuleRegistryArchetype implements ModuleRegistry {
     initializeModules(client: Client, commandRegistry: CommandRegistry, modules: Module[]): Module[] {
         modules.forEach(module => {
             module.initialize();
+            if (module.commands) {
+                module.commands.forEach(command => commandRegistry.register(command, module.moduleInfo.id));
+            }
             if (module.events) {
                 module.events.forEach(event => client.addListener(event.name, event.handle));
-            }
-            if (module.commands) {
-                module.commands.forEach(command => commandRegistry.register(module, command))
             }
         });
         return modules;

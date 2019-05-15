@@ -1,13 +1,16 @@
 import { Client, Message } from 'discord.js';
 import { Options, Arguments } from 'yargs-parser';
 
-export default interface Command {
-    name: string;
-    syntax: string[];
-    description: string;
-    options: Options;
+export default abstract class Command {
+    readonly abstract name: string | symbol;
+    readonly abstract command: string;
+    readonly abstract syntax: string[];
+    readonly abstract description: string;
+    readonly abstract options: Options;
 
-    run(client: Client, message: Message, args: Arguments): any;
+    constructor(public moduleId: string | symbol) {}
 
-    checkPermissions(message: Message): boolean;
+    abstract run(client: Client, message: Message, args: Arguments): any;
+
+    abstract checkPermissions(message: Message): boolean;
 }

@@ -1,57 +1,44 @@
-import Enmap from 'enmap';
+import i18n = require('i18n');
 import { injectable } from 'inversify';
 import { CommandRegistry, Command } from '../../api/entity';
-import { Module } from '../../api/modules';
 
 @injectable()
 export default class CommandRegistryArchetype implements CommandRegistry {
-    readonly registry: Enmap<string, Enmap<string, Command>> = new Enmap();
-
-    register(parentModule: Module, command: Command): boolean {
-        const commandName: string = command.name.toLowerCase().trim();
-        const moduleId: string = parentModule.moduleInfo.id ? parentModule.moduleInfo.id : "";
-
-        let commandMap = this.registry.get(moduleId);
-        if(!commandMap) {
-            commandMap = new Enmap<string, Command>();
-            this.registry.set(moduleId, commandMap);
+    register(command: Command, moduleId: string | symbol): boolean {
+        //TODO: Command Registration
+        if(!moduleId) {
+            console.error(i18n.__('A module attempted to register a command without an ID!'));
         }
-        if(commandMap.has(commandName)) {
-            console.error(i18n.__("The command %s:%s was already registered.", moduleId, commandName));
+        if(!command.command) {
+            console.error(i18n.__('Cannot register an empty command in module %s.', moduleId.toString()));
             return false;
         }
+        if(this.registry.filter(registeredCommand =>
+            registeredCommand.moduleId === moduleId &&
+            registeredCommand.command === command.command).length) {
+                console.error(i18n.__('Skipped registering command %s:%s - Already Registered', moduleId.toString(), command.command));
+                return false;
+            }
 
-        commandMap.set(command.name, command);
+        command.moduleId = moduleId;
+        this.registry.push(command);
+
         return true;
     }
-
-    get(name: string, moduleId?: string): Command[] {
+    get(command: string, moduleId?: string | symbol): Command[] {
         if(moduleId) {
-            let commandList: Enmap<string, Command> = this.registry.get(moduleId);
-            return [commandList.get(name)];
+            return this.registry.filter(entry => entry.moduleId === moduleId && entry.command == command);
+        }
+        return this.registry.filter(entry => entry.command === command);
+    }
+    getAll(moduleId?: string | symbol): Command[] {
+        if(moduleId) {
+            return this.registry.filter(entry => entry.moduleId === moduleId);
         }
 
-        const commands: Command[] = [];
-
-        this.registry.forEach(registryEntry => {
-            var item = registryEntry.get(name);
-            if(item) commands.push(item);
-        });
-
-        return commands;
+        return this.registry;
     }
-
-    getAll(moduleId?: string): Command[] {
-        var commands: Command[] = [];
-
-        if(moduleId) {
-            this.registry.get(moduleId).forEach(command => commands.push(command));
-        } else {
-            this.registry.forEach(registryEntry => registryEntry.forEach(command => commands.push(command)));
-        }
-
-        return commands;
-    }
+    readonly registry: Command[] = [];
 
 
 }
