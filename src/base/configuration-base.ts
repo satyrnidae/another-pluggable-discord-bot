@@ -4,7 +4,7 @@ import { injectable } from 'inversify';
 import { Configuration } from '../../api/entity';
 
 @injectable()
-export default class ConfigurationArchetype implements Configuration {
+export default class ConfigurationBase implements Configuration {
     wrappedInstance: Configuration;
 
     constructor() {

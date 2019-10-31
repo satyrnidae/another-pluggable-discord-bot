@@ -3,7 +3,7 @@ import { injectable } from 'inversify';
 import { CommandRegistry, Command } from '../../api/entity';
 
 @injectable()
-export default class CommandRegistryArchetype implements CommandRegistry {
+export default class CommandRegistryBase implements CommandRegistry {
     register(command: Command, moduleId: string | symbol): boolean {
         //TODO: Command Registration
         if(!moduleId) {

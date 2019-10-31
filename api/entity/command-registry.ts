@@ -1,5 +1,5 @@
 import Enmap from 'enmap';
-import { Command, CommandEntry } from '.';
+import { Command } from '.';
 import { Module } from '../modules';
 
 /**

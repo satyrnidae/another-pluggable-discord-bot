@@ -6,11 +6,12 @@ import { Client } from 'discord.js';
 import { CommandRegistry } from '../../api/entity';
 
 @injectable()
-export default class ModuleRegistryArchetype implements ModuleRegistry {
+export default class ModuleRegistryBase implements ModuleRegistry {
     moduleDirectory: string = `${__dirname}/../../modules`;
 
     async loadModules(): Promise<Module[]> {
         const modules: Module[] = [];
+        await this.loadCore(modules);
         const moduleDirs: string[] = fs.readdirSync(this.moduleDirectory);
         moduleDirs.forEach(item => {
             try {
@@ -48,6 +49,9 @@ export default class ModuleRegistryArchetype implements ModuleRegistry {
             }
         });
         return modules;
+    }
+    async loadCore(modules: Module[]) : Promise<void> {
+
     }
 
     preInitializeModules(modules: Module[]): Module[] {
