@@ -1,1 +1,1 @@
-export { default as MessageEventHandler } from 'core/events/message-event-handler';
+export { default as MessageEventHandler } from 'core/events/command-handler';

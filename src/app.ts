@@ -1,5 +1,5 @@
 require("module-alias/register");
-import * as i18n from 'i18n';
+import i18n = require('i18n');
 import { Client } from 'discord.js';
 import { CommandRegistry, Configuration, ModuleRegistry, Container, SERVICE_IDENTIFIERS } from 'api';
 import { CommandRegistryBase, ConfigurationBase, ModuleRegistryBase } from 'core';
@@ -25,5 +25,5 @@ var configuration = Container.get<Configuration>(SERVICE_IDENTIFIERS.CONFIGURATI
 
 moduleRegistry.loadModules()
     .then(modules => moduleRegistry.preInitializeModules(modules))
-    .then(modules => moduleRegistry.initializeModules(client, commandRegistry, modules))
-    .then(modules => client.login(configuration.token).then(() => moduleRegistry.postInitializeModules(client, modules)));
+    .then(modules => moduleRegistry.initializeModules(client, modules))
+    .then(modules => moduleRegistry.postInitializeModules(client, modules).then(() => client.login(configuration.token)));

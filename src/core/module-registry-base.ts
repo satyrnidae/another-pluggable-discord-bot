@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { ModuleRegistry, CommandRegistry, Module, ModuleInfo, Version } from "api";
+import { ModuleRegistry, CommandRegistry, Command, Container, EventHandler, Module, ModuleInfo, Version, forEachAsync, SERVICE_IDENTIFIERS } from "api";
 import { CoreModule } from 'core';
 import { injectable } from "inversify";
 import { Client } from 'discord.js';
@@ -10,7 +10,6 @@ export default class ModuleRegistryBase implements ModuleRegistry {
 
     async loadModules(): Promise<Module[]> {
         const modules: Module[] = [];
-        await this.loadCore(modules);
         const moduleDirs: string[] = fs.readdirSync(this.moduleDirectory);
         moduleDirs.forEach(item => {
             try {
@@ -47,6 +46,7 @@ export default class ModuleRegistryBase implements ModuleRegistry {
                 return console.error(i18n.__('An unexpected error occurred while loading module %s: %s', item, ex));
             }
         });
+        await this.loadCore(modules);
         return modules;
     }
     async loadCore(modules: Module[]) : Promise<void> {
@@ -71,26 +71,28 @@ export default class ModuleRegistryBase implements ModuleRegistry {
         return Promise.resolve();
     }
 
-    preInitializeModules(modules: Module[]): Module[] {
-        modules.forEach(module => module.preInitialize());
+    async preInitializeModules(modules: Module[]): Promise<Module[]> {
+        await forEachAsync(modules, async (module: Module) => await module.preInitialize());
         return modules;
     }
 
-    initializeModules(client: Client, commandRegistry: CommandRegistry, modules: Module[]): Module[] {
-        modules.forEach(module => {
-            module.initialize();
+    async initializeModules(client: Client, modules: Module[]): Promise<Module[]> {
+        var commandRegistry: CommandRegistry = Container.get<CommandRegistry>(SERVICE_IDENTIFIERS.COMMAND_REGISTRY);
+        await forEachAsync(modules, async (module: Module) => {
+            await module.initialize();
             if (module.commands) {
-                module.commands.forEach(command => commandRegistry.register(command, module.moduleInfo.id));
+                module.commands.forEach((command: Command) => commandRegistry.register(command, module.moduleInfo.id));
             }
             if (module.events) {
-                module.events.forEach(event => client.addListener(event.name, event.handle));
+                module.events.forEach((event: EventHandler) => client.addListener(event.event, event.handler.bind(event, client)));
             }
+            return Promise.resolve();
         });
         return modules;
     }
 
-    postInitializeModules(client: Client, modules: Module[]): Module[] {
-        modules.forEach(module => module.postInitialize(client));
+    async postInitializeModules(client: Client, modules: Module[]): Promise<Module[]> {
+        await forEachAsync(modules, async (module: Module) => await module.postInitialize(client));
         return modules;
     }
 

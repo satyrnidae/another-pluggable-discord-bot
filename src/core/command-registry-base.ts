@@ -4,7 +4,7 @@ import { CommandRegistry, Command } from 'api';
 
 @injectable()
 export default class CommandRegistryBase implements CommandRegistry {
-    register(command: Command, moduleId: string | symbol): boolean {
+    register(command: Command, moduleId: string): boolean {
         //TODO: Command Registration
         if(!moduleId) {
             console.error(i18n.__('A module attempted to register a command without an ID!'));
@@ -25,13 +25,13 @@ export default class CommandRegistryBase implements CommandRegistry {
 
         return true;
     }
-    get(command: string, moduleId?: string | symbol): Command[] {
+    get(command: string, moduleId?: string): Command[] {
         if(moduleId) {
             return this.registry.filter(entry => entry.moduleId === moduleId && entry.command == command);
         }
         return this.registry.filter(entry => entry.command === command);
     }
-    getAll(moduleId?: string | symbol): Command[] {
+    getAll(moduleId?: string): Command[] {
         if(moduleId) {
             return this.registry.filter(entry => entry.moduleId === moduleId);
         }

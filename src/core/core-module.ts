@@ -1,5 +1,5 @@
 import { Client } from 'discord.js';
-import * as i18n from 'i18n';
+import i18n = require('i18n');
 import { Module, ModuleInfo, EventHandler } from 'api';
 import { MessageEventHandler } from 'core/events';
 

@@ -1,9 +1,9 @@
 import { Client } from 'discord.js';
 
 export default abstract class EventHandler {
-    readonly abstract name: string | symbol;
+    readonly abstract event: string;
 
-    constructor(public moduleId: string | symbol) {}
+    constructor(public moduleId: string) {}
 
-    abstract handle(client: Client, ...args: any[]): boolean;
+    abstract handler(client: Client, ...args: any[]): boolean;
 }
