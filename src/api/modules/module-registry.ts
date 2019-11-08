@@ -1,6 +1,5 @@
-import { Module } from ".";
+import { CommandRegistry, Module } from "api";
 import { Client } from "discord.js";
-import { CommandRegistry } from '../entity';
 
 export default interface ModuleRegistry {
 

@@ -1,7 +1,7 @@
 
 import fs from 'fs';
 import { injectable } from 'inversify';
-import { Configuration } from '../../api/entity';
+import { Configuration } from 'api';
 
 @injectable()
 export default class ConfigurationBase implements Configuration {

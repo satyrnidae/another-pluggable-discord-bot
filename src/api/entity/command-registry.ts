@@ -1,6 +1,4 @@
-import Enmap from 'enmap';
-import { Command } from '.';
-import { Module } from '../modules';
+import { Command } from 'api';
 
 /**
  * Holds a registry of each command object by name.  This interface supports

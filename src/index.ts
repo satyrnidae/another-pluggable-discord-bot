@@ -1,9 +1,6 @@
 import i18n = require('i18n');
 import { Client } from 'discord.js';
-import { CommandRegistry, Configuration, Command } from '../api/entity';
-import { ModuleRegistry } from '../api/modules';
-import { Container, SERVICE_IDENTIFIERS } from '../api/inversion';
-
+import { CommandRegistry, Configuration, Command, ModuleRegistry, Container, SERVICE_IDENTIFIERS } from 'api';
 
 i18n.configure({
     locales: ['en'],

@@ -1,5 +1,4 @@
-import { ModuleInfo } from '.';
-import { Command, EventHandler } from '../entity';
+import { Command, EventHandler, ModuleInfo } from 'api';
 import { Client } from 'discord.js';
 
 

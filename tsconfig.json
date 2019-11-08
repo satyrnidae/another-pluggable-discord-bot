@@ -6,7 +6,8 @@
         "outDir": "./bin",
         "sourceMap": true,
         "module": "commonjs",
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "baseUrl": "src"
     },
     "include": [
         "api/**/*.ts",

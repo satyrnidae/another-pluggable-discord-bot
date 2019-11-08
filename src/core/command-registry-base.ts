@@ -1,6 +1,6 @@
 import i18n = require('i18n');
 import { injectable } from 'inversify';
-import { CommandRegistry, Command } from '../../api/entity';
+import { CommandRegistry, Command } from 'api';
 
 @injectable()
 export default class CommandRegistryBase implements CommandRegistry {

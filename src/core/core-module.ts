@@ -1,4 +1,4 @@
-import { Module } from '../../api/modules';
+import { Module } from 'api';
 import { Client } from 'discord.js';
 
 export default class CoreModule extends Module {

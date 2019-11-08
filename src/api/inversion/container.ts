@@ -1,14 +1,12 @@
 import "reflect-metadata";
 import { Container } from 'inversify';
-import SERVICE_IDENTIFIERS from './service-identifiers';
-import { ModuleRegistry } from '../modules';
-import { CommandRegistry, Configuration } from '../entity';
+import { CommandRegistry, Configuration, SERVICE_IDENTIFIERS, ModuleRegistry } from 'api'
 
 let container = new Container();
 
-var commandRegistry = require('../../src/base/command-registry-base');
-var configuration = require('../../src/base/configuration-base');
-var moduleRegistry = require('../../src/base/module-registry-base');
+var commandRegistry = require('core/command-registry-base');
+var configuration = require('core/configuration-base');
+var moduleRegistry = require('core/module-registry-base');
 
 container.bind<CommandRegistry>(SERVICE_IDENTIFIERS.COMMAND_REGISTRY).to(commandRegistry.default).inSingletonScope();
 container.bind<Configuration>(SERVICE_IDENTIFIERS.CONFIGURATION).to(configuration.default).inSingletonScope();

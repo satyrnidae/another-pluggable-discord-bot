@@ -1,9 +1,8 @@
 import * as fs from 'fs';
-import * as api from '../../api';
-import { ModuleRegistry, Module, ModuleInfo } from "../../api/modules";
+import { CommandRegistry, ModuleRegistry, Module, ModuleInfo, Version } from "api";
+import { CoreModule } from 'core';
 import { injectable } from "inversify";
 import { Client } from 'discord.js';
-import { CommandRegistry } from '../../api/entity';
 
 @injectable()
 export default class ModuleRegistryBase implements ModuleRegistry {
@@ -28,8 +27,8 @@ export default class ModuleRegistryBase implements ModuleRegistry {
                 if(!moduleInfo) {
                     return console.warn(i18n.__('Module "%s" information file is not in the proper format.', item));
                 }
-                if(moduleInfo.details.apiVersion.toLowerCase().trim() != api.Version.toLowerCase().trim()) {
-                    return console.warn(i18n.__('Module "%s" was not created against the correct API version (expected %s; got %s)', item, api.Version, moduleInfo.details.apiVersion));
+                if(moduleInfo.details.apiVersion.toLowerCase().trim() != Version.toLowerCase().trim()) {
+                    return console.warn(i18n.__('Module "%s" was not created against the correct API version (expected %s; got %s)', item, Version, moduleInfo.details.apiVersion));
                 }
                 let entryPoint = `${modulePath}/${moduleInfo.details.entryPoint}.ts`;
                 if(!fs.existsSync(entryPoint)) {
@@ -51,7 +50,25 @@ export default class ModuleRegistryBase implements ModuleRegistry {
         return modules;
     }
     async loadCore(modules: Module[]) : Promise<void> {
+        const coreModuleInfo: ModuleInfo = {
+            name: "Core Module",
+            version: "1.0.0",
+            id: "core-module",
+            authors: [
+                "satyrnidae"
+            ],
+            details: {
+                apiVersion: Version,
+                entryPoint: "core-module",
+                commands: [],
+                eventHandlers: []
+            }
+        };
+        const coreModule = new CoreModule(coreModuleInfo);
 
+        modules.push(coreModule)
+
+        return Promise.resolve();
     }
 
     preInitializeModules(modules: Module[]): Module[] {

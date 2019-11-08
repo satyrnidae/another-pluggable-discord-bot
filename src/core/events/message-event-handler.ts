@@ -1,8 +1,6 @@
-import i18n = require('i18n');
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
-import { EventHandler, Configuration, CommandRegistry } from '../../../api/entity';
+import { CommandRegistry, Configuration, Container, EventHandler, SERVICE_IDENTIFIERS } from 'api';
 import { Client, Message } from 'discord.js';
-import { SERVICE_IDENTIFIERS, Container } from '../../../api/inversion';
 
 export default class MessageEventHandler extends EventHandler {
     name: string | symbol = Symbol.for("message");
@@ -16,7 +14,7 @@ export default class MessageEventHandler extends EventHandler {
         this.commandRegistry = Container.get(SERVICE_IDENTIFIERS.COMMAND_REGISTRY);
     }
 
-    handle(client: Client, message: Message): boolean {
+    handle(_: Client, message: Message): boolean {
         const prefix: string = this.configuration.defaultPrefix; //TODO: Custom prefixes
         const parsedCommand: ParsedMessage = ParseMessage(message, prefix);
 
