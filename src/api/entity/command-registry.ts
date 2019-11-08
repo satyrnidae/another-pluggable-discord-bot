@@ -12,7 +12,7 @@ export default interface CommandRegistry {
 
     register(command: Command, moduleId: string): boolean;
 
-    get(command: string, moduleId: string): Command[];
+    get(command: string, moduleId?: string): Command[];
 
     getAll(moduleId?: string): Command[];
 }
