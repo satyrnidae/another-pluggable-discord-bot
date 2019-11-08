@@ -1,5 +1,5 @@
 import i18n = require('i18n')
-import { Client, Guild, TextChannel } from 'discord.js'
+import { Client, Guild, TextChannel, Message } from 'discord.js'
 import { Configuration } from 'api';
 
 /**
@@ -25,6 +25,29 @@ export function sendWelcomeMessage(client: Client, guild: Guild, config: Configu
         });
     }
 }
+
+/**
+ * Sends a general help message to one lucky person, either on a guild or in a DM
+ * @param client The discord client instance
+ * @param message The message to reply to
+ */
+export function sendGeneralHelpMessage(client: Client, message: Message, config: Configuration) {
+    var helpMessage: string;
+    var prefix = config.defaultPrefix;
+
+    if(!message.guild) {
+      helpMessage = i18n.__("Hi! I'm").concat(' ').concat(client.user.username);
+    }
+    else {
+      helpMessage = i18n.__("hi! I'm").concat(' ').concat(message.guild.me.displayName);
+    }
+
+    helpMessage = helpMessage.concat(i18n.__(", your modular robot friend!")).concat('\r\n')
+      .concat(i18n.__("To list all the commands that I can understand, just send")).concat(' `').concat(prefix).concat('help --all` ').concat(i18n.__("to any channel I can read, or via direct message.")).concat('\r\n')
+      .concat(i18n.__("You can also check out my documentation on")).concat(' <https://www.github.com/satyrnidae/another-pluggable-discord-bot>\r\n')
+      .concat(i18n.__("Thanks!")).concat(` :${getHeart()}:`)
+    return message.reply(helpMessage)
+  }
 
 /**
  * Gets a heart reaction from a list of them!
