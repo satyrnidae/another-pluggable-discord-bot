@@ -1,7 +1,7 @@
 import { Client } from 'discord.js';
 import i18n = require('i18n');
 import { Module, ModuleInfo, EventHandler } from 'api';
-import { MessageEventHandler } from 'core/events';
+import { CommandHandler, ReadyHandler } from 'core/events';
 
 export default class CoreModule extends Module {
 
@@ -10,7 +10,8 @@ export default class CoreModule extends Module {
     public constructor(moduleInfo: ModuleInfo) {
         super(moduleInfo);
         this.coreEvents = [
-            new MessageEventHandler(moduleInfo.id)
+            new CommandHandler(moduleInfo.id),
+            new ReadyHandler(moduleInfo.id)
         ];
     }
 
