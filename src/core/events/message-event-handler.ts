@@ -1,6 +1,6 @@
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
-import { CommandRegistry, Configuration, Container, EventHandler, SERVICE_IDENTIFIERS } from 'api';
 import { Client, Message } from 'discord.js';
+import { CommandRegistry, Configuration, Container, EventHandler, SERVICE_IDENTIFIERS } from 'api';
 
 export default class MessageEventHandler extends EventHandler {
     name: string | symbol = Symbol.for("message");
@@ -19,6 +19,8 @@ export default class MessageEventHandler extends EventHandler {
         const parsedCommand: ParsedMessage = ParseMessage(message, prefix);
 
         if(!parsedCommand.success) return false;
+
+        console.log(`Parsed Command ${parsedCommand.command}`);
 
         return true;
     }

@@ -2,11 +2,11 @@
   "name": "another-pluggable-discord-bot",
   "version": "1.0.0",
   "description": "Yet another discord bot with plugins",
-  "main": "src/index.ts",
+  "main": "src/app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node ./src/index.ts",
-    "debug": "node --inspect-brk ./bin/src/index.js"
+    "start": "ts-node ./src/app.ts",
+    "debug": "node --inspect-brk ./bin/src/app.js"
   },
   "repository": {
     "type": "git",
@@ -31,12 +31,16 @@
     "enmap": "^4.8.4",
     "i18n": "^0.8.3",
     "inversify": "^5.0.1",
+    "module-alias": "^2.2.2",
     "reflect-metadata": "^0.1.13",
-    "ts-node": "^8.0.3",
     "typescript": "^3.6.4",
     "yargs-parser": "^13.0.0"
   },
   "devDependencies": {
     "@types/yargs-parser": "^13.0.0"
+  },
+  "_moduleAliases": {
+      "api": "bin/src/api",
+      "core": "bin/src/core"
   }
 }

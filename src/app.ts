@@ -1,6 +1,8 @@
-import i18n = require('i18n');
+require("module-alias/register");
+import * as i18n from 'i18n';
 import { Client } from 'discord.js';
-import { CommandRegistry, Configuration, Command, ModuleRegistry, Container, SERVICE_IDENTIFIERS } from 'api';
+import { CommandRegistry, Configuration, ModuleRegistry, Container, SERVICE_IDENTIFIERS } from 'api';
+import { CommandRegistryBase, ConfigurationBase, ModuleRegistryBase } from 'core';
 
 i18n.configure({
     locales: ['en'],
@@ -10,6 +12,11 @@ i18n.configure({
     logWarnFn: (msg) => console.warn(msg),
     logErrorFn: (msg) => console.error(msg)
 });
+
+// Set Up Dependencies
+Container.bind<CommandRegistry>(SERVICE_IDENTIFIERS.COMMAND_REGISTRY).to(CommandRegistryBase).inSingletonScope();
+Container.bind<Configuration>(SERVICE_IDENTIFIERS.CONFIGURATION).to(ConfigurationBase).inSingletonScope();
+Container.bind<ModuleRegistry>(SERVICE_IDENTIFIERS.MODULE_REGISTRY).to(ModuleRegistryBase).inSingletonScope();
 
 var client = new Client();
 var commandRegistry = Container.get<CommandRegistry>(SERVICE_IDENTIFIERS.COMMAND_REGISTRY);

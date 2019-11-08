@@ -1,4 +1,4 @@
-import { Command } from 'api';
+import { Command } from 'api/entity';
 
 /**
  * Holds a registry of each command object by name.  This interface supports

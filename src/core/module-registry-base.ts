@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { CommandRegistry, ModuleRegistry, Module, ModuleInfo, Version } from "api";
+import { ModuleRegistry, CommandRegistry, Module, ModuleInfo, Version } from "api";
 import { CoreModule } from 'core';
 import { injectable } from "inversify";
 import { Client } from 'discord.js';

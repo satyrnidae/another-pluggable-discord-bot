@@ -1,15 +1,22 @@
-import { Command, EventHandler, ModuleInfo } from 'api';
+import { Command, EventHandler } from 'api/entity';
+import { ModuleInfo } from 'api/modules';
 import { Client } from 'discord.js';
 
 
 export default abstract class Module {
     constructor(public moduleInfo: ModuleInfo) {}
 
-    abstract preInitialize(): any;
+    async preInitialize(): Promise<void> {
+        return Promise.resolve();
+    }
 
-    abstract initialize(): any;
+    async initialize(): Promise<void> {
+        return Promise.resolve();
+    }
 
-    abstract postInitialize(client: Client): any;
+    async postInitialize(client: Client): Promise<void> {
+        return Promise.resolve();
+    }
 
     readonly commands: Command[];
 

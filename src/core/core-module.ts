@@ -1,17 +1,26 @@
-import { Module } from 'api';
 import { Client } from 'discord.js';
+import * as i18n from 'i18n';
+import { Module, ModuleInfo, EventHandler } from 'api';
+import { MessageEventHandler } from 'core/events';
 
 export default class CoreModule extends Module {
-    preInitialize() {
-        throw new Error('Method not implemented.');
+
+    private coreEvents: EventHandler[];
+
+    public constructor(moduleInfo: ModuleInfo) {
+        super(moduleInfo);
+        this.coreEvents = [
+            new MessageEventHandler(moduleInfo.id)
+        ];
     }
 
-    initialize() {
-        throw new Error('Method not implemented.');
+    async postInitialize(client: Client) : Promise<any> {
+        console.info(i18n.__('Loaded core module components'));
+
+        return await super.postInitialize(client);
     }
 
-
-    postInitialize(client: Client) {
-        throw new Error('Method not implemented.');
+    get events(): EventHandler[] {
+        return this.coreEvents;
     }
 }

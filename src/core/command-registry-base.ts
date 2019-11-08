@@ -1,4 +1,4 @@
-import i18n = require('i18n');
+require('i18n');
 import { injectable } from 'inversify';
 import { CommandRegistry, Command } from 'api';
 
