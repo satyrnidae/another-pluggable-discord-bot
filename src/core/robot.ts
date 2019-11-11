@@ -16,7 +16,6 @@ export default class Robot implements Lifecycle {
             locales: ['en'],
             fallbacks: {'*': 'en'},
             directory: `${__dirname}/locale`,
-            logDebugFn: (msg) => console.debug(msg),
             logWarnFn: (msg) => console.warn(msg),
             logErrorFn: (msg) => console.error(msg)
         });

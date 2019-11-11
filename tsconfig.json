@@ -14,9 +14,8 @@
         "src/**/*.ts",
         "config/**/*.json",
         "locale/*.json",
-        "modules/**/*.ts",
-        "modules/**/*.js",
-        "modules/**/*.json",
+        "src/modules/**/*.js",
+        "src/modules/**/*.json",
     ],
     "exclude": [
         "node_modules",

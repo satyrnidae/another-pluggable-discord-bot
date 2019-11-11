@@ -1,3 +1,4 @@
+import i18n = require('i18n');
 import * as fs from 'fs';
 import * as api from 'api';
 import { CoreModule } from 'core';
@@ -20,7 +21,8 @@ export default class ModuleRegistryBase implements api.ModuleRegistry {
                     return Promise.resolve();
                 }
 
-                const moduleConfigFile: string = fs.readdirSync(modulePath).filter(fn => fn.match(/^module\.json$/))[0];
+                const moduleFiles: string[] = fs.readdirSync(modulePath);
+                const moduleConfigFile: string = moduleFiles.filter((file: string) => file.match(/^module\.json$/))[0];
                 if (!moduleConfigFile) {
                     console.warn(i18n.__('Module "%s" is not a valid module.', item));
                     return Promise.resolve();
@@ -38,7 +40,7 @@ export default class ModuleRegistryBase implements api.ModuleRegistry {
 
                 let entryPoint: string = `${modulePath}/${moduleInfo.details.entryPoint}.ts`;
                 if (!fs.existsSync(entryPoint)) {
-                    entryPoint = `${moduleInfo}/${moduleInfo.details.entryPoint}.js`;
+                    entryPoint = `${modulePath}/${moduleInfo.details.entryPoint}.js`;
                     if (!fs.existsSync(entryPoint)) {
                         console.warn(i18n.__('Failed to load entry point for module "%s".'), item);
                         return Promise.resolve();
