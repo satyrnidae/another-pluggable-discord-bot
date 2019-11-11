@@ -7,9 +7,9 @@ import { Client } from 'discord.js';
 @injectable()
 export default class ModuleRegistryBase implements ModuleRegistry {
     moduleDirectory: string = `${__dirname}/../../modules`;
+    public readonly modules: Module[] = [];
 
-    async loadModules(): Promise<Module[]> {
-        const modules: Module[] = [];
+    async loadModules(): Promise<void> {
         const moduleDirs: string[] = fs.readdirSync(this.moduleDirectory);
         moduleDirs.forEach(item => {
             try {
@@ -41,15 +41,14 @@ export default class ModuleRegistryBase implements ModuleRegistry {
                 if(!moduleInstance) {
                     return console.warn(i18n.__('Failed to load module "%s" instance', item));
                 }
-                modules.push(moduleInstance);
+                this.modules.push(moduleInstance);
             } catch (ex) {
                 return console.error(i18n.__('An unexpected error occurred while loading module %s: %s', item, ex));
             }
         });
-        await this.loadCore(modules);
-        return modules;
+        return await this.loadCore();
     }
-    async loadCore(modules: Module[]) : Promise<void> {
+    async loadCore() : Promise<void> {
         const coreModuleInfo: ModuleInfo = {
             name: "Core Module",
             version: "1.0.0",
@@ -66,20 +65,19 @@ export default class ModuleRegistryBase implements ModuleRegistry {
         };
         const coreModule = new CoreModule(coreModuleInfo);
 
-        modules.push(coreModule)
+        this.modules.push(coreModule)
 
         return Promise.resolve();
     }
 
-    async preInitializeModules(modules: Module[]): Promise<Module[]> {
-        await forEachAsync(modules, async (module: Module) => await module.preInitialize());
-        return modules;
+    async preInitializeModules(client: Client): Promise<void> {
+        return await forEachAsync(this.modules, async (module: Module) => await module.preInitialize(client));
     }
 
-    async initializeModules(client: Client, modules: Module[]): Promise<Module[]> {
+    async initializeModules(client: Client): Promise<void> {
         var commandRegistry: CommandRegistry = Container.get<CommandRegistry>(SERVICE_IDENTIFIERS.COMMAND_REGISTRY);
-        await forEachAsync(modules, async (module: Module) => {
-            await module.initialize();
+        return await forEachAsync(this.modules, async (module: Module) => {
+            await module.initialize(client);
             if (module.commands) {
                 module.commands.forEach((command: Command) => commandRegistry.register(command, module.moduleInfo.id));
             }
@@ -88,12 +86,10 @@ export default class ModuleRegistryBase implements ModuleRegistry {
             }
             return Promise.resolve();
         });
-        return modules;
     }
 
-    async postInitializeModules(client: Client, modules: Module[]): Promise<Module[]> {
-        await forEachAsync(modules, async (module: Module) => await module.postInitialize(client));
-        return modules;
+    async postInitializeModules(client: Client): Promise<void> {
+        return await forEachAsync(this.modules, async (module: Module) => await module.postInitialize(client));
     }
 
 }

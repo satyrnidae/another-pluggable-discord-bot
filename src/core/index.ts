@@ -1,3 +1,4 @@
+export { default as Robot } from 'core/robot';
 export { default as ModuleRegistryBase } from 'core/module-registry-base';
 export { default as CoreModule } from 'core/core-module';
 export { default as CommandRegistryBase } from 'core/command-registry-base';

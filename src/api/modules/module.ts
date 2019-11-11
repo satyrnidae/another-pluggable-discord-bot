@@ -6,11 +6,11 @@ import { Client } from 'discord.js';
 export default abstract class Module {
     constructor(public moduleInfo: ModuleInfo) {}
 
-    async preInitialize(): Promise<void> {
+    async preInitialize(client: Client): Promise<void> {
         return Promise.resolve();
     }
 
-    async initialize(): Promise<void> {
+    async initialize(client: Client): Promise<void> {
         return Promise.resolve();
     }
 

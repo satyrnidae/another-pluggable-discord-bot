@@ -9,7 +9,7 @@ export default class CoreModule extends Module {
     private coreEvents: EventHandler[];
     private coreCommands: Command[];
 
-    async preInitialize(): Promise<any> {
+    async preInitialize(_: Client): Promise<void> {
         this.coreEvents = [
             new CommandHandler(this.moduleInfo.id),
             new ReadyHandler(this.moduleInfo.id)
@@ -21,7 +21,7 @@ export default class CoreModule extends Module {
         return Promise.resolve();
     }
 
-    async postInitialize(client: Client) : Promise<any> {
+    async postInitialize(client: Client) : Promise<void> {
         console.info(i18n.__('Loaded core module components'));
 
         return await super.postInitialize(client);

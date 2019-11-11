@@ -2,7 +2,7 @@ import { Client } from 'discord.js';
 import { Command, EventHandler, Module } from 'api';
 export default class ExampleModule extends Module {
 
-    async postInitialize(client: Client) : Promise<any> {
+    async postInitialize(client: Client) : Promise<void> {
         console.info("Finished loading ExampleModule");
 
         return await super.postInitialize(client);

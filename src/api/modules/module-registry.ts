@@ -4,11 +4,11 @@ import { Client } from "discord.js";
 
 export default interface ModuleRegistry {
 
-    loadModules(): Promise<Module[]>;
+    loadModules(): Promise<void>;
 
-    preInitializeModules(modules: Module[]): Promise<Module[]>;
+    preInitializeModules(client: Client): Promise<void>;
 
-    initializeModules(client: Client, modules: Module[]): Promise<Module[]>;
+    initializeModules(client: Client): Promise<void>;
 
-    postInitializeModules(client: Client, modules: Module[]): Promise<Module[]>;
+    postInitializeModules(client: Client): Promise<void>;
 }
