@@ -1,4 +1,4 @@
-require("module-alias/register");
+require('module-alias/register');
 import { Lifecycle, Container, CommandRegistry, SERVICE_IDENTIFIERS, Configuration, ModuleRegistry } from 'api';
 import { Robot, CommandRegistryBase, ConfigurationBase, ModuleRegistryBase } from 'core';
 import { Client } from 'discord.js';
@@ -17,5 +17,5 @@ robot.preInitialize()
     .then(() => robot.run())
     .catch(reason => console.error(reason))
     .finally(async () => {
-        console.log("Service Started");
+        console.log('Service Started');
     });

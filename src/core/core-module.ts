@@ -1,13 +1,26 @@
-import { Client } from 'discord.js';
 import i18n = require('i18n');
-import { Module, ModuleInfo, EventHandler, Command } from 'api';
-import { CommandHandler, ReadyHandler } from 'core/events';
-import HelpCommand from 'core/commands/help-command';
+import { Client } from 'discord.js';
+import { Module, EventHandler, Command, Version } from 'api';
+import { CommandHandler, ReadyHandler, HelpCommand } from 'core';
 
 export default class CoreModule extends Module {
-
     private coreEvents: EventHandler[];
     private coreCommands: Command[];
+
+    public constructor() {
+        super( {
+            name: 'Core Module',
+            version: '1.0.0',
+            id: 'core-module',
+            authors: [ 'satyrnidae' ],
+            details: {
+                apiVersion: Version,
+                entryPoint: 'core-module',
+                commands: [],
+                eventHandlers: []
+            }
+        });
+    }
 
     async preInitialize(_: Client): Promise<void> {
         this.coreEvents = [

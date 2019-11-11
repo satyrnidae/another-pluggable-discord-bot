@@ -1,4 +1,4 @@
-import ModuleDetails from 'api/modules/module-details';
+import { ModuleDetails } from 'api';
 
 export default interface ModuleInfo {
     name: string;

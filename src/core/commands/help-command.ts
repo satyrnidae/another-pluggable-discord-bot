@@ -1,26 +1,19 @@
 import i18n = require('i18n');
 import { Options, Arguments } from 'yargs-parser';
 import { Client, Message } from 'discord.js';
-import { Command, Configuration, CommandRegistry, Container, SERVICE_IDENTIFIERS } from 'api';
-import { sendGeneralHelpMessage } from 'core';
+import { Command, Configuration, CommandRegistry, Container, SERVICE_IDENTIFIERS, forEachAsync } from 'api';
+import * as messages from 'core/messages';
 
-/**
- * A command which will provide help information about the bot, the available commands, and information on specific commands.
- */
 export default class HelpCommand extends Command {
-    /** The name of the command; in this case, "help", localized */
-    name: string = 'help';
+    name: string = 'core/help';
     command: string = 'help';
-    /** The syntax of the command */
     syntax: string[] = [
         'help',
         'help {-a|--all}',
         'help [-c|--command] *command*',
         'help [-m|--moduleId] *moduleId*',
         'help [-c|--command] *command* [-m|--moduleId] *moduleId*'];
-    /** The command description */
     description: string = i18n.__('Provides a detailed overview of any command registered with the bot.');
-    /** The command parser options */
     options: Options = {
         alias: {
             command: ['-c'],
@@ -41,52 +34,44 @@ export default class HelpCommand extends Command {
         this.commandRegistry = Container.get(SERVICE_IDENTIFIERS.COMMAND_REGISTRY);
     }
 
-    /**
-     * Executes the command.
-     * @param client The discord client instance
-     * @param message The message within which the command data resides
-     * @param args The parsed yargs arguments of the command
-     */
-    run(client: Client, message: Message, args: Arguments): any {
-        var commands = this.commandRegistry.registry;
-        var prefix = this.configuration.defaultPrefix;
+    async run(client: Client, message: Message, args: Arguments): Promise<any> {
+        // TODO: per-guild prefix configuration
+        const prefix = this.configuration.defaultPrefix;
+        const commands: Command[] = this.commandRegistry.registry;
 
-        if (args._.length == 0 && !args['all'] && !args['command']) {
-            return sendGeneralHelpMessage(client, message, this.configuration);
+        if (args._.length === 0 && !(args['all'] || args['command'])) {
+            return await messages.sendGeneralHelpMessage(client, message, this.configuration);
         }
-
         if (args['all']) {
-            var helpMessage: string = i18n.__("here's a list of all of the commands I can handle").concat(':\r\n');
-            //TODO: By Module
-            commands.forEach(command => {
-                helpMessage = helpMessage.concat('\t•\t`').concat(command.name).concat('`:\r\n');
+            let helpMessage: string = i18n.__('here\'s a list of all of the commands that I can handle:').concat('\r\n');
+            //TODO: Group commands by module id
+            await forEachAsync(commands, async (command: Command): Promise<void> => {
+                helpMessage = helpMessage.concat('\t•\t').concat(command.name).concat('\r\n');
+                return Promise.resolve();
             });
-            helpMessage = helpMessage.concat(i18n.__("You can find out more by specifying one command specifically")).concat(':\r\n\t\t')
-                .concat(prefix).concat('help [-c|--command] *command*');
-            return message.reply(helpMessage);
+            helpMessage = helpMessage.concat(i18n.__('You can find out more by specifying one command specifically:'))
+                .concat('\r\n\t\t').concat(prefix).concat('help [-c|--command] *command*');
+            return await message.reply(helpMessage);
         }
-
-        var commandName = (args['command'] || args._[0]) as string;
-        var command = this.commandRegistry.get(commandName)[0];
+        //TODO: Commands specified by module id
+        const commandName: string = (args['command'] || args._[0]) as string;
+        const command: Command = this.commandRegistry.get(commandName)[0];
 
         if (command) {
-            var helpMessage: string = command.description.concat('\r\n')
-                .concat(i18n.__('Usage')).concat(':\r\n');
-            command.syntax.forEach((option, i) => {
-                if (i > 0)
+            let helpMessage: string = command.description.concat('\r\n').concat(i18n.__('Usage:')).concat('\r\n');
+            await forEachAsync(command.syntax, async (syntax: string, index: number): Promise<void> => {
+                if (index > 0) {
                     helpMessage = helpMessage.concat('\r\n');
-                helpMessage = helpMessage.concat('\t•\t').concat(prefix).concat(option);
+                }
+                helpMessage = helpMessage.concat('\t•\t').concat(prefix).concat(syntax);
             });
-            return message.channel.send(helpMessage);
+            return await message.channel.send(helpMessage);
         }
 
-        return message.reply(i18n.__("I don't know the command").concat(' "').concat(commandName).concat('"!'));
+        return await message.reply(i18n.__('I don\'t know the command').concat(' "').concat(commandName).concat('"!'));
     }
 
-    /**
-     * Always returns true, as any user can ask for help
-     */
-    checkPermissions(_: Message): boolean {
-        return true;
+    async checkPermissions(_: Message): Promise<boolean> {
+        return Promise.resolve(true);
     }
 }

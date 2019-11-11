@@ -10,7 +10,7 @@ export default abstract class Command {
 
     constructor(public moduleId: string) {}
 
-    abstract run(client: Client, message: Message, args: Arguments): any;
+    abstract run(client: Client, message: Message, args: Arguments): Promise<any>;
 
-    abstract checkPermissions(message: Message): boolean;
+    abstract checkPermissions(message: Message): Promise<boolean>;
 }

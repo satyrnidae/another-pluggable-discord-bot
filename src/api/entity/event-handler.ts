@@ -5,5 +5,5 @@ export default abstract class EventHandler {
 
     constructor(public moduleId: string) {}
 
-    abstract handler(client: Client, ...args: any[]): boolean;
+    abstract handler(client: Client, ...args: any[]): Promise<any>;
 }

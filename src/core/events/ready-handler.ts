@@ -1,12 +1,10 @@
 import i18n = require('i18n');
-import { Configuration, Container, SERVICE_IDENTIFIERS, EventHandler } from 'api'
-import { Client } from 'discord.js'
+import { Configuration, Container, SERVICE_IDENTIFIERS, EventHandler, forEachAsync } from 'api'
+import { Client, Guild } from 'discord.js'
 import { sendWelcomeMessage } from 'core';
 
-/** Handles the ready event from the discord client */
 export default class ReadyHandler extends EventHandler {
-    /** The name of the event */
-    event: string = "ready";
+    event: string = 'ready';
     configuration: Configuration;
 
     constructor(moduleId: string) {
@@ -14,26 +12,20 @@ export default class ReadyHandler extends EventHandler {
         this.configuration = Container.get(SERVICE_IDENTIFIERS.CONFIGURATION);
     }
 
-    /**
-     * Handles the ready event
-     * @param _getCommands Unused. A function to retrieve an enmap of all registed commands
-     * @param client The discord client instance
-     * @param _args Unused.  All other arguments.
-     */
-    handler(client: Client, ..._args: any[]): boolean {
-        // register error handlers
-        client.on("error", (e: string) => console.error(e))
-        client.on("warn", (w: string) => console.warn(w))
-        client.on("info", (i: string) => console.info(i))
+    public async handler(client: Client, ..._args: any[]): Promise<any> {
+        client.on('error', (e: string) => console.error(e))
+        client.on('warn', (w: string) => console.warn(w))
+        client.on('info', (i: string) => console.info(i))
 
-        console.log(`${i18n.__("Logged in as")} ${client.user.tag}, ${i18n.__("and ready for service!")}`)
+        console.log(`${i18n.__('Logged in as ')}${client.user.tag}${i18n.__(', and ready for service!')}`)
 
         if (this.configuration.welcomeMessage) {
-            client.guilds.forEach(guild => {
-                sendWelcomeMessage(client, guild, this.configuration)
-            })
+            return await forEachAsync(client.guilds.array(), async (guild: Guild): Promise<void> => {
+                await sendWelcomeMessage(client, guild, this.configuration);
+                return Promise.resolve();
+            });
         }
 
-        return true;
+        return Promise.resolve();
     }
 }

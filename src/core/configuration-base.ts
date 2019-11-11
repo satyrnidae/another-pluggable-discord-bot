@@ -5,10 +5,11 @@ import { Configuration } from 'api';
 
 @injectable()
 export default class ConfigurationBase implements Configuration {
-    wrappedInstance: Configuration;
+    private wrappedInstance: Configuration;
+    private readonly configPath: string = `${__dirname}/../../config/config.json`;
 
     constructor() {
-        this.wrappedInstance = <Configuration>JSON.parse(fs.readFileSync(`${__dirname}/../../config/config.json`).toString());
+        this.wrappedInstance = JSON.parse(fs.readFileSync(this.configPath).toString()) as Configuration;
     }
 
     get token(): string {
