@@ -10,12 +10,10 @@
         "baseUrl": "src"
     },
     "include": [
-        "api/**/*.ts",
         "src/**/*.ts",
         "config/**/*.json",
-        "locale/*.json",
-        "src/modules/**/*.js",
-        "src/modules/**/*.json",
+        "src/**/*.json",
+        "src/modules/**/*.js"
     ],
     "exclude": [
         "node_modules",
