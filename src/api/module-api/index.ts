@@ -1,0 +1,9 @@
+export { default as Module } from 'api/module-api/module';
+export { default as ModuleInfo } from 'api/module-api/module-info';
+export { default as ModuleDetails } from 'api/module-api/module-details';
+export { default as ModuleRegistry } from 'api/module-api/module-registry';
+export { default as CommandRegistry } from 'api/module-api/command-registry';
+export { default as Command } from 'api/module-api/command';
+export { default as Configuration } from 'api/module-api/configuration';
+export { default as EventHandler } from 'api/module-api/event-handler';
+export { default as Version } from 'api/module-api/version';
