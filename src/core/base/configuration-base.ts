@@ -16,39 +16,22 @@ export default class ConfigurationBase implements AppConfiguration {
         return this.wrappedInstance.token;
     }
 
-    set token(token: string) {
-        this.wrappedInstance.token = token;
-    }
-
     get defaultPrefix(): string {
         return this.wrappedInstance.defaultPrefix;
     }
 
-    set defaultPrefix(defaultPrefix: string) {
-        this.wrappedInstance.defaultPrefix = defaultPrefix;
-    }
-
-    get welcomeMessage(): boolean {
-        return this.wrappedInstance.welcomeMessage;
-    }
-
-    set welcomeMessage(welcomeMessage: boolean) {
-        this.wrappedInstance.welcomeMessage = welcomeMessage;
+    get showWelcomeMessage(): boolean {
+        return this.wrappedInstance.showWelcomeMessage;
     }
 
     get developerMode(): boolean {
         return this.wrappedInstance.developerMode;
     }
-
-    set developerMode(developerMode: boolean) {
-        this.wrappedInstance.developerMode = developerMode;
-    }
-
     get defaultNickname(): string {
         return this.wrappedInstance.defaultNickname;
     }
 
-    set defaultNickname(value: string) {
-        this.wrappedInstance.defaultNickname = value;
+    get hearts(): string[] {
+        return this.wrappedInstance.hearts;
     }
 }
