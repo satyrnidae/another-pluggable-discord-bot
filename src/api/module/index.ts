@@ -6,5 +6,5 @@ export { default as CommandRegistry } from 'api/module/command-registry';
 export { default as Command } from 'api/module/command';
 export { default as EventHandler } from 'api/module/event-handler';
 export { default as Version } from 'api/module/version';
-export { default as AppConfiguration } from 'api/module/api-configuration';
+export { default as AppConfiguration } from 'api/module/app-configuration';
 export { default as DBConnection } from 'api/module/db-connection';
