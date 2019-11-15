@@ -1,16 +1,16 @@
 import i18n = require('i18n')
 import { Client, Guild, TextChannel, Message, Channel, GuildMember } from 'discord.js'
-import { AppConfiguration, forEachAsync, Container, SERVICE_IDENTIFIERS } from 'api';
+import { AppConfiguration, forEachAsync, Container, SERVICE_IDENTIFIERS, LoopStateArgs } from 'api';
 import { GuildConfiguration } from 'db';
 
 export async function sendGuildWelcomeMessage(client: Client, guild: Guild): Promise<any> {
     const configuration: AppConfiguration = Container.get(SERVICE_IDENTIFIERS.CONFIGURATION);
     const guildConfiguration: GuildConfiguration = await GuildConfiguration.load(guild);
 
-    if(configuration.welcomeMessage && !guildConfiguration.welcomeMsgSent) {
-        await forEachAsync(guild.channels.array(), async (channel: Channel): Promise<boolean> => {
+    if(configuration.showWelcomeMessage && !guildConfiguration.welcomeMsgSent) {
+        await forEachAsync(guild.channels.array(), async (channel: Channel, _: number, __: any[], loopStateArgs: LoopStateArgs): Promise<any> => {
             if(channel.type !== 'text')
-                return true;
+                return Promise.resolve();
 
             const textChannel: TextChannel = channel as TextChannel;
             const me: GuildMember = guild.members.get(client.user.id);
@@ -24,7 +24,8 @@ export async function sendGuildWelcomeMessage(client: Client, guild: Guild): Pro
                     .concat(i18n.__('Cheers! ')).concat(`:${getHeart()}:`);
                 textChannel.send(message);
                 guildConfiguration.welcomeMsgSent = true;
-                return false;
+                loopStateArgs.break = true;
+                return Promise.resolve();
             }
         });
     }
@@ -53,24 +54,9 @@ export async function sendGeneralHelpMessage(client: Client, message: Message, c
   }
 
 export function getHeart() {
-    const hearts = [
-        'heart',
-        'yellow_heart',
-        'green_heart',
-        'blue_heart',
-        'purple_heart',
-        'heart_exclamation',
-        'two_hearts',
-        'revolving_hearts',
-        'heartbeat',
-        'heartpulse',
-        'sparkling_heart',
-        'cupid',
-        'gift_heart',
-        'heart_decoration',
-        'hearts',
-        'black_heart'
-    ]
+    const configuration: AppConfiguration = Container.get(SERVICE_IDENTIFIERS.CONFIGURATION);
+
+    const hearts = configuration.hearts;
     const index: number = Math.floor(Math.random() * hearts.length)
     return hearts[index]
 }

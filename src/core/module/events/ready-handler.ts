@@ -17,9 +17,8 @@ export default class ReadyHandler extends EventHandler {
 
         console.log(`${i18n.__('Logged in as ')}${client.user.tag}${i18n.__(', and ready for service!')}`)
 
-        return await forEachAsync(client.guilds.array(), async (guild: Guild): Promise<boolean> => {
-            await sendGuildWelcomeMessage(client, guild);
-            return false;
+        return await forEachAsync(client.guilds.array(), async (guild: Guild): Promise<any> => {
+            return await sendGuildWelcomeMessage(client, guild);
         });
     }
 }
