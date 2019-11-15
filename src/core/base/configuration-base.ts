@@ -1,15 +1,15 @@
 
 import fs from 'fs';
 import { injectable } from 'inversify';
-import { Configuration } from 'api';
+import { AppConfiguration } from 'api';
 
 @injectable()
-export default class ConfigurationBase implements Configuration {
-    private wrappedInstance: Configuration;
-    private readonly configPath: string = `${__dirname}/../../config/config.json`;
+export default class ConfigurationBase implements AppConfiguration {
+    private wrappedInstance: AppConfiguration;
+    private readonly configPath: string = `${__dirname}/../../../../config/config.json`;
 
     constructor() {
-        this.wrappedInstance = JSON.parse(fs.readFileSync(this.configPath).toString()) as Configuration;
+        this.wrappedInstance = JSON.parse(fs.readFileSync(this.configPath).toString()) as AppConfiguration;
     }
 
     get token(): string {
@@ -42,5 +42,13 @@ export default class ConfigurationBase implements Configuration {
 
     set developerMode(developerMode: boolean) {
         this.wrappedInstance.developerMode = developerMode;
+    }
+
+    get defaultNickname(): string {
+        return this.wrappedInstance.defaultNickname;
+    }
+
+    set defaultNickname(value: string) {
+        this.wrappedInstance.defaultNickname = value;
     }
 }

@@ -6,6 +6,7 @@
         "outDir": "./bin",
         "sourceMap": true,
         "module": "commonjs",
+        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "baseUrl": "src"
     },

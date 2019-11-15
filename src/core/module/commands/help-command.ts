@@ -1,7 +1,7 @@
 import i18n = require('i18n');
 import { Options, Arguments } from 'yargs-parser';
 import { Client, Message } from 'discord.js';
-import { Command, Configuration, CommandRegistry, Container, SERVICE_IDENTIFIERS, forEachAsync } from 'api';
+import { Command, AppConfiguration, CommandRegistry, Container, SERVICE_IDENTIFIERS, forEachAsync } from 'api';
 import * as messages from 'core/messages';
 
 export default class HelpCommand extends Command {
@@ -25,7 +25,7 @@ export default class HelpCommand extends Command {
             "duplicate-arguments-array": false
         }
     };
-    configuration: Configuration;
+    configuration: AppConfiguration;
     commandRegistry: CommandRegistry;
 
     constructor(moduleId: string) {

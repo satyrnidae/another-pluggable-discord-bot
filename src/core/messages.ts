@@ -1,29 +1,38 @@
 import i18n = require('i18n')
 import { Client, Guild, TextChannel, Message, Channel, GuildMember } from 'discord.js'
-import { Configuration, forEachAsync } from 'api';
+import { AppConfiguration, forEachAsync, Container, SERVICE_IDENTIFIERS } from 'api';
+import { GuildConfiguration } from 'db';
 
-export async function sendWelcomeMessage(client: Client, guild: Guild, config: Configuration): Promise<any> {
-    if (config.welcomeMessage === true) {
-        return await forEachAsync(guild.channels.array(), async(channel: Channel): Promise<any> => {
-            if (channel.type === 'text') {
-                const textChannel: TextChannel = channel as TextChannel;
-                const me: GuildMember = guild.members.get(client.user.id);
-                //TODO: Guild-specific prefixes
-                const prefix: string = config.defaultPrefix;
-                if (textChannel.memberPermissions(me).has('SEND_MESSAGES')) {
-                    const message: string = i18n.__('Hello everyone! ').concat(me.displayName).concat(i18n.__(' here.')).concat('\r\n')
-                        .concat(i18n.__('I\'m a configurable modular bot, with a potential variety of functions!')).concat('\r\n')
-                        .concat(i18n.__('Feel free to ask for ')).concat('`').concat(prefix.concat('help')).concat('`')
-                        .concat(i18n.__(' if you\'re interested in learning more!')).concat('\r\n')
-                        .concat(i18n.__('Cheers! ')).concat(`:${getHeart()}:`);
-                    return await textChannel.sendMessage(message);
-                }
+export async function sendGuildWelcomeMessage(client: Client, guild: Guild): Promise<any> {
+    const configuration: AppConfiguration = Container.get(SERVICE_IDENTIFIERS.CONFIGURATION);
+    const guildConfiguration: GuildConfiguration = await GuildConfiguration.load(guild);
+
+    if(configuration.welcomeMessage && !guildConfiguration.welcomeMsgSent) {
+        await forEachAsync(guild.channels.array(), async (channel: Channel): Promise<boolean> => {
+            if(channel.type !== 'text')
+                return true;
+
+            const textChannel: TextChannel = channel as TextChannel;
+            const me: GuildMember = guild.members.get(client.user.id);
+            const prefix: string = guildConfiguration.commandPrefix;
+
+            if( textChannel.memberPermissions(me).has('SEND_MESSAGES')) {
+                const message: string = i18n.__('Hello everyone! ').concat(me.displayName).concat(i18n.__(' here.')).concat('\r\n')
+                    .concat(i18n.__('I\'m a configurable modular bot, with a potential variety of functions!')).concat('\r\n')
+                    .concat(i18n.__('Feel free to ask for ')).concat('`').concat(prefix.concat('help')).concat('`')
+                    .concat(i18n.__(' if you\'re interested in learning more!')).concat('\r\n')
+                    .concat(i18n.__('Cheers! ')).concat(`:${getHeart()}:`);
+                textChannel.send(message);
+                guildConfiguration.welcomeMsgSent = true;
+                return false;
             }
         });
     }
+
+    return await guildConfiguration.save();
 }
 
-export async function sendGeneralHelpMessage(client: Client, message: Message, config: Configuration): Promise<any> {
+export async function sendGeneralHelpMessage(client: Client, message: Message, config: AppConfiguration): Promise<any> {
     let helpMessage: string;
     //TODO: Per-guild prefixes
     const prefix: string = config.defaultPrefix;

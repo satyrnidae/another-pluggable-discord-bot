@@ -2,11 +2,11 @@ import i18n = require('i18n');
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
 import yparser, { Arguments } from 'yargs-parser'
 import { Client, Message } from 'discord.js';
-import { CommandRegistry, Configuration, Container, EventHandler, SERVICE_IDENTIFIERS, Command } from 'api';
+import { CommandRegistry, AppConfiguration, Container, EventHandler, SERVICE_IDENTIFIERS, Command } from 'api';
 
 export default class CommandHander extends EventHandler {
     event: string = 'message';
-    configuration: Configuration;
+    configuration: AppConfiguration;
     commandRegistry: CommandRegistry;
 
     constructor(moduleId: string) {

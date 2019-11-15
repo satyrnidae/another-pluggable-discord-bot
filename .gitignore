@@ -67,4 +67,4 @@ bin/
 config/config.json
 
 # SQLite3 Database
-db/
+*.db

@@ -1,6 +1,7 @@
 {
   "token": "",
   "defaultPrefix": "!",
+  "defaultNickname": "",
   "welcomeMessage": true,
   "developerMode": true
 }

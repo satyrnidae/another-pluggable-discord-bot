@@ -8,12 +8,12 @@ import { Client } from 'discord.js';
 @injectable()
 export default class ModuleRegistryBase implements api.ModuleRegistry {
     public readonly modules: api.Module[] = [];
-    private readonly moduleDirectory: string = `${__dirname}/../modules`;
+    private readonly moduleDirectory: string = `${__dirname}/../../modules`;
 
     public async loadModules(): Promise<void> {
         const moduleDirs: string[] = fs.readdirSync(this.moduleDirectory);
-
-        await api.forEachAsync(moduleDirs, async(item) => {
+        await this.loadCore();
+        return await api.forEachAsync(moduleDirs, async (item: string) : Promise<any> => {
             try {
                 const modulePath: string = `${this.moduleDirectory}/${item}`
                 if (!fs.lstatSync(modulePath).isDirectory) {
@@ -61,7 +61,6 @@ export default class ModuleRegistryBase implements api.ModuleRegistry {
             }
             return Promise.resolve();
         });
-        return await this.loadCore();
     }
 
     public async preInitializeModules(client: Client): Promise<void> {
