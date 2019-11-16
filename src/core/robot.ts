@@ -2,20 +2,15 @@ import i18n = require('i18n');
 import { AppConfiguration, ModuleRegistry, Container, SERVICE_IDENTIFIERS, Lifecycle, DBConnection, ClientWrapper } from 'api';
 import { createConnection } from 'typeorm';
 import { Client } from 'discord.js';
+import { injectable, inject } from 'inversify';
 
+@injectable()
 export default class Robot implements Lifecycle {
 
-    public moduleRegistry: ModuleRegistry;
-    public configuration: AppConfiguration;
-    public dbConnection: DBConnection;
-    public client: ClientWrapper;
-
-    public constructor() {
-        this.moduleRegistry = Container.get<ModuleRegistry>(SERVICE_IDENTIFIERS.MODULE_REGISTRY);
-        this.configuration = Container.get<AppConfiguration>(SERVICE_IDENTIFIERS.CONFIGURATION);
-        this.dbConnection = Container.get<DBConnection>(SERVICE_IDENTIFIERS.DB_CONNECTION);
-        this.client = Container.get<ClientWrapper>(SERVICE_IDENTIFIERS.CLIENT);
-    }
+    public constructor(
+        @inject(SERVICE_IDENTIFIERS.CLIENT) public client: ClientWrapper,
+        @inject(SERVICE_IDENTIFIERS.DB_CONNECTION) public dbConnection: DBConnection,
+        @inject(SERVICE_IDENTIFIERS.MODULE_REGISTRY) public moduleRegistry: ModuleRegistry) {}
 
     public async preInitialize(): Promise<void> {
         i18n.configure({
@@ -28,22 +23,21 @@ export default class Robot implements Lifecycle {
         i18n.setLocale('en');
 
         this.dbConnection.instance = await createConnection();
-        this.client.client = new Client();
 
         await this.moduleRegistry.loadModules();
-        return await this.moduleRegistry.preInitializeModules(this.client.client);
+        return await this.moduleRegistry.preInitializeModules();
     }
 
     public async initialize(): Promise<void> {
-        return await this.moduleRegistry.initializeModules(this.client.client);
+        return await this.moduleRegistry.initializeModules();
     }
 
     public async postInitialize(): Promise<void> {
-        return await this.moduleRegistry.postInitializeModules(this.client.client);
+        return await this.moduleRegistry.postInitializeModules();
     }
 
     public async run(): Promise<void> {
-        await this.client.client.login(this.configuration.token);
+        await this.client.login();
         return Promise.resolve();
     }
 }

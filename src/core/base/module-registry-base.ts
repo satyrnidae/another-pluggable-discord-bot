@@ -2,13 +2,19 @@ import i18n = require('i18n');
 import * as fs from 'fs';
 import * as api from 'api';
 import { CoreModule } from 'core';
-import { injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
 import { Client } from 'discord.js';
 
 @injectable()
 export default class ModuleRegistryBase implements api.ModuleRegistry {
     public readonly modules: api.Module[] = [];
     private readonly moduleDirectory: string = `${__dirname}/../../modules`;
+
+    constructor(
+        @inject(api.SERVICE_IDENTIFIERS.CONFIGURATION) 
+        public appConfiguration: api.AppConfiguration,
+        @inject(api.SERVICE_IDENTIFIERS.CLIENT) 
+        public client: api.ClientWrapper) {}
 
     public async loadModules(): Promise<void> {
         const moduleDirs: string[] = fs.readdirSync(this.moduleDirectory);
@@ -63,26 +69,26 @@ export default class ModuleRegistryBase implements api.ModuleRegistry {
         });
     }
 
-    public async preInitializeModules(client: Client): Promise<void> {
-        return await api.forEachAsync(this.modules, async (module: api.Module) => await module.preInitialize(client));
+    public async preInitializeModules(): Promise<void> {
+        return await api.forEachAsync(this.modules, async (module: api.Module) => await module.preInitialize());
     }
 
-    public async initializeModules(client: Client): Promise<void> {
+    public async initializeModules(): Promise<void> {
         var commandRegistry: api.CommandRegistry = api.Container.get<api.CommandRegistry>(api.SERVICE_IDENTIFIERS.COMMAND_REGISTRY);
         return await api.forEachAsync(this.modules, async (module: api.Module) => {
-            await module.initialize(client);
+            await module.initialize();
             if (module.commands) {
                 module.commands.forEach((command: api.Command) => commandRegistry.register(command, module.moduleInfo.id));
             }
             if (module.events) {
-                module.events.forEach((event: api.EventHandler) => client.addListener(event.event, event.handler.bind(event, client)));
+                module.events.forEach((event: api.EventHandler) => this.client.registerEvent(event));
             }
             return Promise.resolve();
         });
     }
 
-    public async postInitializeModules(client: Client): Promise<void> {
-        return await api.forEachAsync(this.modules, async (module: api.Module) => await module.postInitialize(client));
+    public async postInitializeModules(): Promise<void> {
+        return await api.forEachAsync(this.modules, async (module: api.Module) => await module.postInitialize());
     }
 
     private async loadCore() : Promise<void> {

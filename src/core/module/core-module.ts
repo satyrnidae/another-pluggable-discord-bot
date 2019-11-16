@@ -1,5 +1,4 @@
 import i18n = require('i18n');
-import { Client } from 'discord.js';
 import { Module, EventHandler, Command, Version } from 'api';
 import { CommandHandler, ReadyHandler, HelpCommand, GuildCreateHandler } from 'core';
 
@@ -7,8 +6,9 @@ export default class CoreModule extends Module {
     private coreEvents: EventHandler[];
     private coreCommands: Command[];
 
+    //TODO: Module DI?
     public constructor() {
-        super( {
+        super({
             name: 'Core Module',
             version: '1.0.0',
             id: 'core-module',
@@ -22,7 +22,7 @@ export default class CoreModule extends Module {
         });
     }
 
-    async preInitialize(_: Client): Promise<void> {
+    async preInitialize(): Promise<void> {
         this.coreEvents = [
             new CommandHandler(this.moduleInfo.id),
             new ReadyHandler(this.moduleInfo.id),
@@ -32,13 +32,13 @@ export default class CoreModule extends Module {
             new HelpCommand(this.moduleInfo.id)
         ];
 
-        return Promise.resolve();
+        return await super.preInitialize();
     }
 
-    async postInitialize(client: Client) : Promise<void> {
+    async postInitialize() : Promise<void> {
         console.info(i18n.__('Loaded core module components'));
 
-        return await super.postInitialize(client);
+        return await super.postInitialize();
     }
 
     get commands(): Command[] {

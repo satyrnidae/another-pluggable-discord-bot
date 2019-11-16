@@ -9,13 +9,15 @@ Container.bind<ModuleRegistry>(SERVICE_IDENTIFIERS.MODULE_REGISTRY).to(ModuleReg
 Container.bind<DBConnection>(SERVICE_IDENTIFIERS.DB_CONNECTION).to(DBConnectionBase).inSingletonScope();
 Container.bind<ClientWrapper>(SERVICE_IDENTIFIERS.CLIENT).to(ClientWrapperBase).inSingletonScope();
 
-const robot: Lifecycle = new Robot();
+Container.bind<Lifecycle>(Robot).toSelf();
+
+const robot: Lifecycle = Container.resolve(Robot);
 
 robot.preInitialize()
     .then(() => robot.initialize())
     .then(() => robot.postInitialize())
     .then(() => robot.run())
     .catch(reason => console.error(reason))
-    .finally(async () => {
+    .finally(() => {
         console.log('Service Started');
     });

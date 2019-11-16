@@ -4,9 +4,9 @@ export default interface ModuleRegistry {
 
     loadModules(): Promise<void>;
 
-    preInitializeModules(client: Client): Promise<void>;
+    preInitializeModules(): Promise<void>;
 
-    initializeModules(client: Client): Promise<void>;
+    initializeModules(): Promise<void>;
 
-    postInitializeModules(client: Client): Promise<void>;
+    postInitializeModules(): Promise<void>;
 }
