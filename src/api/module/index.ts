@@ -8,3 +8,4 @@ export { default as EventHandler } from 'api/module/event-handler';
 export { default as Version } from 'api/module/version';
 export { default as AppConfiguration } from 'api/module/app-configuration';
 export { default as DBConnection } from 'api/module/db-connection';
+export { default as ClientWrapper } from 'api/module/client-wrapper';
