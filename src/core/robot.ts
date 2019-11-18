@@ -25,6 +25,7 @@ export default class Robot implements Lifecycle {
         this.dbConnection.instance = await createConnection();
 
         await this.moduleRegistry.loadModules();
+        await this.moduleRegistry.registerDependencies();
         return await this.moduleRegistry.preInitializeModules();
     }
 
