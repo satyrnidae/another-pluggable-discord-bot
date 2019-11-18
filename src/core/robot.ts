@@ -1,7 +1,6 @@
 import i18n = require('i18n');
-import { AppConfiguration, ModuleRegistry, Container, SERVICE_IDENTIFIERS, Lifecycle, DBConnection, ClientWrapper } from 'api';
+import { ModuleRegistry, SERVICE_IDENTIFIERS, Lifecycle, DBConnection, ClientWrapper } from 'api';
 import { createConnection } from 'typeorm';
-import { Client } from 'discord.js';
 import { injectable, inject } from 'inversify';
 
 @injectable()
