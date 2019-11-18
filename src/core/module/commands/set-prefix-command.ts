@@ -41,6 +41,4 @@ export default class SetPrefixCommand extends Command {
     async checkPermissions(message: Message): Promise<boolean> {
         return Promise.resolve(message.member.hasPermission('MANAGE_GUILD'));
     }
-
-
 }

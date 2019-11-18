@@ -22,7 +22,7 @@ export default class HelpCommand extends Command {
         },
         string: ['command','moduleId'],
         configuration: {
-            "duplicate-arguments-array": false
+            'duplicate-arguments-array': false
         }
     };
 
