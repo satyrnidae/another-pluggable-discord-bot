@@ -1,6 +1,7 @@
 import i18n = require('i18n');
-import { Module, EventHandler, Command, Version } from 'api';
-import { CommandHandler, ReadyHandler, HelpCommand, GuildCreateHandler, SetPrefixCommand } from 'core';
+import { Module, EventHandler, Command, Version, Container } from 'api';
+import { CommandHandler, ReadyHandler, HelpCommand, GuildCreateHandler, SetPrefixCommand, MessageService } from 'core';
+import { MessageServiceBase } from 'core/module/services';
 
 export default class CoreModule extends Module {
     private coreEvents: EventHandler[];
@@ -22,6 +23,11 @@ export default class CoreModule extends Module {
         });
     }
 
+    async registerDependencies(): Promise<void> {
+        Container.bind<MessageService>('CoreMessageService').to(MessageServiceBase);
+        return await super.registerDependencies();
+    }
+
     async preInitialize(): Promise<void> {
         this.coreEvents = [
             new CommandHandler(this.moduleInfo.id),
@@ -32,7 +38,6 @@ export default class CoreModule extends Module {
             new HelpCommand(this.moduleInfo.id),
             new SetPrefixCommand(this.moduleInfo.id)
         ];
-
         return await super.preInitialize();
     }
 

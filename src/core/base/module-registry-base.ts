@@ -11,9 +11,9 @@ export default class ModuleRegistryBase implements api.ModuleRegistry {
     private readonly moduleDirectory: string = `${__dirname}/../../modules`;
 
     constructor(
-        @inject(api.SERVICE_IDENTIFIERS.CONFIGURATION) 
+        @inject(api.SERVICE_IDENTIFIERS.CONFIGURATION)
         public appConfiguration: api.AppConfiguration,
-        @inject(api.SERVICE_IDENTIFIERS.CLIENT) 
+        @inject(api.SERVICE_IDENTIFIERS.CLIENT)
         public client: api.ClientWrapper) {}
 
     public async loadModules(): Promise<void> {
@@ -67,6 +67,10 @@ export default class ModuleRegistryBase implements api.ModuleRegistry {
             }
             return Promise.resolve();
         });
+    }
+
+    public async registerDependencies() : Promise<void> {
+        return await api.forEachAsync(this.modules, async (module: api.Module) => await module.registerDependencies());
     }
 
     public async preInitializeModules(): Promise<void> {

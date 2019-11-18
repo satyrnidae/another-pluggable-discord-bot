@@ -7,6 +7,10 @@ export default abstract class Module {
     //TODO: DI for modules?
     constructor(public moduleInfo: ModuleInfo) {}
 
+    async registerDependencies(): Promise<void> {
+        return Promise.resolve();
+    }
+
     async preInitialize(): Promise<void> {
         return Promise.resolve();
     }
