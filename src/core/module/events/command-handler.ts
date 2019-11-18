@@ -2,7 +2,7 @@ import i18n = require('i18n');
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
 import yparser, { Arguments } from 'yargs-parser'
 import { Client, Message } from 'discord.js';
-import { CommandRegistry, AppConfiguration, Container, EventHandler, SERVICE_IDENTIFIERS, Command, lazyInject } from 'api';
+import { CommandRegistry, AppConfiguration, EventHandler, SERVICE_IDENTIFIERS, Command, lazyInject } from 'api';
 import { GuildConfiguration } from 'db';
 
 export default class CommandHander extends EventHandler {
