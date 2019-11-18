@@ -5,8 +5,8 @@ import { CommandRegistry, Command } from 'api';
 @injectable()
 export default class CommandRegistryBase implements CommandRegistry {
     readonly registry: Command[] = [];
+
     public register(command: Command, moduleId: string): boolean {
-        //TODO: Command Registration
         if(!moduleId) {
             console.error(i18n.__('A module attempted to register a command without an ID!'));
         }

@@ -6,6 +6,8 @@ import { AppConfiguration } from 'api';
 @injectable()
 export default class ConfigurationBase implements AppConfiguration {
     private wrappedInstance: AppConfiguration;
+
+    //TODO: Resolve this hardcoded relative path somehow
     private readonly configPath: string = `${__dirname}/../../../../config/config.json`;
 
     constructor() {

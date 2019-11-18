@@ -3,11 +3,12 @@ import * as fs from 'fs';
 import * as api from 'api';
 import { CoreModule } from 'core';
 import { injectable, inject } from 'inversify';
-import { Client } from 'discord.js';
 
 @injectable()
 export default class ModuleRegistryBase implements api.ModuleRegistry {
     public readonly modules: api.Module[] = [];
+
+    //TODO: Remove this hardcoded relpath somehow
     private readonly moduleDirectory: string = `${__dirname}/../../modules`;
 
     constructor(
