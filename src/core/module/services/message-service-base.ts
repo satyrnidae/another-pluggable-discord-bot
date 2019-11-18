@@ -1,3 +1,4 @@
+import i18n = require('i18n');
 import { injectable, inject } from 'inversify';
 import { SERVICE_IDENTIFIERS, ClientWrapper, AppConfiguration, forEachAsync, LoopStateArgs } from 'api';
 import { Guild, Message, Channel, TextChannel, GuildMember } from 'discord.js';
