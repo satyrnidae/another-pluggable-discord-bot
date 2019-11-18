@@ -6,6 +6,14 @@ import { injectable, inject } from "inversify";
 export default class ClientWrapperBase implements ClientWrapper {
     client: Client;
 
+    get userId(): string {
+        return this.client.user.id;
+    }
+
+    get username(): string {
+        return this.client.user.username;
+    }
+
     constructor(@inject(SERVICE_IDENTIFIERS.CONFIGURATION) public configuration: AppConfiguration) {
         this.client = new Client();
     }
