@@ -1,1 +1,3 @@
-export { default as DBObject } from 'api/db/db-object';
+export abstract class DBObject {
+    abstract save(): Promise<this & DBObject>;
+}
