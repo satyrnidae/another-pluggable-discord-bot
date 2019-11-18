@@ -1,6 +1,6 @@
 import i18n = require('i18n');
 import { Module, EventHandler, Command, Version } from 'api';
-import { CommandHandler, ReadyHandler, HelpCommand, GuildCreateHandler } from 'core';
+import { CommandHandler, ReadyHandler, HelpCommand, GuildCreateHandler, SetPrefixCommand } from 'core';
 
 export default class CoreModule extends Module {
     private coreEvents: EventHandler[];
@@ -29,7 +29,8 @@ export default class CoreModule extends Module {
             new GuildCreateHandler(this.moduleInfo.id)
         ];
         this.coreCommands = [
-            new HelpCommand(this.moduleInfo.id)
+            new HelpCommand(this.moduleInfo.id),
+            new SetPrefixCommand(this.moduleInfo.id)
         ];
 
         return await super.preInitialize();

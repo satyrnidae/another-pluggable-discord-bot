@@ -5,7 +5,7 @@ import { Command, AppConfiguration, CommandRegistry, Container, SERVICE_IDENTIFI
 import * as messages from 'core/messages';
 
 export default class HelpCommand extends Command {
-    name: string = 'core/help';
+    name: string = 'help';
     command: string = 'help';
     syntax: string[] = [
         'help',
@@ -20,7 +20,7 @@ export default class HelpCommand extends Command {
             all: ['-a'],
             moduleId: ['-m']
         },
-        string: ['command'],
+        string: ['command','moduleId'],
         configuration: {
             "duplicate-arguments-array": false
         }
