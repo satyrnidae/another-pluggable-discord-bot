@@ -1,47 +1,50 @@
 import i18n = require('i18n');
 import { Options, Arguments } from 'yargs-parser';
 import { Client, Message } from 'discord.js';
-import { Command, AppConfiguration, CommandRegistry, Container, SERVICE_IDENTIFIERS, forEachAsync } from 'api';
-import * as messages from 'core/messages';
+import { Command, AppConfiguration, CommandRegistry, SERVICE_IDENTIFIERS, forEachAsync, lazyInject } from 'api';
+import { MessageService } from 'core';
 
 export default class HelpCommand extends Command {
     name: string = 'help';
     command: string = 'help';
     syntax: string[] = [
-        'help',
-        'help {-a|--all}',
-        'help [-c|--command] *command*',
-        'help [-m|--moduleId] *moduleId*',
-        'help [-c|--command] *command* [-m|--moduleId] *moduleId*'];
+            'help',
+            'help {-a|--all}',
+            'help {-m|--module|--moduleId} *moduleId*',
+            'help [-c|--command] *command* [[-m|--module|--moduleId] *moduleId*]'
+        ];
     description: string = i18n.__('Provides a detailed overview of any command registered with the bot.');
     options: Options = {
         alias: {
             command: ['-c'],
             all: ['-a'],
-            moduleId: ['-m']
+            moduleId: ['-m','--module']
         },
         string: ['command','moduleId'],
         configuration: {
             "duplicate-arguments-array": false
         }
     };
+
+    @lazyInject(SERVICE_IDENTIFIERS.CONFIGURATION)
     configuration: AppConfiguration;
+
+    @lazyInject(SERVICE_IDENTIFIERS.COMMAND_REGISTRY)
     commandRegistry: CommandRegistry;
 
-    constructor(moduleId: string) {
-        super(moduleId);
-        this.configuration = Container.get(SERVICE_IDENTIFIERS.CONFIGURATION);
-        this.commandRegistry = Container.get(SERVICE_IDENTIFIERS.COMMAND_REGISTRY);
-    }
+    @lazyInject('CoreMessageService')
+    messageService: MessageService;
 
-    async run(client: Client, message: Message, args: Arguments): Promise<any> {
+    async run(_: Client, message: Message, args: Arguments): Promise<any> {
         // TODO: per-guild prefix configuration
         const prefix = this.configuration.defaultPrefix;
         const commands: Command[] = this.commandRegistry.registry;
 
         if (args._.length === 0 && !(args['all'] || args['command'])) {
-            return await messages.sendGeneralHelpMessage(client, message, this.configuration);
+            return await this.messageService.sendHelpMessage(message);
         }
+
+        //TODO: Move this tripe to MessageService
         if (args['all']) {
             let helpMessage: string = i18n.__('here\'s a list of all of the commands that I can handle:').concat('\r\n');
             //TODO: Group commands by module id
@@ -71,7 +74,7 @@ export default class HelpCommand extends Command {
         return await message.reply(i18n.__('I don\'t know the command').concat(' "').concat(commandName).concat('"!'));
     }
 
-    async checkPermissions(_: Message): Promise<boolean> {
+    async checkPermissions(): Promise<boolean> {
         return Promise.resolve(true);
     }
 }

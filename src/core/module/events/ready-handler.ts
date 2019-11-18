@@ -1,14 +1,13 @@
 import i18n = require('i18n');
-import { AppConfiguration, Container, SERVICE_IDENTIFIERS, EventHandler, forEachAsync, DBConnection } from 'api'
+import { EventHandler, forEachAsync, lazyInject } from 'api'
 import { Client, Guild } from 'discord.js'
-import { sendGuildWelcomeMessage } from 'core/messages';
+import { MessageService } from 'core';
 
 export default class ReadyHandler extends EventHandler {
     event: string = 'ready';
 
-    constructor(moduleId: string) {
-        super(moduleId);
-    }
+    @lazyInject('CoreMessageService')
+    messageService: MessageService;
 
     public async handler(client: Client, ..._args: any[]): Promise<any> {
         client.on('error', (e: string) => console.error(e))
@@ -18,7 +17,7 @@ export default class ReadyHandler extends EventHandler {
         console.log(`${i18n.__('Logged in as ')}${client.user.tag}${i18n.__(', and ready for service!')}`)
 
         return await forEachAsync(client.guilds.array(), async (guild: Guild): Promise<any> => {
-            return await sendGuildWelcomeMessage(client, guild);
+            return await this.messageService.sendGuildWelcomeMessage(guild);
         });
     }
 }

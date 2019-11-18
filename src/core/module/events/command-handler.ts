@@ -2,25 +2,25 @@ import i18n = require('i18n');
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
 import yparser, { Arguments } from 'yargs-parser'
 import { Client, Message } from 'discord.js';
-import { CommandRegistry, AppConfiguration, Container, EventHandler, SERVICE_IDENTIFIERS, Command } from 'api';
+import { CommandRegistry, AppConfiguration, Container, EventHandler, SERVICE_IDENTIFIERS, Command, lazyInject } from 'api';
 import { GuildConfiguration } from 'db';
 
 export default class CommandHander extends EventHandler {
     event: string = 'message';
-    configuration: AppConfiguration;
-    commandRegistry: CommandRegistry;
 
-    constructor(moduleId: string) {
-        super(moduleId);
-        this.configuration = Container.get(SERVICE_IDENTIFIERS.CONFIGURATION);
-        this.commandRegistry = Container.get(SERVICE_IDENTIFIERS.COMMAND_REGISTRY);
-    }
+    @lazyInject(SERVICE_IDENTIFIERS.CONFIGURATION)
+    configuration: AppConfiguration;
+    @lazyInject(SERVICE_IDENTIFIERS.COMMAND_REGISTRY)
+    commandRegistry: CommandRegistry;
 
     //TODO: Refactor this exported code from santa bot
     public async handler(client: Client, message: Message): Promise<any> {
-        //TODO: Per-guild prefixes
-        const guildConfig: GuildConfiguration = await GuildConfiguration.load(message.guild);
-        const prefix: string = guildConfig.commandPrefix;
+        let prefix: string = this.configuration.defaultPrefix;
+        if (message.guild) {
+            const guildConfig: GuildConfiguration = await GuildConfiguration.load(message.guild);
+            prefix = guildConfig.commandPrefix;
+        }
+
         const parsedCommand: ParsedMessage = ParseMessage(message, prefix);
 
         if(!parsedCommand.success) {
