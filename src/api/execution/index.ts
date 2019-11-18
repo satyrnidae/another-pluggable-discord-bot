@@ -1,1 +1,6 @@
-export { default as Lifecycle } from 'api/execution/lifecycle';
+export interface Lifecycle {
+    preInitialize(): Promise<void>;
+    initialize(): Promise<void>;
+    postInitialize(): Promise<void>;
+    run(): Promise<void>;
+}
