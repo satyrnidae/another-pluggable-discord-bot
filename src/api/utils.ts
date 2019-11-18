@@ -1,5 +1,10 @@
 export class LoopStateArgs {
-    break: boolean;
+
+    continueExecution: boolean = true;
+
+    break(): void {
+        this.continueExecution = false;
+    }
 }
 
 export async function forEachAsync(array: any[], callback: (current: any, index: number, array: any[], loopStateArgs: LoopStateArgs) => Promise<any>) {
@@ -7,6 +12,6 @@ export async function forEachAsync(array: any[], callback: (current: any, index:
 
     for(let index: number = 0; index < array.length; ++index) {
         await callback(array[index], index, array, loopStateArgs);
-        if(loopStateArgs.break) break;
+        if(!loopStateArgs.continueExecution) break;
     }
 }
