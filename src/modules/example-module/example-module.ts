@@ -1,4 +1,3 @@
-import { Client } from 'discord.js';
 import { Command, EventHandler, Module } from 'api';
 
 export default class ExampleModule extends Module {
