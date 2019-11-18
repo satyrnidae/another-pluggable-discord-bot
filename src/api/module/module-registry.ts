@@ -1,5 +1,3 @@
-import { Client } from 'discord.js';
-
 export default interface ModuleRegistry {
 
     loadModules(): Promise<void>;
