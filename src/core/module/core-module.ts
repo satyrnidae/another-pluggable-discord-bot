@@ -25,26 +25,25 @@ export default class CoreModule extends Module {
 
     async registerDependencies(): Promise<void> {
         Container.bind<MessageService>('CoreMessageService').to(MessageServiceBase);
-        return await super.registerDependencies();
+        return super.registerDependencies();
     }
 
     async preInitialize(): Promise<void> {
         this.coreEvents = [
-            new CommandHandler(this.moduleInfo.id),
-            new ReadyHandler(this.moduleInfo.id),
-            new GuildCreateHandler(this.moduleInfo.id)
+            new CommandHandler(),
+            new ReadyHandler(),
+            new GuildCreateHandler()
         ];
         this.coreCommands = [
             new HelpCommand(this.moduleInfo.id),
             new SetPrefixCommand(this.moduleInfo.id)
         ];
-        return await super.preInitialize();
+        return super.preInitialize();
     }
 
     async postInitialize() : Promise<void> {
         console.info(i18n.__('Loaded core module components'));
-
-        return await super.postInitialize();
+        return super.postInitialize();
     }
 
     get commands(): Command[] {

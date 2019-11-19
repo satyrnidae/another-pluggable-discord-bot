@@ -10,6 +10,6 @@ export default class GuildCreateHandler extends EventHandler {
 
     async handler(_: Client, guild: Guild): Promise<any> {
         //TODO: Set nickname automatically
-        return await this.messageService.sendGuildWelcomeMessage(guild);
+        return this.messageService.sendGuildWelcomeMessage(guild);
     }
 }

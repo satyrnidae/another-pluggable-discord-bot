@@ -1,6 +1,5 @@
 import i18n = require('i18n');
 import { ModuleRegistry, SERVICE_IDENTIFIERS, Lifecycle, DBConnection, ClientWrapper } from 'api';
-import { createConnection } from 'typeorm';
 import { injectable, inject } from 'inversify';
 
 @injectable()
@@ -21,19 +20,17 @@ export default class Robot implements Lifecycle {
         });
         i18n.setLocale('en');
 
-        this.dbConnection.instance = await createConnection();
-
         await this.moduleRegistry.loadModules();
         await this.moduleRegistry.registerDependencies();
-        return await this.moduleRegistry.preInitializeModules();
+        return this.moduleRegistry.preInitializeModules();
     }
 
     public async initialize(): Promise<void> {
-        return await this.moduleRegistry.initializeModules();
+        return this.moduleRegistry.initializeModules();
     }
 
     public async postInitialize(): Promise<void> {
-        return await this.moduleRegistry.postInitializeModules();
+        return this.moduleRegistry.postInitializeModules();
     }
 
     public async run(): Promise<void> {

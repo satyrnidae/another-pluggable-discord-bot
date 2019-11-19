@@ -1,4 +1,4 @@
-import { Client, Message } from 'discord.js';
+import { Message } from 'discord.js';
 import { Options, Arguments } from 'yargs-parser';
 
 export default abstract class Command {
@@ -10,7 +10,7 @@ export default abstract class Command {
 
     constructor(public moduleId: string) {}
 
-    abstract run(client: Client, message: Message, args: Arguments): Promise<any>;
+    abstract run(message: Message, args: Arguments): Promise<any>;
 
     abstract checkPermissions(message: Message): Promise<boolean>;
 }

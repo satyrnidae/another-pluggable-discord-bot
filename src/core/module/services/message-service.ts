@@ -9,5 +9,7 @@ export default interface MessageService {
 
     sendHelpMessage(message: Message): Promise<any>;
 
+    sendAllHelpMessage(message: Message): Promise<any>;
+
     getRandomHeart(): string;
 }

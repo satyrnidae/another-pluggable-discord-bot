@@ -1,3 +1,3 @@
-var version = 'r1';
+const version = 'r1';
 
 export default version;

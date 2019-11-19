@@ -1,26 +1,25 @@
 import i18n = require('i18n');
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
-import yparser, { Arguments } from 'yargs-parser'
+import yparser, { Arguments } from 'yargs-parser';
 import { Client, Message } from 'discord.js';
-import { CommandRegistry, AppConfiguration, EventHandler, SERVICE_IDENTIFIERS, Command, lazyInject } from 'api';
+import { CommandRegistry, AppConfiguration, EventHandler, SERVICE_IDENTIFIERS, Command, lazyInject, CommandService, ClientWrapper } from 'api';
 import { GuildConfiguration } from 'db';
 
 export default class CommandHander extends EventHandler {
     event: string = 'message';
 
-    @lazyInject(SERVICE_IDENTIFIERS.CONFIGURATION)
-    configuration: AppConfiguration;
+    @lazyInject(SERVICE_IDENTIFIERS.CLIENT)
+    client: ClientWrapper;
+
     @lazyInject(SERVICE_IDENTIFIERS.COMMAND_REGISTRY)
     commandRegistry: CommandRegistry;
 
-    //TODO: Refactor this exported code from santa bot
-    public async handler(client: Client, message: Message): Promise<any> {
-        let prefix: string = this.configuration.defaultPrefix;
-        if (message.guild) {
-            const guildConfig: GuildConfiguration = await GuildConfiguration.load(message.guild);
-            prefix = guildConfig.commandPrefix;
-        }
+    @lazyInject(SERVICE_IDENTIFIERS.COMMAND_SERVICE)
+    commandService: CommandService;
 
+    //TODO: Refactor this exported code from santa bot
+    public async handler(message: Message): Promise<any> {
+        const prefix: string = await this.commandService.getCommandPrefix(message);
         const parsedCommand: ParsedMessage = ParseMessage(message, prefix);
 
         if(!parsedCommand.success) {
@@ -38,7 +37,7 @@ export default class CommandHander extends EventHandler {
             senderId = message.member.displayName.concat('@').concat(message.guild.id).concat(':');
         }
         else {
-            senderId = message.author.username.concat('@').concat(client.user.id).concat(':');
+            senderId = message.author.username.concat('@').concat(this.client.userId).concat(':');
         }
 
         if (commands.length !== 1) {
@@ -47,12 +46,12 @@ export default class CommandHander extends EventHandler {
         }
         const command = commands[0];
 
-        const p_argv: Arguments = yparser(commandArgs, command.options);
+        const args: Arguments = yparser(commandArgs, command.options);
         console.debug(senderId, i18n.__('Execute'), commandValue, commandArgs.join(' '));
 
         // Check perms and execute
         if (await command.checkPermissions(message)) {
-            return await command.run(client, message, p_argv);
+            return command.run(message, args);
         }
 
         return Promise.resolve(false);

@@ -17,24 +17,21 @@ export default class SetPrefixCommand extends Command {
         configuration: {
             'duplicate-arguments-array': false
         }
-    }
+    };
 
-    async run(_: Client, message: Message, args: Arguments): Promise<any> {
-        if(!message.guild) {
+    async run(message: Message, args: Arguments): Promise<any> {
+        if (!message.guild) {
             message.reply(i18n.__('I\'m sorry, but I\'m afraid you can\'t change the prefix in a direct message!'));
         }
 
         const guildConfiguration: GuildConfiguration = await GuildConfiguration.load(message.guild);
         const prefix: string = args['prefix'] || args._[0];
-
-        if(guildConfiguration && prefix) {
+        if (prefix) {
             guildConfiguration.commandPrefix = prefix;
             await guildConfiguration.save();
-            return await message.reply(i18n.__('Guild prefix successfully updated to ').concat(`\`${guildConfiguration.commandPrefix}\``)
-                .concat(i18n.__('!')));
+            return message.reply(i18n.__('Guild prefix successfully updated to "`%s`"!', guildConfiguration.commandPrefix));
         }
-        return await message.reply(i18n.__('Unfortunately, I wasn\'t able to update the prefix to ').concat(prefix).concat(i18n.__('!'))
-            .concat('\r\n').concat('Please feel free to try again!'));
+        return message.reply(i18n.__('Unfortunately, "`%s`" is not a valid prefix! Please try again with a valid prefix.', prefix));
     }
 
     async checkPermissions(message: Message): Promise<boolean> {
