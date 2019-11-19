@@ -8,7 +8,7 @@ export default class GuildConfiguration extends DataEntity {
     dataService: DataService;
 
     async save(): Promise<this & GuildConfiguration> {
-        const guildRepository: Repository<GuildConfiguration> = this.dataService.getRepository(GuildConfiguration);
+        const guildRepository: Repository<GuildConfiguration> = await this.dataService.getRepository(GuildConfiguration);
         return guildRepository.save(this);
     }
 

@@ -16,7 +16,7 @@ export default class GuildConfigurationFactory extends DataEntityFactory<GuildCo
             return null;
         }
 
-        const guildRepository: Repository<GuildConfiguration> = this.dataService.getRepository(GuildConfiguration);
+        const guildRepository: Repository<GuildConfiguration> = await this.dataService.getRepository(GuildConfiguration);
         let guildConfiguration: GuildConfiguration = await guildRepository.findOne({nativeId: guild.id});
 
         if(!guildConfiguration) {
