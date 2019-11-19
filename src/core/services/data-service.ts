@@ -1,9 +1,8 @@
-import { DBConnection } from 'api';
-import { Connection, createConnection, Repository, EntitySchema } from 'typeorm';
-import { injectable, postConstruct } from 'inversify';
+import * as api from 'api';
+import { Connection, EntitySchema, Repository, createConnection } from 'typeorm';
+import { postConstruct } from 'inversify';
 
-@injectable()
-export default class DBConnectionBase implements DBConnection {
+export default class DataService implements api.DataService {
     instance: Connection;
 
     @postConstruct()
