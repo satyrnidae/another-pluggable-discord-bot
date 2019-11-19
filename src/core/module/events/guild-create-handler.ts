@@ -1,6 +1,6 @@
 import { EventHandler, lazyInject, ServiceIdentifiers, ConfigurationService } from 'api';
 import { Guild } from 'discord.js';
-import { MessageService, CoreModuleServiceIdentifiers } from 'core';
+import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
 
 export default class GuildCreateHandler extends EventHandler {
     event: string = 'guildCreate';

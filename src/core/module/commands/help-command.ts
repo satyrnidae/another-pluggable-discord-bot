@@ -2,7 +2,7 @@ import i18n = require('i18n');
 import { Options, Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
 import { Command, forEachAsync, lazyInject, CommandService, ServiceIdentifiers } from 'api';
-import { MessageService, CoreModuleServiceIdentifiers } from 'core';
+import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
 
 export default class HelpCommand extends Command {
     name: string = 'help';
