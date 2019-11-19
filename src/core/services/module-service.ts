@@ -1,9 +1,10 @@
 import i18n = require('i18n');
 import fs from 'fs';
 import * as api from 'api';
-import { inject, id } from 'inversify';
+import { inject, id, injectable } from 'inversify';
 import { CoreModule } from 'core/module';
 
+@injectable()
 export default class ModuleService implements api.ModuleService {
     readonly modules: api.Module[] = [];
     private readonly moduleDirectory: string = `${__dirname}/../../modules`;

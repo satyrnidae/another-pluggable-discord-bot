@@ -1,9 +1,10 @@
 import i18n = require('i18n');
 import * as api from 'api';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { Message } from 'discord.js';
 import { GuildConfiguration, GuildConfigurationFactory } from 'db';
 
+@injectable()
 export default class CommandService implements api.CommandService {
     readonly commands: api.Command[] = [];
 

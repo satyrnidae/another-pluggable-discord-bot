@@ -1,6 +1,8 @@
 import fs from 'fs';
 import * as api from 'api';
+import { injectable } from 'inversify';
 
+@injectable()
 export default class ConfigurationService implements api.ConfigurationService {
     readonly wrappedInstance: api.AppConfiguration;
     //TODO: Resolve this hardcoded relative path somehow

@@ -1,7 +1,8 @@
 import * as api from 'api';
 import { Connection, EntitySchema, Repository, createConnection } from 'typeorm';
-import { postConstruct } from 'inversify';
+import { postConstruct, injectable } from 'inversify';
 
+@injectable()
 export default class DataService implements api.DataService {
     instance: Connection;
 
