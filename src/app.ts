@@ -8,7 +8,8 @@ api.Container.bind<api.ConfigurationService>(api.ServiceIdentifiers.Configuratio
 api.Container.bind<api.ModuleService>(api.ServiceIdentifiers.Module).to(core.ModuleService).inSingletonScope();
 api.Container.bind<api.DataService>(api.ServiceIdentifiers.Data).to(core.DataService).inSingletonScope();
 api.Container.bind<api.ClientService>(api.ServiceIdentifiers.Client).to(core.ClientService).inSingletonScope();
-api.Container.bind<api.Lifecycle>(core.Robot).toSelf();
+api.Container.bind<api.EventService>(api.ServiceIdentifiers.Event).to(core.EventService).inSingletonScope();
+api.Container.bind<api.Lifecycle>(core.Robot).toSelf().inSingletonScope();
 
 const robot: api.Lifecycle = api.Container.resolve(core.Robot);
 
