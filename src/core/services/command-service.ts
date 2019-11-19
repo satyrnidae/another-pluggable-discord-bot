@@ -2,7 +2,7 @@ import i18n = require('i18n');
 import * as api from 'api';
 import { inject } from 'inversify';
 import { Message } from 'discord.js';
-import { GuildConfiguration } from 'db';
+import { GuildConfiguration, GuildConfigurationFactory } from 'db';
 
 export default class CommandService implements api.CommandService {
     readonly commands: api.Command[] = [];
@@ -32,7 +32,7 @@ export default class CommandService implements api.CommandService {
 
     get(command: string, moduleId?: string): api.Command[] {
         if(moduleId) {
-            return this.commands.filter(entry => entry.moduleId === moduleId && entry.command == command);
+            return this.commands.filter(entry => entry.moduleId === moduleId && entry.command === command);
         }
         return this.commands.filter(entry => entry.command === command);
     }
@@ -47,7 +47,7 @@ export default class CommandService implements api.CommandService {
     async getCommandPrefix(message: Message): Promise<string> {
         let prefix: string = this.configurationService.defaultPrefix;
         if(message.guild) {
-            const guildConfiguration: GuildConfiguration = await GuildConfiguration.load(message.guild);
+            const guildConfiguration: GuildConfiguration = await new GuildConfigurationFactory().load(message.guild);
             prefix = guildConfiguration.commandPrefix;
         }
         return prefix;

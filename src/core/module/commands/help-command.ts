@@ -1,8 +1,8 @@
 import i18n = require('i18n');
 import { Options, Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
-import { Command, CommandRegistry, SERVICE_IDENTIFIERS, forEachAsync, lazyInject, CommandService } from 'api';
-import { MessageService } from 'core';
+import { Command, forEachAsync, lazyInject, CommandService, ServiceIdentifiers } from 'api';
+import { MessageService, CoreModuleServiceIdentifiers } from 'core';
 
 export default class HelpCommand extends Command {
     name: string = 'help';
@@ -26,13 +26,10 @@ export default class HelpCommand extends Command {
         }
     };
 
-    @lazyInject(SERVICE_IDENTIFIERS.COMMAND_REGISTRY)
-    commandRegistry: CommandRegistry;
-
-    @lazyInject(SERVICE_IDENTIFIERS.COMMAND_SERVICE)
+    @lazyInject(ServiceIdentifiers.Command)
     commandService: CommandService;
 
-    @lazyInject('CoreMessageService')
+    @lazyInject(CoreModuleServiceIdentifiers.Message)
     messageService: MessageService;
 
     async run(message: Message, args: Arguments): Promise<any> {
@@ -82,7 +79,7 @@ export default class HelpCommand extends Command {
             moduleId = (args['moduleId'] || args._[1]) as string;
         }
 
-        const command: Command = this.commandRegistry.get(commandName, moduleId)[0];
+        const command: Command = this.commandService.get(commandName, moduleId)[0];
         return [commandName, command];
     }
 }

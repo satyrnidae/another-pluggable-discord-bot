@@ -1,15 +1,21 @@
-import { EventHandler, lazyInject } from 'api';
-import { Client, Guild } from 'discord.js';
-import { MessageService } from 'core';
+import { EventHandler, lazyInject, ServiceIdentifiers, ConfigurationService } from 'api';
+import { Guild } from 'discord.js';
+import { MessageService, CoreModuleServiceIdentifiers } from 'core';
 
 export default class GuildCreateHandler extends EventHandler {
     event: string = 'guildCreate';
 
-    @lazyInject('CoreMessageService')
+    @lazyInject(ServiceIdentifiers.Configuration)
+    configurationService: ConfigurationService;
+
+    @lazyInject(CoreModuleServiceIdentifiers.Message)
     messageService: MessageService;
 
-    async handler(_: Client, guild: Guild): Promise<any> {
-        //TODO: Set nickname automatically
+    async handler(guild: Guild): Promise<any> {
+        if (this.configurationService.defaultNickname) {
+            guild.me.setNickname(this.configurationService.defaultNickname);
+        }
+
         return this.messageService.sendGuildWelcomeMessage(guild);
     }
 }

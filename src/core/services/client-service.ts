@@ -1,6 +1,6 @@
 import * as api from 'api';
 import { injectable, inject } from 'inversify';
-import { Client } from 'discord.js';
+import { Client, Guild } from 'discord.js';
 
 @injectable()
 export default class ClientService implements api.ClientService {
@@ -14,6 +14,9 @@ export default class ClientService implements api.ClientService {
     }
     get userTag(): string {
         return this.client.user.tag;
+    }
+    get guilds(): Guild[] {
+        return this.client.guilds.array();
     }
 
     constructor(@inject(api.ServiceIdentifiers.Configuration) public configurationService: api.ConfigurationService) {

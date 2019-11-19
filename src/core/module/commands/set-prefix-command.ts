@@ -1,8 +1,8 @@
 import i18n = require('i18n');
-import { Command, lazyInject, AppConfiguration, SERVICE_IDENTIFIERS } from 'api';
+import { Command } from 'api';
 import { Options, Arguments } from 'yargs-parser';
-import { Message, Client } from 'discord.js';
-import { GuildConfiguration } from 'db';
+import { Message } from 'discord.js';
+import { GuildConfiguration, GuildConfigurationFactory } from 'db';
 
 export default class SetPrefixCommand extends Command {
     name: string = 'setPrefix';
@@ -24,7 +24,7 @@ export default class SetPrefixCommand extends Command {
             message.reply(i18n.__('I\'m sorry, but I\'m afraid you can\'t change the prefix in a direct message!'));
         }
 
-        const guildConfiguration: GuildConfiguration = await GuildConfiguration.load(message.guild);
+        const guildConfiguration: GuildConfiguration = await new GuildConfigurationFactory().load(message.guild);
         const prefix: string = args['prefix'] || args._[0];
         if (prefix) {
             guildConfiguration.commandPrefix = prefix;

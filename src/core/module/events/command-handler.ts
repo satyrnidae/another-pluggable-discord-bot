@@ -1,20 +1,16 @@
 import i18n = require('i18n');
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
 import yparser, { Arguments } from 'yargs-parser';
-import { Client, Message } from 'discord.js';
-import { CommandRegistry, AppConfiguration, EventHandler, SERVICE_IDENTIFIERS, Command, lazyInject, CommandService, ClientWrapper } from 'api';
-import { GuildConfiguration } from 'db';
+import { Message } from 'discord.js';
+import { EventHandler, Command, lazyInject, CommandService, ServiceIdentifiers, ClientService } from 'api';
 
 export default class CommandHander extends EventHandler {
     event: string = 'message';
 
-    @lazyInject(SERVICE_IDENTIFIERS.CLIENT)
-    client: ClientWrapper;
+    @lazyInject(ServiceIdentifiers.Client)
+    client: ClientService;
 
-    @lazyInject(SERVICE_IDENTIFIERS.COMMAND_REGISTRY)
-    commandRegistry: CommandRegistry;
-
-    @lazyInject(SERVICE_IDENTIFIERS.COMMAND_SERVICE)
+    @lazyInject(ServiceIdentifiers.Command)
     commandService: CommandService;
 
     //TODO: Refactor this exported code from santa bot
@@ -29,7 +25,7 @@ export default class CommandHander extends EventHandler {
         //TODO: Commands by module ID
         const commandArgs: string[] = parsedCommand.arguments;
         const commandValue: string = parsedCommand.command;
-        const commands: Command[] = this.commandRegistry.get(commandValue);
+        const commands: Command[] = this.commandService.get(commandValue);
         let senderId: string;
 
         // Gets the ID of the user and the ID of the chat for logging
@@ -41,7 +37,7 @@ export default class CommandHander extends EventHandler {
         }
 
         if (commands.length !== 1) {
-            console.warn(senderId, i18n.__('Command'), commandValue, i18n.__('could not be resolved to a single command. (Module collision?)'));
+            console.info(senderId, i18n.__('Command'), commandValue, i18n.__('could not be resolved to a single command. (Module collision?)'));
             return Promise.resolve(false);
         }
         const command = commands[0];
@@ -53,6 +49,7 @@ export default class CommandHander extends EventHandler {
         if (await command.checkPermissions(message)) {
             return command.run(message, args);
         }
+        //TODO: Message when perms fail
 
         return Promise.resolve(false);
     }

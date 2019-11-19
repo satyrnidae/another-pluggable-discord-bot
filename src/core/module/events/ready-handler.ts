@@ -1,23 +1,27 @@
 import i18n = require('i18n');
-import { EventHandler, forEachAsync, lazyInject, SERVICE_IDENTIFIERS, ClientWrapper } from 'api';
-import { Client, Guild } from 'discord.js';
-import { MessageService } from 'core';
+import { EventHandler, forEachAsync, lazyInject, ServiceIdentifiers, ClientService, EventService } from 'api';
+import { Guild } from 'discord.js';
+import { MessageService, CoreModuleServiceIdentifiers } from 'core';
 
 export default class ReadyHandler extends EventHandler {
     event: string = 'ready';
 
-    @lazyInject('CoreMessageService')
+    @lazyInject(CoreModuleServiceIdentifiers.Message)
     messageService: MessageService;
-    @lazyInject(SERVICE_IDENTIFIERS.CLIENT)
-    clientService: ClientWrapper;
 
-    public async handler(client: Client, ..._args: any[]): Promise<any> {
-        this.clientService.on('error', (e: string) => console.error(e));
-        this.clientService.on('warn', (w: string) => console.warn(w));
-        this.clientService.on('info', (i: string) => console.info(i));
+    @lazyInject(ServiceIdentifiers.Client)
+    clientService: ClientService;
 
-        console.log(i18n.__('Logged in as %s, and ready for service!', this.clientService.userTag));
+    @lazyInject(ServiceIdentifiers.Event)
+    eventService: EventService;
 
-        return forEachAsync(client.guilds.array(), async (guild: Guild): Promise<any> => this.messageService.sendGuildWelcomeMessage(guild));
+    public async handler(): Promise<any> {
+        this.eventService.on('error', (e: string) => console.info(e));
+        this.eventService.on('warn', (w: string) => console.info(w));
+        this.eventService.on('info', (i: string) => console.info(i));
+
+        console.info(i18n.__('Logged in as %s, and ready for service!', this.clientService.userTag));
+
+        return forEachAsync(this.clientService.guilds, async (guild: Guild): Promise<any> => this.messageService.sendGuildWelcomeMessage(guild));
     }
 }
