@@ -1,9 +1,8 @@
 import fs from 'fs';
 import * as api from 'api';
-import { AppConfiguration } from 'api';
 
 export default class ConfigurationService implements api.ConfigurationService {
-    readonly wrappedInstance: AppConfiguration;
+    readonly wrappedInstance: api.AppConfiguration;
     //TODO: Resolve this hardcoded relative path somehow
     private readonly configPath: string = `${__dirname}/../../../../config/config.json`;
 
@@ -27,6 +26,6 @@ export default class ConfigurationService implements api.ConfigurationService {
     }
 
     constructor() {
-        this.wrappedInstance = JSON.parse(fs.readFileSync(this.configPath).toString()) as AppConfiguration;
+        this.wrappedInstance = JSON.parse(fs.readFileSync(this.configPath).toString()) as api.AppConfiguration;
     }
 }

@@ -1,12 +1,11 @@
 import * as api from 'api';
 import { inject, injectable } from 'inversify';
-import { ServiceIdentifiers, ClientService, EventHandler } from 'api';
 
 @injectable()
 export default class EventService implements api.EventService {
-    constructor(@inject(ServiceIdentifiers.Client) public clientService: ClientService) {}
+    constructor(@inject(api.ServiceIdentifiers.Client) public clientService: api.ClientService) {}
 
-    registerEvent(event: EventHandler): void {
+    registerEvent(event: api.EventHandler): void {
         this.clientService.client.addListener(event.event, event.handler.bind(event));
     }
 
