@@ -7,22 +7,36 @@ export default class UserLinkingPreferencesFactory extends DataEntityFactory<Use
     @lazyInject(ServiceIdentifiers.Data)
     dataService: DataService;
 
-    async load(user: User): Promise<UserLinkingPreferences> {
-        if (!user) {
-            return null;
+    async load(query: string | User) {
+        const userQuery: User = query as User;
+        if(userQuery) {
+            return this.loadByUser(userQuery);
         }
+        return this.loadByNativeId(query as string);
+    }
 
+    private async loadByNativeId(nativeId: string): Promise<UserLinkingPreferences> {
         const repository: Repository<UserLinkingPreferences> = await this.dataService.getRepository(UserLinkingPreferences);
-        let preferences: UserLinkingPreferences = await repository.findOne({nativeId: user.id});
+        let preferences: UserLinkingPreferences = await repository.findOne({nativeId});
 
         if(!preferences) {
             preferences = new UserLinkingPreferences();
             preferences.linkingEnabled = true;
-            preferences.nativeId = user.id;
+            preferences.linkFromInactiveGuilds = true;
+            preferences.linkToExternalGuilds = false;
+            preferences.nativeId = nativeId;
             await preferences.save();
         }
 
         return preferences;
+    }
+
+    private async loadByUser(user: User): Promise<UserLinkingPreferences> {
+        if (!user) {
+            return null;
+        }
+
+        return this.loadByNativeId(user.id);
     }
 
 }
