@@ -67,7 +67,6 @@ export default class LinkQuoteHandler implements EventHandler {
         }
 
         const userPreferences: UserLinkingPreferences = await new UserLinkingPreferencesFactory().load(linkedMessage.author);
-        await userPreferences.save();
 //TODO: linking preferences
         let senderUserName: string = linkedMessage.author.username;
 

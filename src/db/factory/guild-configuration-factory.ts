@@ -24,6 +24,7 @@ export default class GuildConfigurationFactory extends DataEntityFactory<GuildCo
             guildConfiguration.commandPrefix = this.configurationService.defaultPrefix;
             guildConfiguration.welcomeMsgSent = false;
             guildConfiguration.nativeId = guild.id;
+            await guildConfiguration.save();
         }
 
         return guildConfiguration;

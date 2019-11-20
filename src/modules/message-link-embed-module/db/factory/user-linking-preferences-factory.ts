@@ -19,6 +19,7 @@ export default class UserLinkingPreferencesFactory extends DataEntityFactory<Use
             preferences = new UserLinkingPreferences();
             preferences.linkingEnabled = true;
             preferences.nativeId = user.id;
+            await preferences.save();
         }
 
         return preferences;
