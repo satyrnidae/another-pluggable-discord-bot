@@ -1,0 +1,13 @@
+{
+    "name": "Message Link Embedder",
+    "version": "1.0.0",
+    "id": "msg-link-embed",
+    "authors": [
+        "satyrnidae"
+    ],
+    "details": {
+        "language": "typescript",
+        "apiVersion": "r1",
+        "entryPoint": "message-link-embed-module"
+    }
+}
