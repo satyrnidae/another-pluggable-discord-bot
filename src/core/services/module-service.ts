@@ -3,6 +3,7 @@ import fs from 'fs';
 import * as api from 'api';
 import { inject, id, injectable } from 'inversify';
 import { CoreModule } from 'core/module';
+import { Module } from 'api';
 
 @injectable()
 export default class ModuleService implements api.ModuleService {
@@ -93,5 +94,22 @@ export default class ModuleService implements api.ModuleService {
         catch (ex) {
             console.info(i18n.__('An unexpected error occurred while loading module "%s": %s', moduleFolder, ex));
         }
+    }
+
+    getModuleById(moduleId: string): Module {
+        const filteredModules: Module[] = this.modules.filter((module: Module) => module.moduleInfo.id === moduleId);
+        return filteredModules && filteredModules.length ? filteredModules[0] : null;
+    }
+
+    getModulesByName(moduleName: string): Module[] {
+        return this.modules.filter((module: Module) => module.moduleInfo.name == moduleName);
+    }
+
+    getModulesByIdOrName(moduleIdOrName: string): Module[] {
+        const module: Module = this.getModuleById(moduleIdOrName);
+        if (!module) {
+            return this.getModulesByName(moduleIdOrName);
+        }
+        return [module];
     }
 }

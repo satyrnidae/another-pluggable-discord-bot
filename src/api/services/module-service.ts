@@ -8,4 +8,7 @@ export default interface ModuleService {
     preInitializeModules(): Promise<void>;
     initializeModules(): Promise<void>;
     postInitializeModules(): Promise<void>;
+    getModuleById(moduleId: string): Module;
+    getModulesByName(moduleName: string): Module[];
+    getModulesByIdOrName(moduleIdOrName: string): Module[];
 }

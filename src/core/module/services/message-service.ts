@@ -7,5 +7,11 @@ export default interface MessageService {
 
     sendAllHelpMessage(message: Message): Promise<any>;
 
+    sendModuleCommandListMessage(message: Message, moduleId: string): Promise<any>;
+
+    sendModuleCommandHelpMessage(message: Message, moduleId: string, command: string): Promise<any>;
+
+    sendCommandHelpMessage(message: Message, command: string): Promise<any>;
+
     getRandomHeart(): string;
 }

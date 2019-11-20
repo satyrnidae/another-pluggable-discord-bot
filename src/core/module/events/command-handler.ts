@@ -30,10 +30,10 @@ export default class CommandHander extends EventHandler {
 
         // Gets the ID of the user and the ID of the chat for logging
         if (message.guild) {
-            senderId = message.member.displayName.concat('@').concat(message.guild.id).concat(':');
+            senderId = message.member.displayName.concat('@').concat(message.guild.name).concat(':');
         }
         else {
-            senderId = message.author.username.concat('@').concat(this.client.userId).concat(':');
+            senderId = message.author.tag.concat(':');
         }
 
         if (commands.length !== 1) {
