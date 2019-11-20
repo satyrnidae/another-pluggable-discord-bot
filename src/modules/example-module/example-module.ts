@@ -3,24 +3,20 @@ import { Command, EventHandler, Module } from 'api';
 export default class ExampleModule extends Module {
     public async preInitialize(): Promise<void> {
         console.info('[ExampleModule] Pre-Initialization Phase');
-        return await super.preInitialize();
+        return super.preInitialize();
     }
 
     public async initialize(): Promise<void> {
         console.info('[ExampleModule] Initialization Phase');
-        return await super.initialize();
+        return super.initialize();
     }
 
     public async postInitialize() : Promise<void> {
         console.info('[ExampleModule] Post-Initialization Phase');
-        return await super.postInitialize();
+        return super.postInitialize();
     }
 
-    get commands(): Command[] {
-        return [];
-    }
+    commands: Command[] = [];
 
-    get events(): EventHandler[] {
-        return [];
-    }
+    events: EventHandler[] = [];
 }
