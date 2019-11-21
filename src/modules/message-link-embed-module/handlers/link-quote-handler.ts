@@ -99,17 +99,26 @@ export default class LinkQuoteHandler implements EventHandler {
             .setTimestamp(linkedMessage.createdAt);
 
         if(linkedMessage.attachments && linkedMessage.attachments.size) {
+            let attachmentsFieldValue: string = '';
             linkedMessage.attachments.forEach(attachment => {
                 const url: string = attachment.url;
-                const xhttp: XMLHttpRequest = new XMLHttpRequest();
-                xhttp.timeout = 500;
-                xhttp.open('HEAD', url, false);
-                xhttp.send();
-                if(xhttp.status === 200 && xhttp.getResponseHeader('Content-Type').startsWith('image') && !embed.image) {
-                    embed.setImage(url);
+                if(!embed.image) {
+                    const xhttp: XMLHttpRequest = new XMLHttpRequest();
+                    xhttp.timeout = this.CONTENT_TYPE_REQUEST_TIMEOUT;
+                    xhttp.open('HEAD', url, false);
+                    xhttp.send();
+                    if(xhttp.status === this.SUCCESS && xhttp.getResponseHeader('Content-Type').startsWith('image')) {
+                        embed.setImage(url);
+                    }
                 }
-                embed.setDescription(embed.description.concat('\r\n').concat(url));
+                if(attachmentsFieldValue) {
+                    attachmentsFieldValue = attachmentsFieldValue.concat('\r\n');
+                }
+                attachmentsFieldValue = attachmentsFieldValue.concat(attachment.proxyURL);
             });
+            if(attachmentsFieldValue) {
+                embed.addField(i18n.__('Attachments'), attachmentsFieldValue);
+            }
         }
 
         await message.channel.send(linkedMessage.url, embed);
@@ -146,4 +155,7 @@ export default class LinkQuoteHandler implements EventHandler {
         i18n.__('Thank you so much!'),
         i18n.__('It\'s greatly appreciated, thank you!')
     ];
+
+    readonly CONTENT_TYPE_REQUEST_TIMEOUT: number = 500;
+    readonly SUCCESS: number = 200;
 }
