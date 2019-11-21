@@ -1,9 +1,9 @@
 import i18n = require('i18n');
 import { XMLHttpRequest } from 'xmlhttprequest';
-import { EventHandler, lazyInject, ServiceIdentifiers, ClientService, ConfigurationService } from 'api';
-import { Message, Guild, GuildMember, TextChannel, RichEmbed, ColorResolvable, Role, User } from 'discord.js';
+import { EventHandler, lazyInject, ServiceIdentifiers, ClientService, ConfigurationService, forEachAsync } from 'api';
+import { Message, Guild, GuildMember, TextChannel, RichEmbed, ColorResolvable, Role, User, MessageEmbed, MessageAttachment, Attachment } from 'discord.js';
 import { UserLinkingPreferences } from 'modules/message-link-embed-module/db/entity';
-import { UserLinkingPreferencesFactory } from 'modules/message-link-embed-module/db/factory';
+import { UserLinkingPreferencesFactory, LinkedMessageDetailsFactory } from 'modules/message-link-embed-module/db/factory';
 
 export default class LinkQuoteHandler implements EventHandler {
     event: string = 'message';
@@ -59,48 +59,62 @@ export default class LinkQuoteHandler implements EventHandler {
                 .concat(i18n.__('%s %s', this.getRandomThanks(), this.getRandomHeart())));
             return;
         }
-        const linkedMessage: Message = await channel.fetchMessage(messageId);
-        if(!linkedMessage) {
+        const originMessage: Message = await channel.fetchMessage(messageId);
+        if(!originMessage) {
             await message.author.send(i18n.__('%s I\'d love to embed that linked message, but I couldn\'t find it!', this.getRandomGreeting()).concat('\r\n')
                 .concat(i18n.__('Could you do me a solid and double check that the link is valid?')).concat('\r\n')
                 .concat(i18n.__('%s %s', this.getRandomThanks(), this.getRandomHeart())));
             return;
         }
 
-        const userPreferences: UserLinkingPreferences = await new UserLinkingPreferencesFactory().load(linkedMessage.author);
-//TODO: linking preferences
-        let senderUserName: string = linkedMessage.author.username;
+        const originUserInGuild: GuildMember = message.guild.member(originMessage.author);
+        const originUserInOriginGuild: GuildMember = guild.member(originMessage.author);
 
-        const linkedUser: GuildMember = message.guild.member(linkedMessage.author);
-        const activeUser: GuildMember = guild.member(linkedMessage.author);
+        const userPreferences: UserLinkingPreferences = await new UserLinkingPreferencesFactory().load(originMessage.author.id);
+        if(!userPreferences.linkingEnabled) {
+            await message.author.send(i18n.__('%s The user who sent that message have disabled linking their messages.', this.getRandomGreeting()).concat('\r\n')
+                .concat(i18n.__('%s %s', this.getRandomGreeting(), this.getRandomHeart())));
+            return;
+        }
+        if(!userPreferences.linkFromInactiveGuilds && !originUserInOriginGuild) {
+            await message.author.send(i18n.__('%s The user who sent that message has disabled linking from guilds they are no longer active in.', this.getRandomGreeting()).concat('\r\n')
+                .concat(i18n.__('%s %s', this.getRandomGreeting(), this.getRandomHeart())));
+            return;
+        }
+        if(!userPreferences.linkToExternalGuilds && !originUserInGuild) {
+            await message.author.send(i18n.__('%s The user who sent that message has disabled linking to guilds they are not currently active in.', this.getRandomGreeting()).concat('\r\n')
+                .concat(i18n.__('%s %s', this.getRandomGreeting(), this.getRandomHeart())));
+            return;
+        }
 
-        let color: ColorResolvable = linkedMessage.author.bot ? '#7289da' : '#99aab5';
+        let senderUserName: string = originMessage.author.username;
+        let color: ColorResolvable = originMessage.author.bot ? '#7289da' : '#99aab5';
 
-        if(!linkedUser) {
-            if(activeUser && activeUser.colorRole) {
-                color = activeUser.displayColor;
+        if(!originUserInGuild) {
+            if(originUserInOriginGuild && originUserInOriginGuild.colorRole) {
+                color = originUserInOriginGuild.displayColor;
             }
         }
-        else if(linkedUser.colorRole) {
-            color = linkedUser.displayColor;
+        else if(originUserInGuild.colorRole) {
+            color = originUserInGuild.displayColor;
         }
-        if(activeUser) {
-            senderUserName = activeUser.displayName;
+        if(originUserInOriginGuild) {
+            senderUserName = originUserInOriginGuild.displayName;
         }
 
         const embed: RichEmbed = new RichEmbed()
             .setColor(color)
-            .setAuthor(senderUserName, linkedMessage.author.displayAvatarURL, linkedMessage.url)
+            .setAuthor(senderUserName, originMessage.author.displayAvatarURL, originMessage.url)
             .setThumbnail(guild.iconURL)
-            .setDescription(linkedMessage.content)
-            .setURL(linkedMessage.url)
+            .setDescription(originMessage.content)
+            .setURL(originMessage.url)
             .setFooter(i18n.__('Requested by %s', requestorName).concat('\r\n')
-                .concat(i18n.__('from %s', linkedMessage.guild.name)), message.author.avatarURL)
-            .setTimestamp(linkedMessage.createdAt);
+                .concat(i18n.__('from %s', originMessage.guild.name)), message.author.avatarURL)
+            .setTimestamp(originMessage.createdAt);
 
-        if(linkedMessage.attachments && linkedMessage.attachments.size) {
+        if(originMessage.attachments && originMessage.attachments.size) {
             let attachmentsFieldValue: string = '';
-            linkedMessage.attachments.forEach(attachment => {
+            originMessage.attachments.forEach(attachment => {
                 const url: string = attachment.url;
                 if(!embed.image) {
                     const xhttp: XMLHttpRequest = new XMLHttpRequest();
@@ -121,7 +135,40 @@ export default class LinkQuoteHandler implements EventHandler {
             }
         }
 
-        await message.channel.send(linkedMessage.url, embed);
+        const sentMessages: Message[] = [];
+        const linkMessage: Message | Message[] = await message.channel.send(originMessage.url, embed);
+        if(linkMessage as Message) {
+            sentMessages.push(linkMessage as Message);
+        }
+        else if(linkMessage as Message[]) {
+            (linkMessage as Message[]).forEach(linkMessage => sentMessages.push(linkMessage));
+        }
+        await forEachAsync(originMessage.embeds, async (embed) => {
+            const newEmbed: RichEmbed = new RichEmbed(embed);
+            const linkMessage: Message | Message[] = await message.channel.send(newEmbed);
+            if(linkMessage as Message) {
+                sentMessages.push(linkMessage as Message);
+            }
+            else if(linkMessage as Message[]) {
+                (linkMessage as Message[]).forEach(linkMessage => sentMessages.push(linkMessage));
+            }
+        });
+
+        await forEachAsync(originMessage.attachments.array(), async (attachment: MessageAttachment) => {
+            const newAttachment = new Attachment(attachment.url);
+            const linkMessage: Message | Message[] = await message.channel.send(newAttachment);
+            if(linkMessage as Message) {
+                sentMessages.push(linkMessage as Message);
+            }
+            else if(linkMessage as Message[]) {
+                (linkMessage as Message[]).forEach(linkMessage => sentMessages.push(linkMessage));
+            }
+        });
+
+        await forEachAsync(sentMessages as Message[], async (replyMessage: Message) => {
+            if(replyMessage === null) return;
+            await new LinkedMessageDetailsFactory().load(originMessage, message, replyMessage);
+        });
 
         if(message.deletable) {
             await message.delete();

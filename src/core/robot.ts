@@ -13,7 +13,7 @@ export default class Robot implements Lifecycle {
         i18n.configure({
             locales: ['en'],
             fallbacks: {'*': 'en'},
-            directory: `${__dirname}/locale`,
+            directory: `${__dirname}/../locale`,
             logWarnFn: (msg) => console.info(msg),
             logErrorFn: (msg) => console.info(msg)
         });
