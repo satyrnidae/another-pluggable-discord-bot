@@ -45,7 +45,7 @@ export default class MessageServiceBase implements MessageService {
     async sendHelpMessage(message: Message): Promise<any> {
         const prefix: string = await this.commandService.getCommandPrefix(message);
 
-        const helpMessage: string = i18n.__('Hi! I\'m %s, your modular robot friend!', message.guild.me.displayName || this.clientService.username).concat('\r\n')
+        const helpMessage: string = i18n.__('Hi! I\'m %s, your modular robot friend!', this.clientService.getDisplayName(message.guild)).concat('\r\n')
             .concat(i18n.__('To list all the commands that I can understand, just send `%s` somewhere I can read it!', `${prefix}help --all`)).concat('\r\n')
             .concat(i18n.__('You can also check out my documentation on %s', '<https://www.github.com/satyrnidae/another-pluggable-discord-bot>')).concat('\r\n')
             .concat(i18n.__('Thanks! %s', this.getRandomHeart()));
@@ -59,7 +59,7 @@ export default class MessageServiceBase implements MessageService {
         const helpMessage: string = i18n.__('Here\'s a list of all the commands that I can handle:')
             .concat(await this.getCommandList(message, commands)).concat('\r\n')
             .concat(i18n.__('You can find out more by specifying a single command:')).concat('\r\n')
-            .concat(i18n.__('> %shelp [-c|--command] *command*', prefix));
+            .concat(i18n.__('> %s%s', prefix, 'help [-c|--command] *command*'));
         return message.channel.send(helpMessage);
     }
 
@@ -128,8 +128,8 @@ export default class MessageServiceBase implements MessageService {
         if(commands.length > 1) {
             const helpMessage: string = i18n.__('Multiple commands matched the given ID %s:', command)
                 .concat(await this.getCommandList(message, commands)).concat('\r\n')
-                .concat(i18n.__('You can find out more by specifying a module ID when you call %shelp:', )).concat('\r\n')
-                .concat(i18n.__('> %shelp [-c|--command] *command* [-m|--module|--moduleId] *module*', prefix)).concat('/r/n')
+                .concat(i18n.__('You can find out more by specifying a module ID when you call %shelp:', prefix)).concat('\r\n')
+                .concat(i18n.__('> %s%s', prefix, 'help [-c|--command] *command* [-m|--module|--moduleId] *module*')).concat('/r/n')
                 .concat(i18n.__('When you execute the command, be sure to specify the module ID as well:')).concat('\r\n')
                 .concat(i18n.__('> %s[moduleId]/[command] [parameters]'));
             return message.channel.send(helpMessage);
