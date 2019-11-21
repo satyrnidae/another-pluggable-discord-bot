@@ -1,4 +1,5 @@
 import i18n = require('i18n');
+import { XMLHttpRequest } from 'xmlhttprequest';
 import { EventHandler, lazyInject, ServiceIdentifiers, ClientService, ConfigurationService } from 'api';
 import { Message, Guild, GuildMember, TextChannel, RichEmbed, ColorResolvable, Role, User } from 'discord.js';
 import { UserLinkingPreferences } from 'modules/message-link-embed-module/db/entity';
@@ -73,14 +74,14 @@ export default class LinkQuoteHandler implements EventHandler {
         const linkedUser: GuildMember = message.guild.member(linkedMessage.author);
         const activeUser: GuildMember = guild.member(linkedMessage.author);
 
-        let color: ColorResolvable = message.author.bot ? '#7289da' : '#99aab5';
+        let color: ColorResolvable = linkedMessage.author.bot ? '#7289da' : '#99aab5';
 
         if(!linkedUser) {
-            if(activeUser) {
+            if(activeUser && activeUser.colorRole) {
                 color = activeUser.displayColor;
             }
         }
-        else {
+        else if(linkedUser.colorRole) {
             color = linkedUser.displayColor;
         }
         if(activeUser) {
@@ -97,14 +98,21 @@ export default class LinkQuoteHandler implements EventHandler {
                 .concat(i18n.__('from %s', linkedMessage.guild.name)), message.author.avatarURL)
             .setTimestamp(linkedMessage.createdAt);
 
+        if(linkedMessage.attachments && linkedMessage.attachments.size) {
+            linkedMessage.attachments.forEach(attachment => {
+                const url: string = attachment.url;
+                const xhttp: XMLHttpRequest = new XMLHttpRequest();
+                xhttp.timeout = 500;
+                xhttp.open('HEAD', url, false);
+                xhttp.send();
+                if(xhttp.status === 200 && xhttp.getResponseHeader('Content-Type').startsWith('image') && !embed.image) {
+                    embed.setImage(url);
+                }
+                embed.setDescription(embed.description.concat('\r\n').concat(url));
+            });
+        }
+
         await message.channel.send(linkedMessage.url, embed);
-
-
-
-        //await linkedMessage.author.send(i18n.__('%s Heads up, your message in the "%s" guild was linked in the "%s" guild by the user %s.',
-        //    this.getRandomGreeting(), linkedMessage.guild.name, message.guild.name, message.author.username).concat('\r\n')
-        //    .concat(i18n.__('[disable functionality coming soon!]')).concat('\r\n')
-        //    .concat(i18n.__('%s %s', this.getRandomThanks(), this.getRandomHeart())), embed);
 
         if(message.deletable) {
             await message.delete();
