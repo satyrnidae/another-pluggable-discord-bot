@@ -37,6 +37,7 @@
     "sqlite3": "^4.1.0",
     "typeorm": "^0.2.20",
     "typescript": "^3.6.4",
+    "xmlhttprequest": "^1.8.0",
     "yargs-parser": "^13.0.0"
   },
   "devDependencies": {
