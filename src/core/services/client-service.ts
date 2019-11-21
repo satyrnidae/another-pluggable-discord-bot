@@ -26,4 +26,8 @@ export default class ClientService implements api.ClientService {
     async login(): Promise<string> {
         return this.client.login(this.configurationService.token);
     }
+
+    getDisplayName(guild?: Guild): string {
+        return guild ? guild.me.displayName : this.username;
+    }
 }
