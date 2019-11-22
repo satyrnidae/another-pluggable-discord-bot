@@ -1,11 +1,9 @@
-import { AppConfiguration } from 'api';
-
 export default interface ConfigurationService {
-    readonly token: string;
-    readonly defaultPrefix: string;
-    readonly defaultNickname: string;
-    readonly showWelcomeMessage: boolean;
-    readonly developerMode: boolean;
-    readonly hearts: string[];
-    readonly wrappedInstance: AppConfiguration;
+    getToken(): Promise<string>;
+    getDefaultPrefix(): Promise<string>;
+    getDefaultNickname(): Promise<string>;
+    getHearts(): Promise<string[]>;
+    shouldShowWelcomeMessage(): Promise<boolean>;
+    isDeveloperMode(): Promise<boolean>;
+    getRandomHeart(): Promise<string>;
 }

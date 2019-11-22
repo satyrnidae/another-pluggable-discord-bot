@@ -46,7 +46,7 @@ export default class CommandService implements api.CommandService {
     }
 
     async getCommandPrefix(message: Message): Promise<string> {
-        let prefix: string = this.configurationService.defaultPrefix;
+        let prefix: string = await this.configurationService.getDefaultPrefix();
         if(message.guild) {
             const guildConfiguration: GuildConfiguration = await new GuildConfigurationFactory().load(message.guild);
             prefix = guildConfiguration.commandPrefix;

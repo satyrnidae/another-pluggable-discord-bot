@@ -3,9 +3,6 @@ import { inject, injectable } from 'inversify';
 import { RichEmbed, Message, ColorResolvable, GuildMember, MessageAttachment, GroupDMChannel, PartialTextBasedChannelFields, DMChannel } from 'discord.js';
 import { forEachAsync, ServiceIdentifiers, ConfigurationService, ClientService } from 'api';
 import { ModuleServiceIdentifiers, ModuleConfigurationService, WebRequestService } from 'modules/message-link-embed-module/services';
-
-type url = string;
-
 @injectable()
 export default class MessageService {
 
@@ -19,7 +16,7 @@ export default class MessageService {
         await this.sendMessage(channel,
             i18n.__('%s Unfortunately, I\'m not able to access that direct message!', await this.getRandomGreeting()),
             i18n.__('Please note that only direct DMs with me are linkable, and users will be unable to follow the link.'),
-            i18n.__('%s %s', await this.getRandomGratitude(), this.getRandomHeart()));
+            i18n.__('%s %s', await this.getRandomGratitude(), await this.configurationService.getRandomHeart()));
     }
 
     async sendGuildInaccessibleMessage(channel: PartialTextBasedChannelFields): Promise<void> {
@@ -27,7 +24,7 @@ export default class MessageService {
             i18n.__('%s Unfortunately, I can\'t access the guild you have linked!', await this.getRandomGreeting()),
             i18n.__('If you want me to embed future messages, and you have access to add or remove bots in that guild, you can add me from the link:'),
             `<https://discordapp.com/api/oauth2/authorize?client_id=${this.clientService.userId}&permissions=67495936&scope=bot>`,
-            i18n.__('%s %s', await this.getRandomGratitude(), this.getRandomHeart()));
+            i18n.__('%s %s', await this.getRandomGratitude(), await this.configurationService.getRandomHeart()));
     }
 
     async sendChannelInaccessibleMessage(channel: PartialTextBasedChannelFields): Promise<void> {
@@ -36,14 +33,14 @@ export default class MessageService {
             i18n.__('If you\'d like me to be able to link messages in the future, could you ask an admin to add ')
                 .concat(i18n.__('the "Read Messages" and "Read Message History" permissions to my role in that channel?')),
             i18n.__('Note that users who attempt to follow the link also need these permissions in the target channel!'),
-            i18n.__('%s %s', await this.getRandomGratitude(), this.getRandomHeart()));
+            i18n.__('%s %s', await this.getRandomGratitude(), await this.configurationService.getRandomHeart()));
     }
 
     async sendMessageNotFoundMessage(channel: PartialTextBasedChannelFields): Promise<void> {
         await this.sendMessage(channel,
             i18n.__('%s I\'d love to embed that linked message, but I couldn\'t find it!', await this.getRandomGreeting()),
             i18n.__('Could you do me a solid and double check that the link is valid?'),
-            i18n.__('%s %s', await this.getRandomGratitude(), this.getRandomHeart()));
+            i18n.__('%s %s', await this.getRandomGratitude(), await this.configurationService.getRandomHeart()));
     }
 
     async getMessageLinkEmbed(requestMessage: Message, originMessage: Message): Promise<RichEmbed> {
@@ -110,7 +107,7 @@ export default class MessageService {
         return originMessage.author.username;
     }
 
-    private getEmbedThumbnailURL(originMessage: Message): url {
+    private getEmbedThumbnailURL(originMessage: Message): string {
         if(originMessage.guild) {
             return originMessage.guild.iconURL;
         }
@@ -167,11 +164,6 @@ export default class MessageService {
         }
 
         return embed;
-    }
-
-    private getRandomHeart(): string {
-        const randomIndex: number = Math.floor(Math.random() * this.configurationService.hearts.length);
-        return `:${this.configurationService.hearts[randomIndex]}:`;
     }
 
     private async getRandomGreeting(): Promise<string> {
