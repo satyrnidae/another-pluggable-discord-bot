@@ -81,9 +81,9 @@ export default class MessageService {
         }
         if(originMessage.channel.type === 'dm') {
             const dmChannel: DMChannel = originMessage.channel as DMChannel;
-            return i18n.__('DM between %s and %s', this.clientService.getDisplayName(), dmChannel.recipient.username);
+            return i18n.__('a DM between %s and %s', this.clientService.getDisplayName(), dmChannel.recipient.username);
         }
-        return i18n.__('unknown location');
+        return i18n.__('an unknown location');
     }
 
     private getRequestorUserName(requestMessage: Message) {
