@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import { readFileAsync } from 'api';
 import { injectable } from 'inversify';
 
 const MODULE_CONFIGURATION_PATH = `${__dirname}/../config/config.json`;
@@ -12,21 +12,27 @@ interface ModuleConfiguration {
 @injectable()
 export default class ModuleConfigurationService {
 
-    private instance: ModuleConfiguration;
+    private config: ModuleConfiguration;
 
-    constructor() {
-        this.instance = JSON.parse(fs.readFileSync(MODULE_CONFIGURATION_PATH).toString()) as ModuleConfiguration;
+    async getGreetings(): Promise<string[]> {
+        await this.loadConfig();
+        return this.config.greetings;
     }
 
-    get greetings(): string[] {
-        return this.instance.greetings;
+    async getGratitude(): Promise<string[]> {
+        await this.loadConfig();
+        return this.config.gratitude;
     }
 
-    get gratitude(): string[] {
-        return this.instance.gratitude;
+    async getSendLinkingErrorsToDMs(): Promise<boolean> {
+        await this.loadConfig();
+        return this.config.sendLinkingErrorsToDMs;
     }
 
-    get sendLinkingErrorsToDMs(): boolean {
-        return this.instance.sendLinkingErrorsToDMs;
+    private async loadConfig(): Promise<void> {
+        if(!this.config) {
+            const configurationData = await readFileAsync(MODULE_CONFIGURATION_PATH);
+            this.config = JSON.parse(configurationData.toString()) as ModuleConfiguration;
+        }
     }
 }

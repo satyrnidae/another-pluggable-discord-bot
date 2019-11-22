@@ -17,33 +17,33 @@ export default class MessageService {
 
     async sendDMInaccessibleMessage(channel: PartialTextBasedChannelFields): Promise<void> {
         await this.sendMessage(channel,
-            i18n.__('%s Unfortunately, I\'m not able to access that direct message!', this.getRandomGreeting()),
+            i18n.__('%s Unfortunately, I\'m not able to access that direct message!', await this.getRandomGreeting()),
             i18n.__('Please note that only direct DMs with me are linkable, and users will be unable to follow the link.'),
-            i18n.__('%s %s', this.getRandomGratitude(), this.getRandomHeart()));
+            i18n.__('%s %s', await this.getRandomGratitude(), this.getRandomHeart()));
     }
 
     async sendGuildInaccessibleMessage(channel: PartialTextBasedChannelFields): Promise<void> {
         await this.sendMessage(channel,
-            i18n.__('%s Unfortunately, I can\'t access the guild you have linked!', this.getRandomGreeting()),
+            i18n.__('%s Unfortunately, I can\'t access the guild you have linked!', await this.getRandomGreeting()),
             i18n.__('If you want me to embed future messages, and you have access to add or remove bots in that guild, you can add me from the link:'),
             `<https://discordapp.com/api/oauth2/authorize?client_id=${this.clientService.userId}&permissions=67495936&scope=bot>`,
-            i18n.__('%s %s', this.getRandomGratitude(), this.getRandomHeart()));
+            i18n.__('%s %s', await this.getRandomGratitude(), this.getRandomHeart()));
     }
 
     async sendChannelInaccessibleMessage(channel: PartialTextBasedChannelFields): Promise<void> {
         await this.sendMessage(channel,
-            i18n.__('%s Unfortunately, I can\'t read the messages in the linked channel.', this.getRandomGreeting()),
+            i18n.__('%s Unfortunately, I can\'t read the messages in the linked channel.', await this.getRandomGreeting()),
             i18n.__('If you\'d like me to be able to link messages in the future, could you ask an admin to add ')
                 .concat(i18n.__('the "Read Messages" and "Read Message History" permissions to my role in that channel?')),
             i18n.__('Note that users who attempt to follow the link also need these permissions in the target channel!'),
-            i18n.__('%s %s', this.getRandomGratitude(), this.getRandomHeart()));
+            i18n.__('%s %s', await this.getRandomGratitude(), this.getRandomHeart()));
     }
 
     async sendMessageNotFoundMessage(channel: PartialTextBasedChannelFields): Promise<void> {
         await this.sendMessage(channel,
-            i18n.__('%s I\'d love to embed that linked message, but I couldn\'t find it!', this.getRandomGreeting()),
+            i18n.__('%s I\'d love to embed that linked message, but I couldn\'t find it!', await this.getRandomGreeting()),
             i18n.__('Could you do me a solid and double check that the link is valid?'),
-            i18n.__('%s %s', this.getRandomGratitude(), this.getRandomHeart()));
+            i18n.__('%s %s', await this.getRandomGratitude(), this.getRandomHeart()));
     }
 
     async getMessageLinkEmbed(requestMessage: Message, originMessage: Message): Promise<RichEmbed> {
@@ -174,13 +174,15 @@ export default class MessageService {
         return `:${this.configurationService.hearts[randomIndex]}:`;
     }
 
-    private getRandomGreeting(): string {
-        const randomIndex: number = Math.floor(Math.random() * this.moduleConfigurationService.greetings.length);
-        return i18n.__(this.moduleConfigurationService.greetings[randomIndex]);
+    private async getRandomGreeting(): Promise<string> {
+        const greetings: string[] = await this.moduleConfigurationService.getGreetings();
+        const randomIndex: number = Math.floor(Math.random() * greetings.length);
+        return i18n.__(greetings[randomIndex]);
     }
 
-    private getRandomGratitude(): string {
-        const randomIndex: number = Math.floor(Math.random() * this.moduleConfigurationService.gratitude.length);
-        return i18n.__(this.moduleConfigurationService.gratitude[randomIndex]);
+    private async getRandomGratitude(): Promise<string> {
+        const gratitude: string[] = await this.moduleConfigurationService.getGratitude();
+        const randomIndex: number = Math.floor(Math.random() * gratitude.length);
+        return i18n.__(gratitude[randomIndex]);
     }
 }

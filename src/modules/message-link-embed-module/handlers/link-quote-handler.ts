@@ -29,7 +29,8 @@ export default class LinkQuoteHandler implements EventHandler {
         const guildId: string = linkMatches[1];
         const channelId: string = linkMatches[2];
         const messageId: string = linkMatches[3];
-        const replyTargetChannel: PartialTextBasedChannelFields = this.moduleConfigurationService.sendLinkingErrorsToDMs ? message.author : message.channel;
+        const replyTargetChannel: PartialTextBasedChannelFields =
+            await this.moduleConfigurationService.getSendLinkingErrorsToDMs() ? message.author : message.channel;
 
         let channel: TextChannel;
 
