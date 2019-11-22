@@ -1,9 +1,17 @@
-import { Command, EventHandler, Module, ModuleInfo } from 'api';
+import { Command, EventHandler, Module, Container } from 'api';
+import { WebRequestService, ModuleServiceIdentifiers, ModuleConfigurationService, MessageService } from 'modules/message-link-embed-module/services';
 import { LinkQuoteHandler } from 'modules/message-link-embed-module/handlers';
 
 export default class MessageLinkEmbedModule extends Module {
 
-    public async preInitialize(): Promise<void> {
+    async registerDependencies(): Promise<void> {
+        Container.bind<WebRequestService>(ModuleServiceIdentifiers.WebRequest).to(WebRequestService);
+        Container.bind<MessageService>(ModuleServiceIdentifiers.Message).to(MessageService);
+        Container.bind<ModuleConfigurationService>(ModuleServiceIdentifiers.Configuration).to(ModuleConfigurationService);
+        return super.registerDependencies();
+    }
+
+    async preInitialize(): Promise<void> {
         this.events = [
             new LinkQuoteHandler()
         ];
