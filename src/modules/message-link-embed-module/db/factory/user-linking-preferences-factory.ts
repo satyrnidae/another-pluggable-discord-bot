@@ -38,5 +38,4 @@ export default class UserLinkingPreferencesFactory extends DataEntityFactory<Use
 
         return this.loadByNativeId(user.id);
     }
-
 }

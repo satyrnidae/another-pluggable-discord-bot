@@ -1,16 +1,17 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import { inject, injectable } from 'inversify';
 import { RichEmbed, Message, ColorResolvable, GuildMember, MessageAttachment, GroupDMChannel, PartialTextBasedChannelFields, DMChannel } from 'discord.js';
 import { forEachAsync, ServiceIdentifiers, ConfigurationService, ClientService } from 'api';
 import { ModuleServiceIdentifiers, ModuleConfigurationService, WebRequestService } from 'modules/message-link-embed-module/services';
+
 @injectable()
 export default class MessageService {
 
     constructor(
-        @inject(ServiceIdentifiers.Client) private clientService: ClientService,
-        @inject(ServiceIdentifiers.Configuration) private configurationService: ConfigurationService,
-        @inject(ModuleServiceIdentifiers.Configuration) private moduleConfigurationService: ModuleConfigurationService,
-        @inject(ModuleServiceIdentifiers.WebRequest) private webRequestService: WebRequestService) {}
+        @inject(ServiceIdentifiers.Client) private readonly clientService: ClientService,
+        @inject(ServiceIdentifiers.Configuration) private readonly configurationService: ConfigurationService,
+        @inject(ModuleServiceIdentifiers.Configuration) private readonly moduleConfigurationService: ModuleConfigurationService,
+        @inject(ModuleServiceIdentifiers.WebRequest) private readonly webRequestService: WebRequestService) {}
 
     async sendDMInaccessibleMessage(channel: PartialTextBasedChannelFields): Promise<void> {
         await this.sendMessage(channel,
@@ -59,13 +60,13 @@ export default class MessageService {
     }
 
     private async sendMessage(channel: PartialTextBasedChannelFields, ...messageLines: string[]): Promise<void> {
-        let message: string = '';
+        let message = '';
         messageLines.forEach((line, index) => {
             if (index) {
                 message = message.concat('\r\n');
             }
             message = message.concat(line);
-        })
+        });
         if(message) {
             await channel.send(message);
         }
@@ -142,17 +143,12 @@ export default class MessageService {
 
     private async addAttachments(embed: RichEmbed, originMessage: Message): Promise<RichEmbed> {
         if(originMessage.attachments && originMessage.attachments.size) {
-            let attachmentsFieldValue: string = '';
+            let attachmentsFieldValue = '';
             await forEachAsync(originMessage.attachments.array(), async (attachment: MessageAttachment): Promise<void> => {
                 if(!embed.image) {
-                    try {
-                        const contentType = await this.webRequestService.getContentType(attachment.url);
-                        if(contentType.startsWith('image') && !embed.image) {
-                            embed.setImage(attachment.url);
-                        }
-                    }
-                    catch {
-                        //TODO: Module logging
+                    const contentType = await this.webRequestService.getContentType(attachment.url);
+                    if(contentType.startsWith('image') && !embed.image) {
+                        embed.setImage(attachment.url);
                     }
                 }
                 attachmentsFieldValue = attachmentsFieldValue.concat(attachment.url).concat('\r\n');

@@ -1,6 +1,8 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import { Module, EventHandler, Command, Version, Container } from 'api';
-import { CommandHandler, ReadyHandler, HelpCommand, GuildCreateHandler, SetPrefixCommand, MessageService, CoreModuleServiceIdentifiers } from 'core';
+import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
+import { CommandHandler, ReadyHandler, GuildCreateHandler } from 'core/module/events';
+import { HelpCommand, SetPrefixCommand } from 'core/module/commands';
 
 export default class CoreModule extends Module {
     private coreEvents: EventHandler[];

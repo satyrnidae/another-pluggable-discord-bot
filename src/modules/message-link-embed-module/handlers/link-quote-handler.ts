@@ -2,8 +2,12 @@ import { EventHandler, lazyInject, ServiceIdentifiers, ClientService } from 'api
 import { Message, Guild, TextChannel, RichEmbed, User, PartialTextBasedChannelFields } from 'discord.js';
 import { ModuleServiceIdentifiers, ModuleConfigurationService, MessageService } from 'modules/message-link-embed-module/services';
 
+const GUILD_GROUP_ID = 1;
+const CHANNEL_GROUP_ID = 2;
+const MESSAGE_GROUP_ID = 3;
+
 export default class LinkQuoteHandler implements EventHandler {
-    event: string = 'message';
+    event = 'message';
 
     @lazyInject(ServiceIdentifiers.Client)
     clientService: ClientService;
@@ -14,60 +18,62 @@ export default class LinkQuoteHandler implements EventHandler {
     @lazyInject(ModuleServiceIdentifiers.Message)
     messageService: MessageService;
 
-    async handler(message: Message): Promise<void> {
-        if(message.author.bot) {
-            return;
-        }
+    async handler(requestMessage: Message): Promise<void> {
+        const originalMessage: Message = await this.getOriginalMessage(requestMessage);
 
+        if(!originalMessage) return;
+
+        //TODO: linking preferences
+
+        const embed: RichEmbed = await this.messageService.getMessageLinkEmbed(requestMessage, originalMessage);
+
+        const resultMessages: Message | Message[] = await requestMessage.channel.send(originalMessage.url, embed);
+
+        if(resultMessages && requestMessage.deletable) {
+            await requestMessage.delete();
+        }
+    }
+
+    private async getOriginalMessage(requestMessage: Message): Promise<Message> {
         const me: User = this.clientService.client.user;
-        const linkMatches: RegExpMatchArray = message.content.match(/^https:\/\/discordapp.com\/channels\/(.+)\/(\d+)\/(\d+)\/?$/);
-
-        if(!linkMatches) {
-            return;
+        const linkMatches: RegExpMatchArray = requestMessage.content.match(/^https:\/\/discordapp.com\/channels\/(.+)\/(\d+)\/(\d+)\/?$/);
+        if(!linkMatches || requestMessage.author.bot) {
+            return undefined;
         }
-
-        const guildId: string = linkMatches[1];
-        const channelId: string = linkMatches[2];
-        const messageId: string = linkMatches[3];
+        const guildId: string = linkMatches[GUILD_GROUP_ID];
+        const channelId: string = linkMatches[CHANNEL_GROUP_ID];
+        const messageId: string = linkMatches[MESSAGE_GROUP_ID];
         const replyTargetChannel: PartialTextBasedChannelFields =
-            await this.moduleConfigurationService.getSendLinkingErrorsToDMs() ? message.author : message.channel;
+            await this.moduleConfigurationService.getSendLinkingErrorsToDMs() ? requestMessage.author : requestMessage.channel;
 
         let channel: TextChannel;
 
         if (guildId === '@me') {
-            channel = this.clientService.client.channels.find((channel) => channel.id === channelId) as TextChannel;
+            channel = this.clientService.client.channels.find(dmChannel => dmChannel.id === channelId) as TextChannel;
             if(!channel) {
                 await this.messageService.sendDMInaccessibleMessage(replyTargetChannel);
-                return;
+                return undefined;
             }
         }
         else {
             const guild: Guild = this.clientService.client.guilds.get(guildId);
             if(!guild) {
                 await this.messageService.sendGuildInaccessibleMessage(replyTargetChannel);
-                return;
+                return undefined;
             }
             channel = guild.channels.get(channelId) as TextChannel;
             if(!(channel && channel.permissionsFor(me).has(['READ_MESSAGES', 'READ_MESSAGE_HISTORY']))) {
                 await this.messageService.sendChannelInaccessibleMessage(replyTargetChannel);
-                return;
+                return undefined;
             }
         }
 
         const originMessage: Message = await channel.fetchMessage(messageId);
         if(!originMessage) {
             await this.messageService.sendMessageNotFoundMessage(replyTargetChannel);
-            return;
+            return undefined;
         }
 
-        //TODO: linking preferences
-
-        const embed: RichEmbed = await this.messageService.getMessageLinkEmbed(message, originMessage);
-
-        const resultMessages: Message | Message[] = await message.channel.send(originMessage.url, embed);
-
-        if(resultMessages && message.deletable) {
-            await message.delete();
-        }
+        return originMessage;
     }
 }

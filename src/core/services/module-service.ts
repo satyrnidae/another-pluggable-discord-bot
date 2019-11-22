@@ -1,8 +1,7 @@
-import i18n = require('i18n');
-import fs from 'fs';
+import * as i18n from 'i18n';
 import * as api from 'api';
 import { inject, id, injectable } from 'inversify';
-import { CoreModule } from 'core/module';
+import CoreModule from 'core/module/core-module';
 
 const MODULE_DIRECTORY = `${__dirname}/../../modules`;
 
@@ -19,7 +18,7 @@ export default class ModuleService implements api.ModuleService {
 
         const moduleFolders: string[] = await api.readDirAsync(MODULE_DIRECTORY);
 
-        return api.forEachAsync(moduleFolders, async (moduleFolder: string) => await this.loadModule(moduleFolder));
+        return api.forEachAsync(moduleFolders, async (moduleFolder: string) => this.loadModule(moduleFolder));
     }
 
     async registerDependencies(): Promise<void> {
@@ -52,7 +51,7 @@ export default class ModuleService implements api.ModuleService {
 
     private async loadModule(moduleFolder: string): Promise<void> {
         try {
-            const modulePath: string = `${MODULE_DIRECTORY}/${moduleFolder}`;
+            const modulePath = `${MODULE_DIRECTORY}/${moduleFolder}`;
             if (!(await api.lstatAsync(modulePath)).isDirectory) {
                 console.info(i18n.__('Skipped non directory "%s".', moduleFolder));
                 return;
@@ -73,7 +72,7 @@ export default class ModuleService implements api.ModuleService {
                 console.info(i18n.__('Module "%s" was made for a different version of this bot and has been skipped.', moduleInfo.name));
                 return;
             }
-            let moduleEntryPointFile: string = `${modulePath}/${moduleInfo.details.entryPoint}.ts`;
+            let moduleEntryPointFile = `${modulePath}/${moduleInfo.details.entryPoint}.ts`;
             if (!await api.existsAsync(moduleEntryPointFile)) {
                 moduleEntryPointFile = `${modulePath}/${moduleInfo.details.entryPoint}.js`;
                 if (!await api.existsAsync(moduleEntryPointFile)) {
@@ -103,7 +102,7 @@ export default class ModuleService implements api.ModuleService {
     }
 
     getModulesByName(moduleName: string): api.Module[] {
-        return this.modules.filter((module: api.Module) => module.moduleInfo.name == moduleName);
+        return this.modules.filter((module: api.Module) => module.moduleInfo.name === moduleName);
     }
 
     getModulesByIdOrName(moduleIdOrName: string): api.Module[] {

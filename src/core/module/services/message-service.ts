@@ -1,4 +1,4 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import { injectable, inject } from 'inversify';
 import { forEachAsync, LoopStateArgs, Command, CommandService, ConfigurationService, ServiceIdentifiers, ClientService, Module, ModuleService } from 'api';
 import { Guild, Message, Channel, TextChannel, GuildMember } from 'discord.js';
@@ -140,7 +140,7 @@ export default class MessageService {
     }
 
     private async getCommandList(message: Message, commands: Command[]): Promise<string> {
-        let allCommands: string = '';
+        let allCommands = '';
         await forEachAsync(commands, async (currentCommand: Command): Promise<void> => {
             allCommands = allCommands.concat('\r\n').concat(await this.getCommandListEntry(message, currentCommand));
         });

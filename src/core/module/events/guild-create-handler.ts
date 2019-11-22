@@ -3,7 +3,7 @@ import { Guild } from 'discord.js';
 import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
 
 export default class GuildCreateHandler extends EventHandler {
-    event: string = 'guildCreate';
+    event = 'guildCreate';
 
     @lazyInject(ServiceIdentifiers.Configuration)
     configurationService: ConfigurationService;

@@ -1,4 +1,4 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import { readFileAsync } from 'api';
 import { injectable } from 'inversify';
 

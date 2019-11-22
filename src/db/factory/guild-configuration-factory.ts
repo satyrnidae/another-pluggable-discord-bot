@@ -29,5 +29,4 @@ export default class GuildConfigurationFactory extends DataEntityFactory<GuildCo
 
         return guildConfiguration;
     }
-
 }
