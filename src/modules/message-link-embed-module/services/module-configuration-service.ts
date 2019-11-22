@@ -1,3 +1,4 @@
+import i18n = require('i18n');
 import { readFileAsync } from 'api';
 import { injectable } from 'inversify';
 
@@ -27,6 +28,18 @@ export default class ModuleConfigurationService {
     async getSendLinkingErrorsToDMs(): Promise<boolean> {
         await this.loadConfig();
         return this.config.sendLinkingErrorsToDMs;
+    }
+
+    async getRandomGreeting(): Promise<string> {
+        const greetings: string[] = await this.getGreetings();
+        const randomIndex: number = Math.floor(Math.random() * greetings.length);
+        return i18n.__(greetings[randomIndex]);
+    }
+
+    async getRandomGratitude(): Promise<string> {
+        const gratitude: string[] = await this.getGratitude();
+        const randomIndex: number = Math.floor(Math.random() * gratitude.length);
+        return i18n.__(gratitude[randomIndex]);
     }
 
     private async loadConfig(): Promise<void> {
