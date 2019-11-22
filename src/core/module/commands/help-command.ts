@@ -1,12 +1,12 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import { Options, Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
-import { Command, lazyInject, CommandService, ServiceIdentifiers, ModuleService } from 'api';
+import { Command, lazyInject } from 'api';
 import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
 
 export default class HelpCommand extends Command {
-    name: string = 'help';
-    command: string = 'help';
+    name = 'help';
+    command = 'help';
     syntax: string[] = [
             'help',
             'help {-a|--all}',
@@ -26,9 +26,6 @@ export default class HelpCommand extends Command {
             'duplicate-arguments-array': false
         }
     };
-
-    @lazyInject(ServiceIdentifiers.Command)
-    commandService: CommandService;
 
     @lazyInject(CoreModuleServiceIdentifiers.Message)
     messageService: MessageService;

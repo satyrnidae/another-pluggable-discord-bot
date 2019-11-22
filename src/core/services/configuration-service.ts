@@ -1,33 +1,52 @@
-import fs from 'fs';
 import * as api from 'api';
 import { injectable } from 'inversify';
 
+const CONFIG_PATH = `${__dirname}/../../../../config/config.json`;
+
 @injectable()
 export default class ConfigurationService implements api.ConfigurationService {
-    readonly wrappedInstance: api.AppConfiguration;
-    //TODO: Resolve this hardcoded relative path somehow
-    private readonly configPath: string = `${__dirname}/../../../../config/config.json`;
+    private config: api.AppConfiguration;
 
-    get token(): string {
-        return this.wrappedInstance.token;
-    }
-    get defaultPrefix(): string {
-        return this.wrappedInstance.defaultPrefix;
-    }
-    get showWelcomeMessage(): boolean {
-        return this.wrappedInstance.showWelcomeMessage;
-    }
-    get developerMode(): boolean {
-        return this.wrappedInstance.developerMode;
-    }
-    get defaultNickname(): string {
-        return this.wrappedInstance.defaultNickname;
-    }
-    get hearts(): string[] {
-        return this.wrappedInstance.hearts;
+    async getToken(): Promise<string> {
+        await this.loadConfig();
+        return this.config.token;
     }
 
-    constructor() {
-        this.wrappedInstance = JSON.parse(fs.readFileSync(this.configPath).toString()) as api.AppConfiguration;
+    async getDefaultPrefix(): Promise<string> {
+        await this.loadConfig();
+        return this.config.defaultPrefix;
+    }
+
+    async getDefaultNickname(): Promise<string> {
+        await this.loadConfig();
+        return this.config.defaultNickname;
+    }
+
+    async getHearts(): Promise<string[]> {
+        await this.loadConfig();
+        return this.config.hearts;
+    }
+
+    async shouldShowWelcomeMessage(): Promise<boolean> {
+        await this.loadConfig();
+        return this.config.showWelcomeMessage;
+    }
+
+    async isDeveloperMode(): Promise<boolean> {
+        await this.loadConfig();
+        return this.config.developerMode;
+    }
+
+    async getRandomHeart(): Promise<string> {
+        const hearts: string[] = await this.getHearts();
+        const index: number = Math.floor(Math.random() * hearts.length);
+        return `${hearts[index]}`;
+    }
+
+    private async loadConfig() {
+        if(!this.config) {
+            const configData: Buffer = await api.readFileAsync(CONFIG_PATH);
+            this.config = JSON.parse(configData.toString()) as api.AppConfiguration;
+        }
     }
 }

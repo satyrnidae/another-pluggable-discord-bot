@@ -1,12 +1,12 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import { Command } from 'api';
 import { Options, Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
 import { GuildConfiguration, GuildConfigurationFactory } from 'db';
 
 export default class SetPrefixCommand extends Command {
-    name: string = 'setPrefix';
-    command: string = 'setPrefix';
+    name = 'setPrefix';
+    command = 'setPrefix';
     syntax: string[] = ['setPrefix [-p|--prefix] *prefix*'];
     description: string = i18n.__('Allows a guild admin to set the command prefix for the guild.');
     options: Options = {

@@ -1,5 +1,5 @@
 export default class LoopStateArgs {
-    continueExecution: boolean = true;
+    continueExecution = true;
 
     break(): void {
         this.continueExecution = false;

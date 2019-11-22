@@ -1,11 +1,11 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
 import yparser, { Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
 import { EventHandler, Command, lazyInject, CommandService, ServiceIdentifiers, ClientService } from 'api';
 
 export default class CommandHander extends EventHandler {
-    event: string = 'message';
+    event = 'message';
 
     @lazyInject(ServiceIdentifiers.Client)
     client: ClientService;
@@ -13,7 +13,6 @@ export default class CommandHander extends EventHandler {
     @lazyInject(ServiceIdentifiers.Command)
     commandService: CommandService;
 
-    //TODO: Refactor this exported code from santa bot
     public async handler(message: Message): Promise<any> {
         const prefix: string = await this.commandService.getCommandPrefix(message);
         const parsedCommand: ParsedMessage = ParseMessage(message, prefix);

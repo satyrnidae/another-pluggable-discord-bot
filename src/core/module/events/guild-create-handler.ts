@@ -3,7 +3,7 @@ import { Guild } from 'discord.js';
 import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
 
 export default class GuildCreateHandler extends EventHandler {
-    event: string = 'guildCreate';
+    event = 'guildCreate';
 
     @lazyInject(ServiceIdentifiers.Configuration)
     configurationService: ConfigurationService;
@@ -12,8 +12,10 @@ export default class GuildCreateHandler extends EventHandler {
     messageService: MessageService;
 
     async handler(guild: Guild): Promise<any> {
-        if (this.configurationService.defaultNickname) {
-            guild.me.setNickname(this.configurationService.defaultNickname);
+        const defaultNickname: string = await this.configurationService.getDefaultNickname();
+
+        if (defaultNickname) {
+            guild.me.setNickname(defaultNickname);
         }
 
         return this.messageService.sendGuildWelcomeMessage(guild);

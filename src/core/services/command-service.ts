@@ -1,4 +1,4 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import * as api from 'api';
 import { inject, injectable } from 'inversify';
 import { Message } from 'discord.js';
@@ -46,7 +46,7 @@ export default class CommandService implements api.CommandService {
     }
 
     async getCommandPrefix(message: Message): Promise<string> {
-        let prefix: string = this.configurationService.defaultPrefix;
+        let prefix: string = await this.configurationService.getDefaultPrefix();
         if(message.guild) {
             const guildConfiguration: GuildConfiguration = await new GuildConfigurationFactory().load(message.guild);
             prefix = guildConfiguration.commandPrefix;

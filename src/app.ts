@@ -1,4 +1,4 @@
-require('module-alias/register');
+import 'module-alias/register';
 import * as api from 'api';
 import * as core from 'core';
 

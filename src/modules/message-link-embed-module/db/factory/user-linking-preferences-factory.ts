@@ -21,5 +21,4 @@ export default class UserLinkingPreferencesFactory extends DataEntityFactory<Use
 
         return preferences;
     }
-
 }

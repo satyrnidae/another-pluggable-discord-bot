@@ -1,10 +1,10 @@
-import i18n = require('i18n');
+import * as i18n from 'i18n';
 import { EventHandler, forEachAsync, lazyInject, ServiceIdentifiers, ClientService, EventService } from 'api';
 import { Guild } from 'discord.js';
 import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
 
 export default class ReadyHandler extends EventHandler {
-    event: string = 'ready';
+    event = 'ready';
 
     @lazyInject(CoreModuleServiceIdentifiers.Message)
     messageService: MessageService;
