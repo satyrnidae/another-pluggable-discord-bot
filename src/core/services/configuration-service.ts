@@ -40,7 +40,7 @@ export default class ConfigurationService implements api.ConfigurationService {
     async getRandomHeart(): Promise<string> {
         const hearts: string[] = await this.getHearts();
         const index: number = Math.floor(Math.random() * hearts.length);
-        return `${hearts[index]}`;
+        return `:${hearts[index]}:`;
     }
 
     private async loadConfig() {
