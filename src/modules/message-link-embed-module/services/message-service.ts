@@ -1,7 +1,7 @@
 import * as i18n from 'i18n';
 import { inject, injectable } from 'inversify';
-import { RichEmbed, Message, ColorResolvable, GuildMember, MessageAttachment, GroupDMChannel, PartialTextBasedChannelFields, DMChannel } from 'discord.js';
-import { forEachAsync, ServiceIdentifiers, ConfigurationService, ClientService } from 'api';
+import { RichEmbed, Message, ColorResolvable, GuildMember, MessageAttachment, GroupDMChannel, PartialTextBasedChannelFields, DMChannel, MessageEmbed } from 'discord.js';
+import { forEachAsync, ServiceIdentifiers, ConfigurationService, ClientService, unwrapUnionToArray } from 'api';
 import { ModuleServiceIdentifiers, ModuleConfigurationService, WebRequestService } from 'modules/message-link-embed-module/services';
 
 @injectable()
@@ -44,8 +44,23 @@ export default class MessageService {
             i18n.__('%s %s', await this.moduleConfigurationService.getRandomGratitude(), await this.configurationService.getRandomHeart()));
     }
 
-    async getMessageLinkEmbed(requestMessage: Message, originMessage: Message): Promise<RichEmbed> {
+    async sendLinkedMessage(requestMessage: Message, originalMessage: Message): Promise<Message[]> {
+        const embed: RichEmbed = await this.getMessageLinkEmbed(requestMessage, originalMessage);
+        const sentMessages: Message[] = unwrapUnionToArray(await requestMessage.channel.send(originalMessage.url, embed));
+        sentMessages.push(...await this.resendMessageEmbeds(requestMessage.channel, originalMessage));
+        return sentMessages;
+    }
 
+    private async resendMessageEmbeds(channel: PartialTextBasedChannelFields, originalMessage: Message): Promise<Message[]> {
+        const sentMessages: Message[] = [];
+        await forEachAsync(originalMessage.embeds, async (current: MessageEmbed) => {
+            const newEmbed: RichEmbed = new RichEmbed(current);
+            sentMessages.push(...unwrapUnionToArray(await channel.send(newEmbed)));
+        });
+        return sentMessages;
+    }
+
+    private async getMessageLinkEmbed(requestMessage: Message, originMessage: Message): Promise<RichEmbed> {
         const embed: RichEmbed = new RichEmbed()
             .setColor(this.getEmbedColor(requestMessage, originMessage))
             .setAuthor(this.getSenderUserName(requestMessage, originMessage), originMessage.author.displayAvatarURL, originMessage.url)
