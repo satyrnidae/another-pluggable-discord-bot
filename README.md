@@ -9,10 +9,10 @@ This is another plugin-ready bot framework for Discord.  Nothing special, just w
 - Node.js v10.15 or higher (I recommend grabbing the current LTS release)
 - Global install of TypeScript 3.7.5+ (install via npm)
 
-## Optional
+### Optional
 
 - Global install of ts-node (optional)
-- GLobal install of ts-node-dev (in case you want to restart each time you build the files)
+- Global install of ts-node-dev (in case you want to restart each time you build the files)
 - Recommend using Visual Studio Code and using that for build / run
 
 ## Setting Up
