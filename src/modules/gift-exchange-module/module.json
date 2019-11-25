@@ -1,0 +1,13 @@
+{
+    "name": "Gift Exchange Module",
+    "version": "1.0.0",
+    "id": "gex-module",
+    "authors": [
+        "satyrnidae"
+    ],
+    "details": {
+        "language": "typescript",
+        "apiVersion": "r1",
+        "entryPoint": "gift-exchange-module"
+    }
+}
