@@ -25,9 +25,7 @@ export default class LinkQuoteHandler implements EventHandler {
 
         //TODO: linking preferences
 
-        const embed: RichEmbed = await this.messageService.getMessageLinkEmbed(requestMessage, originalMessage);
-
-        const resultMessages: Message | Message[] = await requestMessage.channel.send(originalMessage.url, embed);
+        const resultMessages: Message[] = await this.messageService.sendLinkedMessage(requestMessage, originalMessage);
 
         if(resultMessages && requestMessage.deletable) {
             await requestMessage.delete();

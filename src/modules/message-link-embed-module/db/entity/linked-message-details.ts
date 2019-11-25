@@ -1,11 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
-import { DataEntity } from 'api';
-import { UserLinkingPreferences } from 'modules/message-link-embed-module/db/entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, Repository, ManyToOne } from 'typeorm';
+import { DataEntity, lazyInject, ServiceIdentifiers, DataService } from 'api';
+import { UserLinkingPreferences } from '.';
 
 @Entity()
 export default class LinkedMessageDetails extends DataEntity {
-    save(): Promise<this & LinkedMessageDetails> {
-        throw new Error('Method not implemented.');
+    @lazyInject(ServiceIdentifiers.Data)
+    dataService: DataService;
+
+    async save(): Promise<this & LinkedMessageDetails> {
+        const repository: Repository<LinkedMessageDetails> = await this.dataService.getRepository(LinkedMessageDetails);
+        return repository.save(this);
     }
 
     @PrimaryGeneratedColumn()
@@ -30,9 +34,12 @@ export default class LinkedMessageDetails extends DataEntity {
     targetMessageId: string;
 
     @Column()
-    requestor: string;
+    requestorId: string;
 
-    @OneToOne(type => UserLinkingPreferences)
+    @Column()
+    senderId: string;
+
+    @ManyToOne(type => UserLinkingPreferences)
     @JoinColumn()
     senderPreferences: UserLinkingPreferences;
 }

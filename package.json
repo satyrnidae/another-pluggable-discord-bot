@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node ./src/app.ts",
-    "debug": "node --inspect-brk ./bin/src/app.js"
+    "debug": "node --inspect-brk ./bin/src/app.js",
+    "watch": "ts-node-dev ./src/app.ts"
   },
   "repository": {
     "type": "git",
