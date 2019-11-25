@@ -15,7 +15,6 @@ export class GuildHistoryFactory implements DataEntityFactory<GuildHistory> {
         if(!object) {
             object = new GuildHistory();
             object.nativeId = nativeId;
-            await object.save();
         }
 
         return object;

@@ -25,7 +25,6 @@ export class MessageHistoryFactory implements DataEntityFactory<MessageHistory> 
             object.nativeId = message.id;
             object.channel = await this.channelHistoryFactory.load(message.channel);
             object.user = await this.userHistoryFactory.load(message.author);
-            await object.save();
         }
         return object;
     }

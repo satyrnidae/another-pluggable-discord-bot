@@ -14,7 +14,6 @@ export class UserHistoryFactory implements DataEntityFactory<UserHistory> {
         if(!object) {
             object = new UserHistory();
             object.nativeId = user.id;
-            object.save();
         }
         return object;
     }

@@ -17,7 +17,7 @@ export class GuildHistory implements DataEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({unique: true})
     nativeId: string;
 
     @OneToMany(() => ChannelHistory, channel => channel.guild)

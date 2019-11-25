@@ -3,6 +3,8 @@ import { ModuleServiceIdentifiers, ModuleConfigurationService, MessageService } 
 import { EventHandler } from 'api/module';
 import { lazyInject } from 'api/inversion';
 import { ServiceIdentifiers, ClientService } from 'api/services';
+import { forEachAsync } from 'api/utils';
+import { MessageHistoryFactory } from 'modules/message-link-embed-module/db/factory';
 
 const GUILD_GROUP_ID = 1;
 const CHANNEL_GROUP_ID = 2;
@@ -20,17 +22,31 @@ export default class LinkQuoteHandler implements EventHandler {
     @lazyInject(ModuleServiceIdentifiers.Message)
     messageService: MessageService;
 
+    @lazyInject(MessageHistoryFactory)
+    messageHistoryFactory: MessageHistoryFactory;
+
     async handler(requestMessage: Message): Promise<void> {
         const originalMessage: Message = await this.getOriginalMessage(requestMessage);
 
         if(!originalMessage) return;
 
         //TODO: linking preferences
+        const requestMessageHist = await this.messageHistoryFactory.load(requestMessage);
+        await requestMessageHist.save();
+        const originMessageHist = await this.messageHistoryFactory.load(originalMessage);
+        await originMessageHist.save();
 
         const resultMessages: Message[] = await this.messageService.sendLinkedMessage(requestMessage, originalMessage);
 
-        if(resultMessages && requestMessage.deletable) {
-            await requestMessage.delete();
+        if(resultMessages) {
+            forEachAsync(resultMessages, async (resultMessage: Message) => {
+                const resultMessageHist = await this.messageHistoryFactory.load(resultMessage);
+                await resultMessageHist.save();
+            });
+
+            if (requestMessage.deletable) {
+                await requestMessage.delete();
+            }
         }
     }
 

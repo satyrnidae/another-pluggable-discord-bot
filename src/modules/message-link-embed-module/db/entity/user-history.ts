@@ -17,7 +17,7 @@ export class UserHistory implements DataEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({unique: true})
     nativeId: string;
 
     @OneToMany(() => MessageHistory, message => message.user)

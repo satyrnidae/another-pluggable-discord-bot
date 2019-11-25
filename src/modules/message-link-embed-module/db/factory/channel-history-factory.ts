@@ -29,7 +29,6 @@ export class ChannelHistoryFactory implements DataEntityFactory<ChannelHistory> 
             else {
                 object.guild = await this.guildHistoryFactory.load();
             }
-            await object.save();
         }
         return object;
     }

@@ -17,10 +17,10 @@ export class ChannelHistory implements DataEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({unique: true})
     nativeId: string;
 
-    @ManyToOne(() => GuildHistory, guild => guild.channels)
+    @ManyToOne(() => GuildHistory, guild => guild.channels, {cascade: true})
     guild: GuildHistory;
 
     @OneToMany(() => MessageHistory, message => message.channel)

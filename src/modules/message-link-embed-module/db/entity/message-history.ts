@@ -17,12 +17,12 @@ export class MessageHistory implements DataEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({unique: true})
     nativeId: string;
 
-    @ManyToOne(() => ChannelHistory, channel => channel.messages)
+    @ManyToOne(() => ChannelHistory, channel => channel.messages, {cascade: true})
     channel: ChannelHistory;
 
-    @ManyToOne(() => UserHistory, user => user.messages)
+    @ManyToOne(() => UserHistory, user => user.messages, {cascade: true})
     user: UserHistory;
 }
