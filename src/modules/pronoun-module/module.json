@@ -1,0 +1,13 @@
+{
+    "name": "Pronoun Module",
+    "version": "1.0.0",
+    "id": "pronoun-module",
+    "authors": [
+        "satyrnidae"
+    ],
+    "details": {
+        "language": "typescript",
+        "apiVersion": "r1",
+        "entryPoint": "pronoun-module"
+    }
+}
