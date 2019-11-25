@@ -4,16 +4,16 @@
    "synchronize": true,
    "logging": false,
    "entities": [
-      "bin/src/db/entity/**/*.js",
-      "bin/src/modules/**/db/entity/**/*.js"
+      "bin/src/db/entity/*.js",
+      "bin/src/modules/**/db/entity/*.js"
    ],
    "migrations": [
-      "bin/src/db/migration/**/*.js",
-      "bin/src/modules/**/db/migration/**/*.js"
+      "bin/src/db/migration/*.js",
+      "bin/src/modules/**/db/migration/*.js"
    ],
    "subscribers": [
-      "bin/src/db/subscriber/**/*.js",
-      "bin/src/modules/**/db/subscriber/**/*.js"
+      "bin/src/db/subscriber/*.js",
+      "bin/src/modules/**/db/subscriber/*.js"
    ],
    "cli": {
       "entitiesDir": "bin/src/db/entity",
