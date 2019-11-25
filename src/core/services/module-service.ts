@@ -1,48 +1,50 @@
 import * as i18n from 'i18n';
-import * as api from 'api';
-import { inject, id, injectable } from 'inversify';
+import * as sapi from 'api/services';
+import { inject, injectable } from 'inversify';
 import CoreModule from 'core/module/core-module';
+import { Module, Command, EventHandler, ModuleInfo, Version } from 'api/module';
+import { forEachAsync, lstatAsync, readDirAsync, readFileAsync, existsAsync } from 'api/utils';
 
 const MODULE_DIRECTORY = `${__dirname}/../../modules`;
 
 @injectable()
-export default class ModuleService implements api.ModuleService {
-    readonly modules: api.Module[] = [];
+export default class ModuleService implements sapi.ModuleService {
+    readonly modules: Module[] = [];
 
     constructor(
-        @inject(api.ServiceIdentifiers.Event) public eventService: api.EventService,
-        @inject(api.ServiceIdentifiers.Command) public commandService: api.CommandService) {}
+        @inject(sapi.ServiceIdentifiers.Event) public eventService: sapi.EventService,
+        @inject(sapi.ServiceIdentifiers.Command) public commandService: sapi.CommandService) {}
 
     async loadModules(): Promise<void> {
         this.loadCore();
 
-        const moduleFolders: string[] = await api.readDirAsync(MODULE_DIRECTORY);
+        const moduleFolders: string[] = await readDirAsync(MODULE_DIRECTORY);
 
-        return api.forEachAsync(moduleFolders, async (moduleFolder: string) => this.loadModule(moduleFolder));
+        return forEachAsync(moduleFolders, async (moduleFolder: string) => this.loadModule(moduleFolder));
     }
 
     async registerDependencies(): Promise<void> {
-        return api.forEachAsync(this.modules, async (module: api.Module) => module.registerDependencies());
+        return forEachAsync(this.modules, async (module: Module) => module.registerDependencies());
     }
 
     async preInitializeModules(): Promise<void> {
-        return api.forEachAsync(this.modules, async (module: api.Module) => module.preInitialize());
+        return forEachAsync(this.modules, async (module: Module) => module.preInitialize());
     }
 
     async initializeModules(): Promise<void> {
-        return api.forEachAsync(this.modules, async (module: api.Module) => {
+        return forEachAsync(this.modules, async (module: Module) => {
             await module.initialize();
             if(module.commands) {
-                module.commands.forEach((command: api.Command) => this.commandService.register(command, module.moduleInfo.id));
+                module.commands.forEach((command: Command) => this.commandService.register(command, module.moduleInfo.id));
             }
             if(module.events) {
-                module.events.forEach((event: api.EventHandler) => this.eventService.registerEvent(event));
+                module.events.forEach((event: EventHandler) => this.eventService.registerEvent(event));
             }
         });
     }
 
     async postInitializeModules(): Promise<void> {
-        return api.forEachAsync(this.modules, async (module: api.Module) => module.postInitialize());
+        return forEachAsync(this.modules, async (module: Module) => module.postInitialize());
     }
 
     private loadCore(): void {
@@ -52,37 +54,37 @@ export default class ModuleService implements api.ModuleService {
     private async loadModule(moduleFolder: string): Promise<void> {
         try {
             const modulePath = `${MODULE_DIRECTORY}/${moduleFolder}`;
-            if (!(await api.lstatAsync(modulePath)).isDirectory) {
+            if (!(await lstatAsync(modulePath)).isDirectory) {
                 console.info(i18n.__('Skipped non directory "%s".', moduleFolder));
                 return;
             }
-            const moduleFiles: string[] = await api.readDirAsync(modulePath);
+            const moduleFiles: string[] = await readDirAsync(modulePath);
             const moduleConfigFile = moduleFiles.filter((file: string) => file.match(/^module\.json$/))[0];
             if (!moduleConfigFile) {
                 console.info(i18n.__('Module "%s" is missing a module config file and has been skipped.', moduleFolder));
                 return;
             }
-            const moduleInfo: api.ModuleInfo = JSON.parse((await api.readFileAsync(`${modulePath}/${moduleConfigFile}`)).toString()) as api.ModuleInfo;
+            const moduleInfo: ModuleInfo = JSON.parse((await readFileAsync(`${modulePath}/${moduleConfigFile}`)).toString()) as ModuleInfo;
             if (!moduleInfo) {
                 console.info(i18n.__('Module "%s"\'s module info file cannot be read, and the module has been skipped.', moduleFolder));
                 return;
             }
             //TODO: More robust versioning
-            if (moduleInfo.details.apiVersion.toLowerCase().trim() !== api.Version.toLowerCase().trim()) {
+            if (moduleInfo.details.apiVersion.toLowerCase().trim() !== Version.toLowerCase().trim()) {
                 console.info(i18n.__('Module "%s" was made for a different version of this bot and has been skipped.', moduleInfo.name));
                 return;
             }
             let moduleEntryPointFile = `${modulePath}/${moduleInfo.details.entryPoint}.ts`;
-            if (!await api.existsAsync(moduleEntryPointFile)) {
+            if (!await existsAsync(moduleEntryPointFile)) {
                 moduleEntryPointFile = `${modulePath}/${moduleInfo.details.entryPoint}.js`;
-                if (!await api.existsAsync(moduleEntryPointFile)) {
+                if (!await existsAsync(moduleEntryPointFile)) {
                     console.info(i18n.__('The entry point "%s" for module "%s" could not be found and the module has been skipped.',
                         moduleInfo.details.entryPoint, moduleInfo.name));
                     return;
                 }
             }
             const moduleEntryPointImport: any = require(moduleEntryPointFile);
-            const module: api.Module = new moduleEntryPointImport.default(moduleInfo) as api.Module;
+            const module: Module = new moduleEntryPointImport.default(moduleInfo) as Module;
             if (!module) {
                 console.info(i18n.__('Failed to initialize module instance for "%s". The module has been skipped.', moduleInfo.name));
                 return;
@@ -96,17 +98,17 @@ export default class ModuleService implements api.ModuleService {
         }
     }
 
-    getModuleById(moduleId: string): api.Module {
-        const filteredModules: api.Module[] = this.modules.filter((module: api.Module) => module.moduleInfo.id === moduleId);
+    getModuleById(moduleId: string): Module {
+        const filteredModules: Module[] = this.modules.filter((module: Module) => module.moduleInfo.id === moduleId);
         return filteredModules && filteredModules.length ? filteredModules[0] : null;
     }
 
-    getModulesByName(moduleName: string): api.Module[] {
-        return this.modules.filter((module: api.Module) => module.moduleInfo.name === moduleName);
+    getModulesByName(moduleName: string): Module[] {
+        return this.modules.filter((module: Module) => module.moduleInfo.name === moduleName);
     }
 
-    getModulesByIdOrName(moduleIdOrName: string): api.Module[] {
-        const module: api.Module = this.getModuleById(moduleIdOrName);
+    getModulesByIdOrName(moduleIdOrName: string): Module[] {
+        const module: Module = this.getModuleById(moduleIdOrName);
         if (!module) {
             return this.getModulesByName(moduleIdOrName);
         }

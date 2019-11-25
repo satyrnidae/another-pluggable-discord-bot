@@ -1,8 +1,9 @@
 import * as i18n from 'i18n';
-import { Command } from 'api';
 import { Options, Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
-import { GuildConfiguration, GuildConfigurationFactory } from 'db';
+import { Command } from 'api/module';
+import { GuildConfiguration } from 'db/entity';
+import { GuildConfigurationFactory } from 'db/factory';
 
 export default class SetPrefixCommand extends Command {
     name = 'setPrefix';

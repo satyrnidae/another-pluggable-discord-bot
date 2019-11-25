@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, Repository } from 'typeorm';
-import { DataEntity, lazyInject, ServiceIdentifiers, DataService } from 'api';
+import { DataEntity } from 'api/db';
+import { lazyInject } from 'api/inversion';
+import { ServiceIdentifiers, DataService } from 'api/services';
 
 @Entity()
 export default class GuildConfiguration extends DataEntity {

@@ -1,4 +1,4 @@
-import { LoopStateArgs } from 'api';
+import { LoopStateArgs } from 'api/utils';
 
 export async function forEachAsync<T>(array: T[], callback: (current: any, index: number, array: T[], loopStateArgs: LoopStateArgs) => Promise<void>) {
     const loopStateArgs: LoopStateArgs = new LoopStateArgs();

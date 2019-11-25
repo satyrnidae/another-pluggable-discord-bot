@@ -1,6 +1,7 @@
 import * as i18n from 'i18n';
-import { Lifecycle, ModuleService, ClientService, ServiceIdentifiers } from 'api';
 import { injectable, inject } from 'inversify';
+import { Lifecycle } from 'api/lifecycle';
+import { ServiceIdentifiers, ClientService, ModuleService } from 'api/services';
 
 @injectable()
 export default class Robot implements Lifecycle {

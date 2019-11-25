@@ -1,8 +1,9 @@
 import * as i18n from 'i18n';
-import { Module, EventHandler, Command, Version, Container } from 'api';
 import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
 import { CommandHandler, ReadyHandler, GuildCreateHandler } from 'core/module/events';
 import { HelpCommand, SetPrefixCommand } from 'core/module/commands';
+import { Module, EventHandler, Command, Version } from 'api/module';
+import { Container } from 'api/inversion';
 
 export default class CoreModule extends Module {
     private coreEvents: EventHandler[];

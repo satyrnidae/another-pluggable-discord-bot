@@ -1,6 +1,6 @@
 import * as i18n from 'i18n';
-import { readFileAsync } from 'api';
 import { injectable } from 'inversify';
+import { readFileAsync } from 'api/utils';
 
 const MODULE_CONFIGURATION_PATH = `${__dirname}/../config/config.json`;
 

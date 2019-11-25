@@ -1,11 +1,12 @@
-import * as api from 'api';
+import * as sapi from 'api/services';
 import { inject, injectable } from 'inversify';
+import { EventHandler } from 'api/module';
 
 @injectable()
-export default class EventService implements api.EventService {
-    constructor(@inject(api.ServiceIdentifiers.Client) public clientService: api.ClientService) {}
+export default class EventService implements sapi.EventService {
+    constructor(@inject(sapi.ServiceIdentifiers.Client) public clientService: sapi.ClientService) {}
 
-    registerEvent(event: api.EventHandler): void {
+    registerEvent(event: EventHandler): void {
         this.clientService.client.addListener(event.event, event.handler.bind(event));
     }
 

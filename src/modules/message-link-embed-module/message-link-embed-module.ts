@@ -1,6 +1,7 @@
-import { Command, EventHandler, Module, Container } from 'api';
 import { WebRequestService, ModuleServiceIdentifiers, ModuleConfigurationService, MessageService } from 'modules/message-link-embed-module/services';
 import { LinkQuoteHandler } from 'modules/message-link-embed-module/handlers';
+import { Container } from 'api/inversion';
+import { Module, Command, EventHandler } from 'api/module';
 
 export default class MessageLinkEmbedModule extends Module {
 

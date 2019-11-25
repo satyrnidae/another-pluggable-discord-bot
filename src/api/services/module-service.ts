@@ -1,4 +1,4 @@
-import { Module } from 'api';
+import { Module } from 'api/module';
 
 export default interface ModuleService {
     readonly modules: Module[];

@@ -1,7 +1,10 @@
 import * as i18n from 'i18n';
-import { EventHandler, forEachAsync, lazyInject, ServiceIdentifiers, ClientService, EventService } from 'api';
 import { Guild } from 'discord.js';
 import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
+import { EventHandler } from 'api/module';
+import { lazyInject } from 'api/inversion';
+import { ServiceIdentifiers, ClientService, EventService } from 'api/services';
+import { forEachAsync } from 'api/utils';
 
 export default class ReadyHandler extends EventHandler {
     event = 'ready';

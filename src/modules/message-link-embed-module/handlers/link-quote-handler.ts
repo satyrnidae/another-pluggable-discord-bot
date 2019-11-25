@@ -1,6 +1,8 @@
-import { EventHandler, lazyInject, ServiceIdentifiers, ClientService } from 'api';
 import { Message, Guild, TextChannel, RichEmbed, User, PartialTextBasedChannelFields } from 'discord.js';
 import { ModuleServiceIdentifiers, ModuleConfigurationService, MessageService } from 'modules/message-link-embed-module/services';
+import { EventHandler } from 'api/module';
+import { lazyInject } from 'api/inversion';
+import { ServiceIdentifiers, ClientService } from 'api/services';
 
 const GUILD_GROUP_ID = 1;
 const CHANNEL_GROUP_ID = 2;

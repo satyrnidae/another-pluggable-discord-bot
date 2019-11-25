@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { getHttpResponse } from 'api';
+import { getHttpResponse } from 'api/utils';
 
 const TIMEOUT = 500;
 const OK = 200;

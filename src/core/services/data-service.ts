@@ -1,9 +1,9 @@
-import * as api from 'api';
+import * as sapi from 'api/services';
 import { Connection, EntitySchema, Repository, createConnection } from 'typeorm';
-import { postConstruct, injectable } from 'inversify';
+import { injectable } from 'inversify';
 
 @injectable()
-export default class DataService implements api.DataService {
+export default class DataService implements sapi.DataService {
     instance: Connection;
 
     async getRepository<T>(target: string | Function | (new () => T) | EntitySchema<T>): Promise<Repository<T>> {

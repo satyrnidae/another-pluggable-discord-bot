@@ -1,4 +1,4 @@
-import { Command, EventHandler, Module } from 'api';
+import { Command, EventHandler, Module } from 'api/module';
 
 export default class ExampleModule extends Module {
     public async preInitialize(): Promise<void> {

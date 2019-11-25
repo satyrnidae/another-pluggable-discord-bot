@@ -1,5 +1,5 @@
-import { Command } from 'api';
 import { Message } from 'discord.js';
+import { Command } from 'api/module';
 
 export default interface CommandRegistry {
     readonly commands: Command[];

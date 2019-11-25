@@ -1,8 +1,11 @@
 import * as i18n from 'i18n';
 import { injectable, inject } from 'inversify';
-import { forEachAsync, LoopStateArgs, Command, CommandService, ConfigurationService, ServiceIdentifiers, ClientService, Module, ModuleService } from 'api';
 import { Guild, Message, Channel, TextChannel, GuildMember } from 'discord.js';
-import { GuildConfiguration, GuildConfigurationFactory } from 'db';
+import { ServiceIdentifiers, ConfigurationService, ClientService, CommandService, ModuleService } from 'api/services';
+import { GuildConfiguration } from 'db/entity';
+import { GuildConfigurationFactory } from 'db/factory';
+import { forEachAsync, LoopStateArgs } from 'api/utils';
+import { Command, Module } from 'api/module';
 
 @injectable()
 export default class MessageService {

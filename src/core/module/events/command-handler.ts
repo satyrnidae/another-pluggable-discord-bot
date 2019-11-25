@@ -2,7 +2,9 @@ import * as i18n from 'i18n';
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
 import yparser, { Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
-import { EventHandler, Command, lazyInject, CommandService, ServiceIdentifiers, ClientService } from 'api';
+import { EventHandler, Command } from 'api/module';
+import { lazyInject } from 'api/inversion';
+import { ServiceIdentifiers, ClientService, CommandService } from 'api/services';
 
 export default class CommandHander extends EventHandler {
     event = 'message';

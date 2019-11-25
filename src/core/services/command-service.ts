@@ -1,16 +1,18 @@
 import * as i18n from 'i18n';
-import * as api from 'api';
+import * as sapi from 'api/services';
 import { inject, injectable } from 'inversify';
 import { Message } from 'discord.js';
-import { GuildConfiguration, GuildConfigurationFactory } from 'db';
+import { Command } from 'api/module';
+import { GuildConfiguration } from 'db/entity';
+import { GuildConfigurationFactory } from 'db/factory';
 
 @injectable()
-export default class CommandService implements api.CommandService {
-    readonly commands: api.Command[] = [];
+export default class CommandService implements sapi.CommandService {
+    readonly commands: Command[] = [];
 
-    constructor(@inject(api.ServiceIdentifiers.Configuration) public configurationService: api.ConfigurationService) {}
+    constructor(@inject(sapi.ServiceIdentifiers.Configuration) public configurationService: sapi.ConfigurationService) {}
 
-    public register(command: api.Command, moduleId: string): boolean {
+    public register(command: Command, moduleId: string): boolean {
         if(!moduleId) {
             console.info(i18n.__('A module attempted to register a command without an ID!'));
         }
@@ -31,14 +33,14 @@ export default class CommandService implements api.CommandService {
         return true;
     }
 
-    get(command: string, moduleId?: string): api.Command[] {
+    get(command: string, moduleId?: string): Command[] {
         if(moduleId) {
             return this.commands.filter(entry => entry.moduleId === moduleId && entry.command === command);
         }
         return this.commands.filter(entry => entry.command === command);
     }
 
-    getAll(moduleId?: string): api.Command[] {
+    getAll(moduleId?: string): Command[] {
         if(moduleId) {
             return this.commands.filter(entry => entry.moduleId === moduleId);
         }

@@ -1,4 +1,4 @@
-import { Command, EventHandler, Module } from 'api';
+import { Module, Command, EventHandler } from 'api/module';
 
 export default class PronounModule extends Module {
     public async preInitialize(): Promise<void> {

@@ -1,8 +1,9 @@
 import * as i18n from 'i18n';
 import { inject, injectable } from 'inversify';
 import { RichEmbed, Message, ColorResolvable, GuildMember, MessageAttachment, GroupDMChannel, PartialTextBasedChannelFields, DMChannel, MessageEmbed } from 'discord.js';
-import { forEachAsync, ServiceIdentifiers, ConfigurationService, ClientService, unwrapUnionToArray } from 'api';
 import { ModuleServiceIdentifiers, ModuleConfigurationService, WebRequestService } from 'modules/message-link-embed-module/services';
+import { ServiceIdentifiers, ClientService, ConfigurationService } from 'api/services';
+import { unwrapUnionToArray, forEachAsync } from 'api/utils';
 
 @injectable()
 export default class MessageService {

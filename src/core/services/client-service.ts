@@ -1,9 +1,9 @@
-import * as api from 'api';
 import { injectable, inject } from 'inversify';
 import { Client, Guild } from 'discord.js';
+import * as sapi from 'api/services';
 
 @injectable()
-export default class ClientService implements api.ClientService {
+export default class ClientService implements sapi.ClientService {
     client: Client;
 
     get userId(): string {
@@ -19,7 +19,7 @@ export default class ClientService implements api.ClientService {
         return this.client.guilds.array();
     }
 
-    constructor(@inject(api.ServiceIdentifiers.Configuration) public configurationService: api.ConfigurationService) {
+    constructor(@inject(sapi.ServiceIdentifiers.Configuration) public configurationService: sapi.ConfigurationService) {
         this.client = new Client();
     }
 

@@ -1,4 +1,4 @@
-import { EventHandler } from 'api';
+import { EventHandler } from 'api/module';
 
 export default interface EventService {
     registerEvent(event: EventHandler): void;

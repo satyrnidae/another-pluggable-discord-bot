@@ -1,11 +1,13 @@
-import * as api from 'api';
+import * as sapi from 'api/services';
 import { injectable } from 'inversify';
+import { AppConfiguration } from 'api/module';
+import { readFileAsync } from 'api/utils';
 
 const CONFIG_PATH = `${__dirname}/../../../../config/config.json`;
 
 @injectable()
-export default class ConfigurationService implements api.ConfigurationService {
-    private config: api.AppConfiguration;
+export default class ConfigurationService implements sapi.ConfigurationService {
+    private config: AppConfiguration;
 
     async getToken(): Promise<string> {
         await this.loadConfig();
@@ -45,8 +47,8 @@ export default class ConfigurationService implements api.ConfigurationService {
 
     private async loadConfig() {
         if(!this.config) {
-            const configData: Buffer = await api.readFileAsync(CONFIG_PATH);
-            this.config = JSON.parse(configData.toString()) as api.AppConfiguration;
+            const configData: Buffer = await readFileAsync(CONFIG_PATH);
+            this.config = JSON.parse(configData.toString()) as AppConfiguration;
         }
     }
 }

@@ -1,7 +1,9 @@
-import { GuildConfiguration } from 'db';
-import { DataEntityFactory, lazyInject, ServiceIdentifiers, DataService, ConfigurationService } from 'api';
 import { Guild } from 'discord.js';
 import { Repository } from 'typeorm';
+import { DataEntityFactory } from 'api/db';
+import { GuildConfiguration } from 'db/entity';
+import { lazyInject } from 'api/inversion';
+import { ServiceIdentifiers, DataService, ConfigurationService } from 'api/services';
 
 export default class GuildConfigurationFactory extends DataEntityFactory<GuildConfiguration>{
 

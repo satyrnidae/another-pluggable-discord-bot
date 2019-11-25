@@ -1,4 +1,4 @@
-import { Command, EventHandler, ModuleInfo } from 'api';
+import { Command, EventHandler, ModuleInfo } from 'api/module';
 
 export default abstract class Module {
     public readonly commands: Command[];
