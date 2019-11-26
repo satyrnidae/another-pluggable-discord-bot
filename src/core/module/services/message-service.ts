@@ -155,14 +155,13 @@ export default class MessageService {
     private async getCommandListEntry(message: Message, command: Command): Promise<string> {
         const prefix: string = await this.commandService.getCommandPrefix(message);
         const module: Module = this.moduleService.getModuleById(command.moduleId);
-        return i18n.__(this.COMMAND_MODULE_ID_LIST,
-            command.name, prefix, command.command, module.moduleInfo.name, module.moduleInfo.id);
+        return i18n.__(this.COMMAND_MODULE_ID_LIST, prefix, command.command, module.moduleInfo.name, module.moduleInfo.id);
     }
 
     private async sendCommandUsageMessage(message: Message, command: Command): Promise<any> {
         const prefix: string = await this.commandService.getCommandPrefix(message);
         const module: Module = this.moduleService.getModuleById(command.moduleId);
-        let helpMessage: string = i18n.__('__**"%s" Command**__', command.name).concat('\r\n')
+        let helpMessage: string = i18n.__('__**"%s%s" Command**__', prefix, command.command).concat('\r\n')
             .concat(i18n.__('*in module* %s (id: %s)', module.moduleInfo.name, module.moduleInfo.id)).concat('\r\n')
             .concat('*Description*').concat('\r\n')
             .concat(i18n.__('> %s', command.description)).concat('\r\n')
@@ -201,5 +200,5 @@ export default class MessageService {
     }
 
     private readonly MODULE_ID_LIST_STRING: string = '> • %s (id: %s)';
-    private readonly COMMAND_MODULE_ID_LIST: string = '> • %s (%s%s) *in module "%s" (id: %s)*';
+    private readonly COMMAND_MODULE_ID_LIST: string = '> • %s%s *in module "%s" (id: %s)*';
 }
