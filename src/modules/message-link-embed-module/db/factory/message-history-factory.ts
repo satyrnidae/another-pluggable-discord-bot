@@ -28,5 +28,4 @@ export class MessageHistoryFactory implements DataEntityFactory<MessageHistory> 
         }
         return object;
     }
-
 }

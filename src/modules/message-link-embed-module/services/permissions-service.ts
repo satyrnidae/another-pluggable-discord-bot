@@ -1,6 +1,4 @@
-import { injectable } from "inversify";
+import { injectable } from 'inversify';
 
 @injectable()
-export default class PermissionsService {
-
-}
+export default class PermissionsService {}

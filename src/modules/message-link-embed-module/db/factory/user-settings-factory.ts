@@ -25,5 +25,4 @@ export class UserSettingsFactory implements DataEntityFactory<UserSettings> {
         object.name = user.username;
         return object;
     }
-
 }

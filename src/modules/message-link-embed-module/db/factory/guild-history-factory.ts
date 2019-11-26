@@ -20,5 +20,4 @@ export class GuildHistoryFactory implements DataEntityFactory<GuildHistory> {
         object.name = name;
         return object;
     }
-
 }

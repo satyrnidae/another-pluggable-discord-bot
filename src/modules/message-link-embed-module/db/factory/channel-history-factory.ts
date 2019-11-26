@@ -39,5 +39,4 @@ export class ChannelHistoryFactory implements DataEntityFactory<ChannelHistory> 
         else object.name = 'unknown';
         return object;
     }
-
 }

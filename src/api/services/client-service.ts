@@ -8,6 +8,5 @@ export default interface ClientService {
     readonly guilds: Guild[];
 
     login(): Promise<string>;
-
     getDisplayName(guild?: Guild): string;
 }
