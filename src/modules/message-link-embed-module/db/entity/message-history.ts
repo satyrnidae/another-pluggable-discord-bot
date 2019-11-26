@@ -2,10 +2,11 @@ import { DataEntity } from 'api/db';
 import { lazyInject } from 'api/inversion';
 import { ServiceIdentifiers, DataService } from 'api/services';
 import { Entity, ManyToOne, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { ChannelHistory, UserHistory } from 'modules/message-link-embed-module/db/entity';
+import { ChannelHistory, UserSettings } from 'modules/message-link-embed-module/db/entity';
+import { Message, Channel, TextChannel, PartialTextBasedChannel, TextBasedChannel } from 'discord.js';
 
-@Entity('MsgLinkEmbed_MessageHistory')
-export class MessageHistory implements DataEntity {
+@Entity('msg_link_embed_message_history')
+export class MessageHistory extends DataEntity {
     @lazyInject(ServiceIdentifiers.Data)
     private readonly dataService!: DataService;
 
@@ -20,9 +21,17 @@ export class MessageHistory implements DataEntity {
     @Column({unique: true})
     nativeId: string;
 
-    @ManyToOne(() => ChannelHistory, channel => channel.messages, {cascade: true})
+    @ManyToOne(() => ChannelHistory, channel => channel.messages, {cascade: ['insert']})
     channel: ChannelHistory;
 
-    @ManyToOne(() => UserHistory, user => user.messages, {cascade: true})
-    user: UserHistory;
+    @ManyToOne(() => UserSettings, user => user.messages, {cascade: ['insert']})
+    user: UserSettings;
+
+    async getNativeMessage(): Promise<Message> {
+        const channel: Channel = this.channel.getNativeChannel();
+        if(channel instanceof TextChannel) {
+            return channel.fetchMessage(this.nativeId);
+        }
+        return null;
+    }
 }
