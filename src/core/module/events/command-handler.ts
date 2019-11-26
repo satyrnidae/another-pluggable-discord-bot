@@ -4,23 +4,27 @@ import yparser, { Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
 import { EventHandler, Command } from 'api/module';
 import { lazyInject } from 'api/inversion';
-import { ServiceIdentifiers, ClientService, CommandService } from 'api/services';
+import { ServiceIdentifiers, CommandService, ConfigurationService } from 'api/services';
 
 export default class CommandHander extends EventHandler {
     event = 'message';
 
-    @lazyInject(ServiceIdentifiers.Client)
-    client: ClientService;
+    @lazyInject(ServiceIdentifiers.Configuration)
+    configurationService: ConfigurationService;
 
     @lazyInject(ServiceIdentifiers.Command)
     commandService: CommandService;
 
     public async handler(message: Message): Promise<any> {
-        const prefix: string = await this.commandService.getCommandPrefix(message);
-        const parsedCommand: ParsedMessage = ParseMessage(message, prefix);
+        let prefix: string = await this.commandService.getCommandPrefix(message);
+        let parsedCommand: ParsedMessage = ParseMessage(message, prefix);
 
         if(!parsedCommand.success) {
-            return Promise.resolve(false);
+            prefix = await this.configurationService.getDefaultPrefix();
+            parsedCommand = ParseMessage(message, prefix);
+            if(!parsedCommand || parsedCommand.command !== 'help') {
+                return false;
+            }
         }
 
         //TODO: Commands by module ID
@@ -39,7 +43,7 @@ export default class CommandHander extends EventHandler {
 
         if (commands.length !== 1) {
             console.info(senderId, i18n.__('Command'), commandValue, i18n.__('could not be resolved to a single command. (Module collision?)'));
-            return Promise.resolve(false);
+            return false;
         }
         const command = commands[0];
 
@@ -52,6 +56,6 @@ export default class CommandHander extends EventHandler {
         }
         //TODO: Message when perms fail
 
-        return Promise.resolve(false);
+        return false;
     }
 }
