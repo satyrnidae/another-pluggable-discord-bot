@@ -11,7 +11,7 @@ const GUILD_GROUP_ID = 1;
 const CHANNEL_GROUP_ID = 2;
 const MESSAGE_GROUP_ID = 3;
 
-export default class LinkQuoteHandler implements EventHandler {
+export default class LinkQuoteHandler extends EventHandler {
     event = 'message';
 
     @lazyInject(ServiceIdentifiers.Client)

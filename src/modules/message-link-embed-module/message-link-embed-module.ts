@@ -21,7 +21,7 @@ export default class MessageLinkEmbedModule extends Module {
 
     async preInitialize(): Promise<void> {
         this.events = [
-            new LinkQuoteHandler()
+            new LinkQuoteHandler(this.moduleInfo.id)
         ];
         return super.preInitialize();
     }

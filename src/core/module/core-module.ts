@@ -31,9 +31,9 @@ export default class CoreModule extends Module {
 
     async preInitialize(): Promise<void> {
         this.coreEvents = [
-            new CommandHandler(),
-            new ReadyHandler(),
-            new GuildCreateHandler()
+            new CommandHandler(this.moduleInfo.id),
+            new ReadyHandler(this.moduleInfo.id),
+            new GuildCreateHandler(this.moduleInfo.id)
         ];
         this.coreCommands = [
             new HelpCommand(this.moduleInfo.id),
