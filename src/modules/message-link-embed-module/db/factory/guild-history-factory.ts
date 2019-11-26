@@ -16,7 +16,8 @@ export class GuildHistoryFactory implements DataEntityFactory<GuildHistory> {
             object = new GuildHistory();
             object.nativeId = nativeId;
         }
-
+        const name: string = guild ? guild.name : '@me';
+        object.name = name;
         return object;
     }
 

@@ -4,14 +4,14 @@ import { injectable, inject } from 'inversify';
 import { ServiceIdentifiers, DataService } from 'api/services';
 import { Message } from 'discord.js';
 import { lazyInject } from 'api/inversion';
-import { UserHistoryFactory, ChannelHistoryFactory } from 'modules/message-link-embed-module/db/factory';
+import { UserSettingsFactory, ChannelHistoryFactory } from 'modules/message-link-embed-module/db/factory';
 
 @injectable()
 export class MessageHistoryFactory implements DataEntityFactory<MessageHistory> {
     constructor(@inject(ServiceIdentifiers.Data) private readonly dataService: DataService) {}
 
-    @lazyInject(UserHistoryFactory)
-    private readonly userHistoryFactory!: UserHistoryFactory;
+    @lazyInject(UserSettingsFactory)
+    private readonly userHistoryFactory!: UserSettingsFactory;
 
 
     @lazyInject(ChannelHistoryFactory)

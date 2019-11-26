@@ -1,5 +1,5 @@
 import { DataEntityFactory } from 'api/db';
-import { Channel, GuildChannel } from 'discord.js';
+import { Channel, GuildChannel, GroupDMChannel, DMChannel } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { ServiceIdentifiers, DataService } from 'api/services';
 import { lazyInject } from 'api/inversion';
@@ -30,6 +30,13 @@ export class ChannelHistoryFactory implements DataEntityFactory<ChannelHistory> 
                 object.guild = await this.guildHistoryFactory.load();
             }
         }
+        if(channel instanceof GuildChannel || channel instanceof GroupDMChannel) {
+            object.name = channel.name;
+        }
+        else if(channel instanceof DMChannel) {
+            object.name = channel.recipient.username;
+        }
+        else object.name = 'unknown';
         return object;
     }
 
