@@ -5,7 +5,7 @@ import { lazyInject } from 'api/inversion';
 import { DataService } from 'core/services';
 import { ServiceIdentifiers } from 'api/services';
 
-@Entity('msg_link_embed_message_link_history')
+@Entity('msg_link_embed/message_link_history')
 export class MessageLinkHistory extends DataEntity {
 
     @lazyInject(ServiceIdentifiers.Data)
@@ -31,6 +31,6 @@ export class MessageLinkHistory extends DataEntity {
     originMessage: MessageHistory;
 
     @ManyToMany(() => MessageHistory)
-    @JoinTable({name: 'msg_link_embed_join_messages_to_link_history'})
+    @JoinTable({name: 'msg_link_embed/join_messages_to_link_history'})
     resultMessages: MessageHistory[];
 }

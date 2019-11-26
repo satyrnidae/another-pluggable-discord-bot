@@ -5,7 +5,7 @@ import { Entity, ManyToOne, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { ChannelHistory, UserSettings } from 'modules/message-link-embed-module/db/entity';
 import { Message, Channel, TextChannel, PartialTextBasedChannel, TextBasedChannel } from 'discord.js';
 
-@Entity('msg_link_embed_message_history')
+@Entity('msg_link_embed/message_history')
 export class MessageHistory extends DataEntity {
     @lazyInject(ServiceIdentifiers.Data)
     private readonly dataService!: DataService;

@@ -5,7 +5,7 @@ import { ServiceIdentifiers, DataService, ClientService } from 'api/services';
 import { ChannelHistory } from 'modules/message-link-embed-module/db/entity';
 import { Guild } from 'discord.js';
 
-@Entity('msg_link_embed_guild_history')
+@Entity('msg_link_embed/guild_history')
 export class GuildHistory extends DataEntity {
     @lazyInject(ServiceIdentifiers.Data)
     private readonly dataService!: DataService;

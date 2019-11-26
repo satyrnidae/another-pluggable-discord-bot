@@ -3,7 +3,7 @@ import { DataEntity } from 'api/db';
 import { lazyInject } from 'api/inversion';
 import { ServiceIdentifiers, DataService } from 'api/services';
 
-@Entity()
+@Entity('core/guild_configuration')
 export default class GuildConfiguration extends DataEntity {
 
     @lazyInject(ServiceIdentifiers.Data)

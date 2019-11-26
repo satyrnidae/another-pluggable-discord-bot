@@ -5,7 +5,7 @@ import { ServiceIdentifiers, DataService, ClientService } from 'api/services';
 import { MessageHistory } from 'modules/message-link-embed-module/db/entity/message-history';
 import { User } from 'discord.js';
 
-@Entity('msg_link_embed_user_settings')
+@Entity('msg_link_embed/user_settings')
 export class UserSettings extends DataEntity {
     @lazyInject(ServiceIdentifiers.Data)
     private readonly dataService!: DataService;
