@@ -1,6 +1,6 @@
 import * as i18n from 'i18n';
 import { injectable, inject } from 'inversify';
-import { Guild, Message, Channel, TextChannel, GuildMember } from 'discord.js';
+import { Guild, Message, Channel, TextChannel, GuildMember, PartialTextBasedChannelFields, GuildChannel } from 'discord.js';
 import { ServiceIdentifiers, ConfigurationService, ClientService, CommandService, ModuleService } from 'api/services';
 import { GuildConfiguration } from 'db/entity';
 import { GuildConfigurationFactory } from 'db/factory';
@@ -22,28 +22,18 @@ export default class MessageService {
         if(!showWelcomeMessage || guildConfiguration.welcomeMsgSent) {
             return;
         }
-
+        const me: GuildMember = guild.members.get(this.clientService.userId);
         await forEachAsync(
             guild.channels.array(),
             async (channel: Channel, _: number, __: Channel[], loopStateArgs: LoopStateArgs): Promise<any> => {
-                if(channel.type !== 'text') {
-                    return Promise.resolve();
+                if(!(channel instanceof TextChannel)) {
+                    return;
                 }
-                const textChannel: TextChannel = channel as TextChannel;
-                const me: GuildMember = guild.members.get(this.clientService.userId);
-                const prefix: string = guildConfiguration.commandPrefix;
-                if(textChannel.memberPermissions(me).has('SEND_MESSAGES')) {
-                    const message: string = i18n.__('Hello everyone! %s here.', me.displayName).concat('\r\n')
-                        .concat(i18n.__('I\'m a configurable modular bot, with a potential variety of functions!')).concat('\r\n')
-                        .concat(i18n.__('Feel free to ask for `%shelp` if you\'re interested in learning more!', prefix).concat('\r\n')
-                        .concat(i18n.__('Cheers! %s', await this.configuration.getRandomHeart())));
-                    await textChannel.send(message);
-                    guildConfiguration.welcomeMsgSent = true;
+                if(channel.memberPermissions(me).has('SEND_MESSAGES')) {
                     loopStateArgs.break();
-                    return Promise.resolve();
+                    return this.sendWelcomeMessage(channel);
                 }
             });
-        await guildConfiguration.save();
     }
 
     async sendHelpMessage(message: Message): Promise<any> {
@@ -140,6 +130,18 @@ export default class MessageService {
         }
 
         return this.sendCommandUsageMessage(message, commands[0]);
+    }
+
+    private async sendWelcomeMessage(channel: TextChannel & GuildChannel) {
+        const guildConfiguration: GuildConfiguration = await new GuildConfigurationFactory().load(channel.guild);
+        const prefix: string = guildConfiguration.commandPrefix;
+        const me: GuildMember = channel.guild.members.get(this.clientService.userId);
+
+        const message: string = i18n.__('Hello everyone! %s here.', me.displayName).concat('\r\n')
+            .concat(i18n.__('I\'m a configurable modular bot, with a potential variety of functions!')).concat('\r\n')
+            .concat(i18n.__('Feel free to ask for `%shelp` if you\'re interested in learning more!', prefix).concat('\r\n')
+            .concat(i18n.__('Cheers! %s', await this.configuration.getRandomHeart())));
+        return channel.send(message);
     }
 
     private async getCommandList(message: Message, commands: Command[]): Promise<string> {
