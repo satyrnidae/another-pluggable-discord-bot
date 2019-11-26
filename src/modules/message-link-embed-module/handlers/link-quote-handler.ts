@@ -1,4 +1,4 @@
-import { Message, Guild, TextChannel, RichEmbed, User, PartialTextBasedChannelFields } from 'discord.js';
+import { Message, Guild, TextChannel, User, PartialTextBasedChannelFields } from 'discord.js';
 import { ModuleServiceIdentifiers, ModuleConfigurationService, MessageService } from 'modules/message-link-embed-module/services';
 import { EventHandler } from 'api/module';
 import { lazyInject } from 'api/inversion';
