@@ -132,6 +132,10 @@ export default class MessageService {
         return this.sendCommandUsageMessage(message, commands[0]);
     }
 
+    async sendPermissionDeniedMessage(message: Message): Promise<UnionArray<Message>> {
+        return message.reply(i18n.__('unfortunately, you do not have permission to perform that command!'));
+    }
+
     private async sendWelcomeMessage(channel: TextChannel & GuildChannel) {
         const guildConfiguration: GuildConfiguration = await new GuildConfigurationFactory().load(channel.guild);
         const prefix: string = guildConfiguration.commandPrefix;

@@ -5,6 +5,7 @@ import { Message } from 'discord.js';
 import { EventHandler, Command } from 'api/module';
 import { lazyInject } from 'api/inversion';
 import { ServiceIdentifiers, CommandService, ConfigurationService } from 'api/services';
+import { CoreModuleServiceIdentifiers, MessageService } from 'core/module/services';
 
 export default class CommandHander extends EventHandler {
     event = 'message';
@@ -15,7 +16,10 @@ export default class CommandHander extends EventHandler {
     @lazyInject(ServiceIdentifiers.Command)
     commandService: CommandService;
 
-    public async handler(message: Message): Promise<any> {
+    @lazyInject(CoreModuleServiceIdentifiers.Message)
+    messageService: MessageService;
+
+    public async handler(message: Message): Promise<void> {
         let prefix: string = await this.commandService.getCommandPrefix(message);
         let parsedCommand: ParsedMessage = ParseMessage(message, prefix);
 
@@ -23,7 +27,7 @@ export default class CommandHander extends EventHandler {
             prefix = await this.configurationService.getDefaultPrefix();
             parsedCommand = ParseMessage(message, prefix);
             if(!parsedCommand || parsedCommand.command !== 'help') {
-                return false;
+                return;
             }
         }
 
@@ -43,7 +47,7 @@ export default class CommandHander extends EventHandler {
 
         if (commands.length !== 1) {
             console.info(senderId, i18n.__('Command'), commandValue, i18n.__('could not be resolved to a single command. (Module collision?)'));
-            return false;
+            return;
         }
         const command = commands[0];
 
@@ -51,11 +55,10 @@ export default class CommandHander extends EventHandler {
         console.debug(senderId, i18n.__('Execute'), commandValue, commandArgs.join(' '));
 
         // Check perms and execute
-        if (await command.checkPermissions(message)) {
-            return command.run(message, args);
+        if (!await command.checkPermissions(message)) {
+            this.messageService.sendPermissionDeniedMessage(message);
+            return;
         }
-        //TODO: Message when perms fail
-
-        return false;
+        command.run(message, args);
     }
 }
