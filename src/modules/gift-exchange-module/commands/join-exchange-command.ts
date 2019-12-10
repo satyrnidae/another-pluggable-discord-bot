@@ -9,7 +9,7 @@ export class JoinExchangeCommand extends Command {
     readonly options: Options;
 
     async run(message: Message, args: Arguments): Promise<void> {
-        
+
     }
 
     async checkPermissions(message: Message): Promise<boolean> {

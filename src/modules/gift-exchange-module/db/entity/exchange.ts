@@ -29,5 +29,7 @@ export class Exchange extends DataEntity {
 
     @ManyToMany(() => ExchangeMember, member => member.exchanges)
     @JoinColumn({name: 'gex/ExchangeToMember'})
-    members: ExchangeMember;
+    members: ExchangeMember[];
+
+
 }
