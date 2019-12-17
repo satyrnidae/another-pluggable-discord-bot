@@ -3,6 +3,7 @@ import { Options, Arguments } from 'yargs-parser';
 
 export default abstract class Command {
     readonly abstract command: string;
+    readonly abstract friendlyName: string;
     readonly abstract syntax: string[];
     readonly abstract description: string;
     readonly abstract options: Options;

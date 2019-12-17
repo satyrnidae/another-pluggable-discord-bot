@@ -8,6 +8,7 @@ import { Exchange } from 'modules/gift-exchange-module/db/entity';
 import { ExchangeFactory } from 'modules/gift-exchange-module/db/factory';
 
 export class AddExchangeCommand extends Command {
+    readonly friendlyName: string = i18n.__('Add Exchange');
     readonly command: string = 'addexchange';
     readonly syntax: string[] = ['addexchange [-n|--name] *name*'];
     readonly description: string = i18n.__('Adds a new exchange to the current guild.');

@@ -172,7 +172,7 @@ export default class MessageService {
         });
 
         const commandEmbed: RichEmbed = new RichEmbed()
-            .setTitle(i18n.__('__%s__', command.command))
+            .setTitle(i18n.__('__%s__', command.friendlyName))
             .setDescription(i18n.__('*from module %s (id: %s)*', module.moduleInfo.name, module.moduleInfo.id))
             .addField(i18n.__('**Description**'), command.description || i18n.__('*no description available*'))
             .addField(i18n.__('**Usage**'), helpMessage || i18n.__('*no usage information available*'))

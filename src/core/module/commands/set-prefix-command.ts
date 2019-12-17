@@ -6,6 +6,7 @@ import { GuildConfiguration } from 'db/entity';
 import { GuildConfigurationFactory } from 'db/factory';
 
 export default class SetPrefixCommand extends Command {
+    friendlyName = i18n.__('Set Prefix');
     command = 'setprefix';
     syntax: string[] = ['setprefix [-p|--prefix] *prefix*'];
     description: string = i18n.__('Allows a guild admin to set the command prefix for the guild.');
