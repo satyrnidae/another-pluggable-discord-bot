@@ -1,5 +1,5 @@
 import { DataEntity } from "api/db";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Repository, JoinColumn, ManyToMany, Unique } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Repository, JoinColumn, ManyToMany, Unique, JoinTable } from "typeorm";
 import { lazyInject } from "api/inversion";
 import { ServiceIdentifiers, DataService } from "api/services";
 import { GuildInstance, ExchangeMember } from "modules/gift-exchange-module/db/entity";
@@ -29,6 +29,16 @@ export class Exchange extends DataEntity {
     guild: GuildInstance;
 
     @ManyToMany(() => ExchangeMember, member => member.exchanges)
-    @JoinColumn({name: 'gex/ExchangeToMember'})
-    members: ExchangeMember;
+    @JoinTable({
+        name: 'gex/ExchangeMemberSettings',
+        joinColumn: {
+            name: 'exchange_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'member_id',
+            referencedColumnName: 'id'
+        }
+    })
+    members: ExchangeMember[];
 }

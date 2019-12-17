@@ -1,7 +1,7 @@
 import { DataEntity } from "api/db";
 import { lazyInject } from "api/inversion";
 import { ServiceIdentifiers, DataService } from "api/services";
-import { PrimaryGeneratedColumn, Entity, Column, ManyToMany, JoinColumn, Repository } from "typeorm";
+import { PrimaryGeneratedColumn, Entity, Column, ManyToMany, JoinColumn, Repository, JoinTable } from "typeorm";
 import { Exchange } from "modules/gift-exchange-module/db/entity";
 
 @Entity('gex/ExchangeMember')
@@ -15,12 +15,25 @@ export class ExchangeMember extends DataEntity {
     }
 
     @PrimaryGeneratedColumn()
-    id: Number;
+    id: number;
 
     @Column()
     nativeId: string;
 
     @ManyToMany(() => Exchange, exchange => exchange.members)
-    @JoinColumn({name: 'gex/ExchangeToMember'})
+    @JoinTable({
+        name: 'gex/ExchangeMemberSettings',
+        joinColumn: {
+            name: 'member_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'exchange_id',
+            referencedColumnName: 'id'
+        }
+    })
     exchanges: Exchange[];
+
+    @Column({nullable: true})
+    address: string;
 }
