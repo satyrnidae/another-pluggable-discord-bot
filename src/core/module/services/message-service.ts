@@ -1,6 +1,6 @@
 import * as i18n from 'i18n';
 import { injectable, inject } from 'inversify';
-import { Guild, Message, Channel, TextChannel, GuildMember, PartialTextBasedChannelFields, GuildChannel } from 'discord.js';
+import { Guild, Message, Channel, TextChannel, GuildMember, PartialTextBasedChannelFields, GuildChannel, RichEmbed } from 'discord.js';
 import { ServiceIdentifiers, ConfigurationService, ClientService, CommandService, ModuleService } from 'api/services';
 import { GuildConfiguration } from 'db/entity';
 import { GuildConfigurationFactory } from 'db/factory';
@@ -165,16 +165,20 @@ export default class MessageService {
     private async sendCommandUsageMessage(message: Message, command: Command): Promise<any> {
         const prefix: string = await this.commandService.getCommandPrefix(message);
         const module: Module = this.moduleService.getModuleById(command.moduleId);
-        let helpMessage: string = i18n.__('__**"%s%s" Command**__', prefix, command.command).concat('\r\n')
-            .concat(i18n.__('*in module* %s (id: %s)', module.moduleInfo.name, module.moduleInfo.id)).concat('\r\n')
-            .concat('*Description*').concat('\r\n')
-            .concat(i18n.__('> %s', command.description)).concat('\r\n')
-            .concat(i18n.__('*Usage*'));
+        let helpMessage = '';
         await forEachAsync(command.syntax, async (syntax: string): Promise<void> => {
             helpMessage = helpMessage.concat('\r\n')
-                .concat(i18n.__('> • %s%s', prefix, syntax));
+                .concat(i18n.__('• %s%s', prefix, syntax));
         });
-        return message.channel.send(helpMessage);
+
+        const commandEmbed: RichEmbed = new RichEmbed()
+            .setTitle(i18n.__('__%s__', command.command))
+            .setDescription(i18n.__('*from module %s (id: %s)*', module.moduleInfo.name, module.moduleInfo.id))
+            .addField(i18n.__('**Description**'), command.description || i18n.__('*no description available*'))
+            .addField(i18n.__('**Usage**'), helpMessage || i18n.__('*no usage information available*'))
+            .setTimestamp(Date.now());
+
+        return message.channel.send(i18n.__('Help for command `%s%s`:', prefix, command.command), commandEmbed);
     }
 
     private async sendModuleHasNoCommandsHelpMessage(message: Message, module: Module): Promise<any> {
@@ -203,6 +207,6 @@ export default class MessageService {
             return message.channel.send(multipleModulesHelpMessage);
     }
 
-    private readonly MODULE_ID_LIST_STRING: string = '> • %s (id: %s)';
-    private readonly COMMAND_MODULE_ID_LIST: string = '> • %s%s *in module "%s" (id: %s)*';
+    private readonly MODULE_ID_LIST_STRING: string = '• %s (id: %s)';
+    private readonly COMMAND_MODULE_ID_LIST: string = '• %s%s *in module "%s" (id: %s)*';
 }
