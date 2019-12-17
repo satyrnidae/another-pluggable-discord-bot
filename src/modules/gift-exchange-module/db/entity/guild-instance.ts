@@ -4,7 +4,7 @@ import { ServiceIdentifiers, DataService } from "api/services";
 import { Repository, Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Exchange } from "./exchange";
 
-@Entity('@gex/GuildInstance')
+@Entity('gex/GuildInstance')
 export class GuildInstance extends DataEntity {
 
     @lazyInject(ServiceIdentifiers.Data)
@@ -14,7 +14,7 @@ export class GuildInstance extends DataEntity {
         const repository: Repository<GuildInstance> = await this.dataService.getRepository(GuildInstance);
         return repository.save(this);
     }
-    
+
     @PrimaryGeneratedColumn()
     id: number;
 

@@ -1,13 +1,13 @@
-import { DataEntityFactory } from "api/db";
+import { DataEntityFactory } from 'api/db';
 import { GuildInstance } from 'modules/gift-exchange-module/db/entity';
-import { Guild } from "discord.js";
-import { injectable, inject } from "inversify";
-import { ServiceIdentifiers, DataService } from "api/services";
-import { Repository } from "typeorm";
+import { Guild } from 'discord.js';
+import { injectable, inject } from 'inversify';
+import { ServiceIdentifiers, DataService } from 'api/services';
+import { Repository } from 'typeorm';
 
 @injectable()
 export class GuildInstanceFactory implements DataEntityFactory<GuildInstance> {
-    
+
     constructor(@inject(ServiceIdentifiers.Data) private readonly dataService: DataService) { }
 
     async load(guild: Guild, save: boolean = false): Promise<GuildInstance> {
@@ -18,7 +18,9 @@ export class GuildInstanceFactory implements DataEntityFactory<GuildInstance> {
         if (!guildInstance) {
             guildInstance = new GuildInstance();
             guildInstance.nativeId = nativeId;
-            if (save) guildInstance.save();
+            if (save) {
+                await guildInstance.save();
+            }
         }
         return guildInstance;
     }
