@@ -37,10 +37,10 @@ export default class HelpCommand extends Command {
         const allParam: boolean = this.isAllParamPresent(args);
         const commandParam: string = this.getCommandNameParam(args);
         const moduleIdParam: string = this.getModuleIdParam(args);
-        const page: number = args['page'];
+        const page: number = args['page'] || 1;
 
         if (allParam) {
-            return this.messageService.sendAllHelpMessage(message);
+            return this.messageService.sendAllHelpMessage(message, page);
         }
 
         if (commandParam === undefined) {
