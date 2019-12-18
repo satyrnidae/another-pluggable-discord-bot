@@ -1,12 +1,12 @@
-import * as sapi from 'api/services';
 import { injectable } from 'inversify';
-import { AppConfiguration } from 'api/module';
-import { readFileAsync } from 'api/utils';
+import { ConfigurationService as IConfigurationService } from '/src/api/services';
+import { AppConfiguration } from '/src/api/module';
+import { FsAsync } from '/src/api/utils';
 
 const CONFIG_PATH = `${__dirname}/../../../../config/config.json`;
 
 @injectable()
-export default class ConfigurationService implements sapi.ConfigurationService {
+export class ConfigurationService implements IConfigurationService {
     private config: AppConfiguration;
 
     async getToken(): Promise<string> {
@@ -47,7 +47,7 @@ export default class ConfigurationService implements sapi.ConfigurationService {
 
     private async loadConfig() {
         if(!this.config) {
-            const configData: Buffer = await readFileAsync(CONFIG_PATH);
+            const configData: Buffer = await FsAsync.readFileAsync(CONFIG_PATH);
             this.config = JSON.parse(configData.toString()) as AppConfiguration;
         }
     }

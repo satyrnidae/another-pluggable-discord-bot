@@ -1,25 +1,26 @@
 import { injectable, inject } from 'inversify';
-import { Client, Guild } from 'discord.js';
-import * as sapi from 'api/services';
+import { Client, Guild, User } from 'discord.js';
+import { ClientService as IClientService, ConfigurationService, ServiceIdentifiers} from '/src/api/services';
 
+/**
+ * A service which provides access to a client instance.
+ */
 @injectable()
-export default class ClientService implements sapi.ClientService {
+export class ClientService implements IClientService {
     client: Client;
 
-    get userId(): string {
-        return this.client.user.id;
+    get user(): User {
+        return this.client.user;
     }
-    get username(): string {
-        return this.client.user.username;
-    }
-    get userTag(): string {
-        return this.client.user.tag;
-    }
+
     get guilds(): Guild[] {
         return this.client.guilds.array();
     }
 
-    constructor(@inject(sapi.ServiceIdentifiers.Configuration) public configurationService: sapi.ConfigurationService) {
+    /**
+     * @param configurationService The injected configuration service instance
+     */
+    constructor(@inject(ServiceIdentifiers.Configuration) private readonly configurationService: ConfigurationService) {
         this.client = new Client();
     }
 
@@ -28,6 +29,13 @@ export default class ClientService implements sapi.ClientService {
     }
 
     getDisplayName(guild?: Guild): string {
-        return guild ? guild.me.displayName : this.username;
+        if (guild) {
+            const member = guild.member(this.user);
+            if (member) {
+                return member.displayName;
+            }
+        }
+
+        return this.user.username;
     }
 }

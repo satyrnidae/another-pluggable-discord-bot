@@ -1,24 +1,23 @@
 import * as i18n from 'i18n';
-import * as sapi from 'api/services';
 import { inject, injectable } from 'inversify';
-import CoreModule from 'core/module/core-module';
-import { Module, Command, EventHandler, ModuleInfo, Version } from 'api/module';
-import { forEachAsync, lstatAsync, readDirAsync, readFileAsync, existsAsync } from 'api/utils';
+import { ModuleService as IModuleService, ServiceIdentifiers, EventService, CommandService } from '/src/api/services';
+import { Module, Command, EventHandler, ModuleInfo, Version } from '/src/api/module';
+import { FsAsync, forEachAsync, arrayToUnion } from '/src/api/utils';
 
 const MODULE_DIRECTORY = `${__dirname}/../../modules`;
 
 @injectable()
-export default class ModuleService implements sapi.ModuleService {
-    readonly modules: Module[] = [];
+export class ModuleService implements IModuleService {
+    private readonly modules: Module[] = [];
 
     constructor(
-        @inject(sapi.ServiceIdentifiers.Event) public eventService: sapi.EventService,
-        @inject(sapi.ServiceIdentifiers.Command) public commandService: sapi.CommandService) {}
+        @inject(ServiceIdentifiers.Event) public eventService: EventService,
+        @inject(ServiceIdentifiers.Command) public commandService: CommandService) { }
 
     async loadModules(): Promise<void> {
         this.loadCore();
 
-        const moduleFolders: string[] = await readDirAsync(MODULE_DIRECTORY);
+        const moduleFolders: string[] = await FsAsync.readDirAsync(MODULE_DIRECTORY);
 
         return forEachAsync(moduleFolders, async (moduleFolder: string) => this.loadModule(moduleFolder));
     }
@@ -34,10 +33,10 @@ export default class ModuleService implements sapi.ModuleService {
     async initializeModules(): Promise<void> {
         return forEachAsync(this.modules, async (module: Module) => {
             await module.initialize();
-            if(module.commands) {
-                module.commands.forEach((command: Command) => this.commandService.register(command, module.moduleInfo.id));
+            if (module.commands) {
+                module.commands.forEach((command: Command) => this.commandService.register(command));
             }
-            if(module.events) {
+            if (module.events) {
                 module.events.forEach((event: EventHandler) => this.eventService.registerEvent(event));
             }
         });
@@ -54,17 +53,17 @@ export default class ModuleService implements sapi.ModuleService {
     private async loadModule(moduleFolder: string): Promise<void> {
         try {
             const modulePath = `${MODULE_DIRECTORY}/${moduleFolder}`;
-            if (!(await lstatAsync(modulePath)).isDirectory) {
+            if (!(await FsAsync.lstatAsync(modulePath)).isDirectory) {
                 console.info(i18n.__('Skipped non directory "%s".', moduleFolder));
                 return;
             }
-            const moduleFiles: string[] = await readDirAsync(modulePath);
+            const moduleFiles: string[] = await FsAsync.readDirAsync(modulePath);
             const moduleConfigFile = moduleFiles.filter((file: string) => file.match(/^module\.json$/))[0];
             if (!moduleConfigFile) {
                 console.info(i18n.__('Module "%s" is missing a module config file and has been skipped.', moduleFolder));
                 return;
             }
-            const moduleInfo: ModuleInfo = JSON.parse((await readFileAsync(`${modulePath}/${moduleConfigFile}`)).toString()) as ModuleInfo;
+            const moduleInfo: ModuleInfo = JSON.parse((await FsAsync.readFileAsync(`${modulePath}/${moduleConfigFile}`)).toString()) as ModuleInfo;
             if (!moduleInfo) {
                 console.info(i18n.__('Module "%s"\'s module info file cannot be read, and the module has been skipped.', moduleFolder));
                 return;
@@ -75,9 +74,9 @@ export default class ModuleService implements sapi.ModuleService {
                 return;
             }
             let moduleEntryPointFile = `${modulePath}/${moduleInfo.details.entryPoint}.ts`;
-            if (!await existsAsync(moduleEntryPointFile)) {
+            if (!await FsAsync.existsAsync(moduleEntryPointFile)) {
                 moduleEntryPointFile = `${modulePath}/${moduleInfo.details.entryPoint}.js`;
-                if (!await existsAsync(moduleEntryPointFile)) {
+                if (!await FsAsync.existsAsync(moduleEntryPointFile)) {
                     console.info(i18n.__('The entry point "%s" for module "%s" could not be found and the module has been skipped.',
                         moduleInfo.details.entryPoint, moduleInfo.name));
                     return;
@@ -98,20 +97,26 @@ export default class ModuleService implements sapi.ModuleService {
         }
     }
 
+    getAllModules(): UnionArray<Module> {
+        const modules = new Array(...this.modules);
+        return arrayToUnion(modules);
+    }
+
     getModuleById(moduleId: string): Module {
         const filteredModules: Module[] = this.modules.filter((module: Module) => module.moduleInfo.id === moduleId);
         return filteredModules && filteredModules.length ? filteredModules[0] : null;
     }
 
-    getModulesByName(moduleName: string): Module[] {
-        return this.modules.filter((module: Module) => module.moduleInfo.name === moduleName);
+    getModulesByName(moduleName: string): UnionArray<Module> {
+        const modules = new Array(...this.modules.filter((module: Module) => module.moduleInfo.name === moduleName));
+        return arrayToUnion(modules);
     }
 
-    getModulesByIdOrName(moduleIdOrName: string): Module[] {
+    getModulesByIdOrName(moduleIdOrName: string): UnionArray<Module> {
         const module: Module = this.getModuleById(moduleIdOrName);
         if (!module) {
             return this.getModulesByName(moduleIdOrName);
         }
-        return [module];
+        return module;
     }
 }

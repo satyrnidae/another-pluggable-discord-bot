@@ -33,7 +33,7 @@ export interface ModuleService {
     /**
      * Gets a list of all loaded modules.
      */
-    getAllModules(): Module[];
+    getAllModules(): UnionArray<Module>;
 
     /**
      * Gets a single module by ID

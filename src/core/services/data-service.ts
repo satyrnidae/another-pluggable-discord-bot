@@ -1,15 +1,15 @@
-import * as sapi from 'api/services';
-import { Connection, EntitySchema, Repository, createConnection } from 'typeorm';
+import { Connection, Repository, createConnection } from 'typeorm';
 import { injectable } from 'inversify';
+import { DataService as IDataService } from '/src/api/services';
 
 @injectable()
-export default class DataService implements sapi.DataService {
-    instance: Connection;
+export class DataService implements IDataService {
+    private connection: Connection;
 
-    async getRepository<T>(target: string | Function | (new () => T) | EntitySchema<T>): Promise<Repository<T>> {
-        if(!this.instance) {
-            this.instance = await createConnection();
+    async getRepository<T>(target: RepositoryTarget<T>): Promise<Repository<T>> {
+        if(!this.connection) {
+            this.connection = await createConnection();
         }
-        return this.instance.getRepository<T>(target);
+        return this.connection.getRepository<T>(target);
     }
 }
