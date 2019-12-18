@@ -1,13 +1,13 @@
 {
     "name": "Example Module",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "id": "example-module",
-    "authors": [
-        "satyrnidae"
-    ],
     "details": {
         "language": "typescript",
-        "apiVersion": "r1",
-        "entryPoint": "example-module"
+        "apiVersion": "2.0.0-alpha",
+        "entryPoint": "example-module",
+        "authors": ["Isabel Maskrey (satyrnidae)"],
+        "description": "This module does nothing; it's just an example.",
+        "website": "https://github.com/satyrnidae/another-pluggable-discord-bot"
     }
 }
