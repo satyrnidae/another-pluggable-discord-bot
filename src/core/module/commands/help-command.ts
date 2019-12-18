@@ -1,11 +1,11 @@
 import * as i18n from 'i18n';
 import { Options, Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
-import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
-import { Command } from 'api/module';
-import { lazyInject } from 'api/inversion';
+import { Command } from '/src/api/module';
+import { lazyInject } from '/src/api/inversion';
+import { CoreModuleServiceIdentifiers, MessageService } from '/src/core/module/services';
 
-export default class HelpCommand extends Command {
+export class HelpCommand extends Command {
     friendlyName = i18n.__('Help');
     command = 'help';
     syntax: string[] = [
@@ -31,30 +31,34 @@ export default class HelpCommand extends Command {
     };
 
     @lazyInject(CoreModuleServiceIdentifiers.Message)
-    messageService: MessageService;
+    private readonly messageService: MessageService;
 
-    async run(message: Message, args: Arguments): Promise<any> {
+    async run(message: Message, args: Arguments): Promise<void> {
         const allParam: boolean = this.isAllParamPresent(args);
         const commandParam: string = this.getCommandNameParam(args);
         const moduleIdParam: string = this.getModuleIdParam(args);
         const page: number = args['page'] || 1;
 
         if (allParam) {
-            return this.messageService.sendAllHelpMessage(message, page);
+            await this.messageService.sendAllHelpMessage(message, page);
+            return;
         }
 
         if (commandParam === undefined) {
             if (moduleIdParam === undefined) {
-                return this.messageService.sendHelpMessage(message);
+                await this.messageService.sendHelpMessage(message);
+                return;
             }
-            return this.messageService.sendModuleCommandListMessage(message, moduleIdParam);
+            await this.messageService.sendModuleCommandListMessage(message, moduleIdParam);
+            return;
         }
 
         if(moduleIdParam === undefined) {
-            return this.messageService.sendCommandHelpMessage(message, commandParam);
+            await this.messageService.sendCommandHelpMessage(message, commandParam);
+            return;
         }
 
-        return this.messageService.sendModuleCommandHelpMessage(message, moduleIdParam, commandParam);
+        this.messageService.sendModuleCommandHelpMessage(message, moduleIdParam, commandParam);
     }
 
     private isAllParamPresent(args: Arguments): boolean {

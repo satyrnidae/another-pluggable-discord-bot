@@ -2,25 +2,24 @@ import * as i18n from 'i18n';
 import { ParsedMessage, parse as ParseMessage } from 'discord-command-parser';
 import yparser, { Arguments } from 'yargs-parser';
 import { Message } from 'discord.js';
-import { EventHandler, Command } from 'api/module';
-import { lazyInject } from 'api/inversion';
-import { ServiceIdentifiers, CommandService, ConfigurationService } from 'api/services';
-import { CoreModuleServiceIdentifiers, MessageService } from 'core/module/services';
+import { MessageEventHandler, Command } from '/src/api/module';
+import { ServiceIdentifiers, ConfigurationService, CommandService } from '/src/api/services';
+import { lazyInject } from '/src/api/inversion';
+import { CoreModuleServiceIdentifiers, MessageService } from '/src/core/module/services';
 
-export default class CommandHander extends EventHandler {
-    event = 'message';
+export class CommandHandler extends MessageEventHandler {
 
     @lazyInject(ServiceIdentifiers.Configuration)
-    configurationService: ConfigurationService;
+    private readonly configurationService: ConfigurationService;
 
     @lazyInject(ServiceIdentifiers.Command)
-    commandService: CommandService;
+    private readonly commandService: CommandService;
 
     @lazyInject(CoreModuleServiceIdentifiers.Message)
-    messageService: MessageService;
+    private readonly messageService: MessageService;
 
     public async handler(message: Message): Promise<void> {
-        let prefix: string = await this.commandService.getCommandPrefix(message);
+        let prefix: string = await this.commandService.getCommandPrefix(message.guild);
         let parsedCommand: ParsedMessage = ParseMessage(message, prefix);
 
         if(!parsedCommand.success) {
@@ -34,7 +33,7 @@ export default class CommandHander extends EventHandler {
         //TODO: Commands by module ID
         const commandArgs: string[] = parsedCommand.arguments;
         const commandValue: string = parsedCommand.command;
-        const commands: Command[] = this.commandService.get(commandValue);
+        const commands: UnionArray<Command> = this.commandService.get(commandValue);
         let senderId: string;
 
         // Gets the ID of the user and the ID of the chat for logging
@@ -45,20 +44,19 @@ export default class CommandHander extends EventHandler {
             senderId = message.author.tag.concat(':');
         }
 
-        if (commands.length !== 1) {
+        if (commands instanceof Array) {
             console.info(senderId, i18n.__('Command'), commandValue, i18n.__('could not be resolved to a single command. (Module collision?)'));
             return;
         }
-        const command = commands[0];
 
-        const args: Arguments = yparser(commandArgs, command.options);
+        const args: Arguments = yparser(commandArgs, commands.options);
         console.debug(senderId, i18n.__('Execute'), commandValue, commandArgs.join(' '));
 
         // Check perms and execute
-        if (!await command.checkPermissions(message)) {
+        if (!await commands.checkPermissions(message)) {
             this.messageService.sendPermissionDeniedMessage(message);
             return;
         }
-        command.run(message, args);
+        commands.run(message, args);
     }
 }

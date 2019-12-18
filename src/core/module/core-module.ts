@@ -1,25 +1,25 @@
 import * as i18n from 'i18n';
-import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
-import { CommandHandler, ReadyHandler, GuildCreateHandler } from 'core/module/events';
-import { HelpCommand, SetPrefixCommand } from 'core/module/commands';
-import { Module, EventHandler, Command, Version } from 'api/module';
-import { Container } from 'api/inversion';
+import { Module, EventHandler, Command, Version } from '/src/api/module';
+import { Container } from '/src/api/inversion';
+import { MessageService, CoreModuleServiceIdentifiers } from '/src/core/module/services';
+import { CommandHandler, GuildCreateHandler, ReadyHandler } from '/src/core/module/events';
+import { HelpCommand, SetPrefixCommand } from '/src/core/module/commands';
 
-export default class CoreModule extends Module {
+export class CoreModule extends Module {
     private coreEvents: EventHandler[];
     private coreCommands: Command[];
 
     public constructor() {
         super({
             name: 'Core Module',
-            version: '1.0.0',
-            id: 'core-module',
-            authors: [ 'satyrnidae' ],
+            version: Version,
+            id: '$core',
             details: {
                 apiVersion: Version,
-                entryPoint: 'core-module',
-                commands: [],
-                eventHandlers: []
+                entryPoint: '/src/core/module/core-module',
+                authors: [ 'Isabel Maskrey (satyrnidae)' ],
+                description: 'Provides core functionality for the modular discord bot.',
+                website: 'https://github.com/satyrnidae/another-pluggable-discord-bot'
             }
         });
     }

@@ -1,5 +1,5 @@
 const CoreModuleServiceIdentifiers = {
-    Message: Symbol.for('core-module.Message')
+    Message: Symbol.for('/src/core/module/services/message-service')
 };
 
-export default CoreModuleServiceIdentifiers;
+export { CoreModuleServiceIdentifiers };

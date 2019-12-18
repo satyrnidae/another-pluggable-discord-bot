@@ -1,30 +1,30 @@
 import * as i18n from 'i18n';
 import { Guild } from 'discord.js';
-import { MessageService, CoreModuleServiceIdentifiers } from 'core/module/services';
-import { EventHandler } from 'api/module';
-import { lazyInject } from 'api/inversion';
-import { ServiceIdentifiers, ClientService, EventService } from 'api/services';
-import { forEachAsync } from 'api/utils';
+import { EventHandler } from '/src/api/module';
+import { lazyInject } from '/src/api/inversion';
+import { CoreModuleServiceIdentifiers, MessageService } from '/src/core/module/services';
+import { ServiceIdentifiers, ClientService, EventService } from '/src/api/services';
+import { forEachAsync } from '/src/api/utils';
 
-export default class ReadyHandler extends EventHandler {
-    event = 'ready';
+export class ReadyHandler extends EventHandler {
+    readonly event = 'ready';
 
     @lazyInject(CoreModuleServiceIdentifiers.Message)
-    messageService: MessageService;
+    private readonly messageService: MessageService;
 
     @lazyInject(ServiceIdentifiers.Client)
-    clientService: ClientService;
+    private readonly clientService: ClientService;
 
     @lazyInject(ServiceIdentifiers.Event)
-    eventService: EventService;
+    private readonly eventService: EventService;
 
-    public async handler(): Promise<any> {
+    public async handler(): Promise<void> {
         this.eventService.on('error', (e: string) => console.info(e));
         this.eventService.on('warn', (w: string) => console.info(w));
         this.eventService.on('info', (i: string) => console.info(i));
 
-        console.info(i18n.__('Logged in as %s, and ready for service!', this.clientService.userTag));
+        console.info(i18n.__('Logged in as %s, and ready for service!', this.clientService.user.tag));
 
-        return forEachAsync(this.clientService.guilds, async (guild: Guild): Promise<any> => this.messageService.sendGuildWelcomeMessage(guild));
+        await forEachAsync(this.clientService.guilds, async (guild: Guild) => this.messageService.sendGuildWelcomeMessage(guild));
     }
 }
