@@ -1,3 +1,6 @@
-const version = 'r1';
+/**
+ * The API version.
+ */
+const Version = 'r1';
 
-export default version;
+export { Version };

@@ -1,9 +1,26 @@
-import { ModuleDetails } from 'api/module';
+import { ModuleDetails } from '/src/api/module';
 
-export default interface ModuleInfo {
+/**
+ * Models the basic module info file.
+ */
+export interface ModuleInfo {
+    /**
+     * The friendly name of the module
+     */
     name: string;
+
+    /**
+     * The module's version
+     */
     version: string;
+
+    /**
+     * The module's unique ID
+     */
     id: string;
-    authors: string[];
+
+    /**
+     * Additional details about the module
+     */
     details: ModuleDetails
 }

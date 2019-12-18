@@ -1,24 +1,42 @@
-import { Command, EventHandler, ModuleInfo } from 'api/module';
+import { Command, EventHandler, ModuleInfo } from '/src/api/module';
 
-export default abstract class Module {
+/**
+ * The base class for a module implementation.
+ */
+export abstract class Module {
+    /**
+     * A list of commands which are provided by this module.
+     */
     public readonly commands: Command[];
+
+    /**
+     * A list of events which should be registered to this module.
+     */
     public readonly events: EventHandler[];
 
-    constructor(public moduleInfo: ModuleInfo) {}
+    /**
+     * Creates a new instance of the module.
+     * @param moduleInfo The parsed information from the associated module info file.
+     */
+    constructor(public moduleInfo: ModuleInfo) { }
 
-    async registerDependencies(): Promise<void> {
-        return Promise.resolve();
-    }
+    /**
+     * Registers any dependencies to the IOC container
+     */
+    async registerDependencies(): Promise<void> { }
 
-    async preInitialize(): Promise<void> {
-        return Promise.resolve();
-    }
+    /**
+     * Pre-initialization stage for the module.
+     */
+    async preInitialize(): Promise<void> { }
 
-    async initialize(): Promise<void> {
-        return Promise.resolve();
-    }
+    /**
+     * Initialization stage for the module.
+     */
+    async initialize(): Promise<void> { }
 
-    async postInitialize(): Promise<void> {
-        return Promise.resolve();
-    }
+    /**
+     * Post-initialization stage for the module.
+     */
+    async postInitialize(): Promise<void> { }
 }

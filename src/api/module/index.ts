@@ -1,7 +1,8 @@
-export { default as Module } from 'api/module/module';
-export { default as ModuleInfo } from 'api/module/module-info';
-export { default as ModuleDetails } from 'api/module/module-details';
-export { default as Command } from 'api/module/command';
-export { default as EventHandler } from 'api/module/event-handler';
-export { default as Version } from 'api/module/version';
-export { default as AppConfiguration } from 'api/module/app-configuration';
+export * from '/src/api/module/version';
+export * from '/src/api/module/app-configuration';
+export * from '/src/api/module/command';
+export * from '/src/api/module/event-handler';
+export * from '/src/api/module/message-event-handler';
+export * from '/src/api/module/module-details';
+export * from '/src/api/module/module-info';
+export * from '/src/api/module/module';
