@@ -1,13 +1,14 @@
+import * as i18n from 'i18n';
 import { Message } from 'discord.js';
 import { Options, Arguments } from 'yargs-parser';
-import { Command } from 'api/module';
+import { Command } from '/src/api/module';
 
 export class JoinExchangeCommand extends Command {
-    readonly friendlyName: string;
-    readonly command: string;
-    readonly syntax: string[];
-    readonly description: string;
-    readonly options: Options;
+    readonly friendlyName: string = i18n.__('Join Exchange');
+    readonly command: string = 'joinexchange';
+    readonly syntax: string[] = [];
+    readonly description: string = i18n.__('Allows a user to join an exchange in the current guild.');
+    readonly options: Options = {};
 
     async run(message: Message, args: Arguments): Promise<void> {
 

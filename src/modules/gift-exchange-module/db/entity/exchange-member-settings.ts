@@ -1,8 +1,9 @@
 import { Entity, ManyToOne, JoinColumn, Column, Repository } from 'typeorm';
 import { DataEntity } from '/src/api/db';
-import { Exchange, ExchangeMember } from '/src/modules/gift-exchange-module/db/entity';
 import { lazyInject } from '/src/api/inversion';
 import { ServiceIdentifiers, DataService } from '/src/api/services';
+import { Exchange } from '/src/modules/gift-exchange-module/db/entity/exchange';
+import { ExchangeMember } from '/src/modules/gift-exchange-module/db/entity/exchange-member';
 
 type DeliveryPreference = 'INPERSON'|'MAIL';
 
