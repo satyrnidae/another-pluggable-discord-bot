@@ -1,28 +1,47 @@
-import { Entity, PrimaryGeneratedColumn, Column, Repository } from 'typeorm';
-import { DataEntity } from 'api/db';
-import { lazyInject } from 'api/inversion';
-import { ServiceIdentifiers, DataService } from 'api/services';
+import { Entity, PrimaryGeneratedColumn, Column, Repository, ManyToOne, OneToMany } from 'typeorm';
+import { lazyInject } from '/src/api/inversion';
+import { DataEntity } from '/src/api/db';
+import { ServiceIdentifiers, DataService } from '/src/api/services';
+import { ModuleConfiguration } from '/src/db/entity';
 
-@Entity('core/guild_configuration')
-export default class GuildConfiguration extends DataEntity {
+@Entity('$guild')
+export class GuildConfiguration extends DataEntity {
 
     @lazyInject(ServiceIdentifiers.Data)
-    dataService: DataService;
+    private readonly dataService: DataService;
 
     async save(): Promise<this & GuildConfiguration> {
         const guildRepository: Repository<GuildConfiguration> = await this.dataService.getRepository(GuildConfiguration);
         return guildRepository.save(this);
     }
 
+    /**
+     * The primary ID column
+     */
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * The Discord native ID for the guild
+     */
     @Column()
     nativeId: string;
 
+    /**
+     * The guild command prefix setting
+     */
     @Column()
     commandPrefix: string;
 
+    /**
+     * Whether or not the welcome message has been sent
+     */
     @Column()
     welcomeMsgSent: boolean;
+
+    /**
+     * The module configuration entries for the guild
+     */
+    @OneToMany(() => ModuleConfiguration, module => module.guild, {cascade: ['remove']})
+    modules: ModuleConfiguration[];
 }

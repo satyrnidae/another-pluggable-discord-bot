@@ -1,1 +1,2 @@
-export { default as GuildConfiguration } from 'db/entity/guild-configuration';
+export * from '/src/db/entity/module-configuration';
+export * from '/src/db/entity/guild-configuration';
