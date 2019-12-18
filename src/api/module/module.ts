@@ -15,10 +15,9 @@ export abstract class Module {
     public readonly events: EventHandler[];
 
     /**
-     * Creates a new instance of the module.
      * @param moduleInfo The parsed information from the associated module info file.
      */
-    constructor(public moduleInfo: ModuleInfo) { }
+    constructor(public readonly moduleInfo: ModuleInfo) { }
 
     /**
      * Registers any dependencies to the IOC container

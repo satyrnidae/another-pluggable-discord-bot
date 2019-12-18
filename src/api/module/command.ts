@@ -31,10 +31,9 @@ export abstract class Command {
     readonly abstract options: Options;
 
     /**
-     * Initializes a new command instance.
      * @param moduleId The ID of the module to which this command belongs.
      */
-    constructor(public moduleId: string) { }
+    constructor(public readonly moduleId: string) { }
 
     /**
      * Executes the command functionality.

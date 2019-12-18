@@ -10,7 +10,7 @@ export interface CommandService {
      * @param command The command to register
      * @param moduleId The ID of the module to which the command belongs
      */
-    register(command: Command, moduleId: string): boolean;
+    register(command: Command): boolean;
 
     /**
      * Gets a list of all commands which can be triggered by the command string.
@@ -23,7 +23,7 @@ export interface CommandService {
      * Gets all the commands from the list, optionally filtering by module.
      * @param moduleId Optionally, the module ID by which to filter the commands.
      */
-    getAll(moduleId?: string): Command[];
+    getAll(moduleId?: string): UnionArray<Command>;
 
     /**
      * Gets the prefix for a specific guild.

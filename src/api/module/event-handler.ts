@@ -8,10 +8,9 @@ export abstract class EventHandler {
     readonly abstract event: string;
 
     /**
-     * Constructs a new event handler instance.
      * @param moduleId The ID of the module to which this event belongs.
      */
-    constructor(public moduleId: string) { }
+    constructor(public readonly moduleId: string) { }
 
     /**
      * Handles the event.

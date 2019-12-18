@@ -23,3 +23,11 @@ export function unwrapUnionToSingle<T>(union: UnionArray<T>): T | undefined {
     }
     return union;
 }
+
+/**
+ * Converts an array to null if empty, the single entry if length is one, or returns the array.
+ * @param array The array to convert
+ */
+export function arrayToUnion<T>(array: T[]): UnionArray<T> | null {
+    return array.length === 0 ? null : array.length === 1 ? array[0] : array;
+}
