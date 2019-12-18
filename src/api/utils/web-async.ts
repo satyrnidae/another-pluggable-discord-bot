@@ -1,17 +1,23 @@
 import { XMLHttpRequest } from 'xmlhttprequest';
 
-const TIMEOUT = 500;
-const SUCCESS = 200;
-const MULTIPLE_CHOICES = 300;
+const DEFAULT_REQUEST_TIMEOUT = 500;
+const HTTP_STATUS_SUCCESS = 200;
+const HTTP_STATUS_MULTIPLE_CHOICES = 300;
 
-export function getHttpResponse(method: string, url: string, timeout: number = TIMEOUT): Promise<XMLHttpRequest> {
+/**
+ * Asynchronously calls an XMLHttpRequest. Promisifies XmlHttpRequest.open and onreadystatechanged.
+ * @param method The HTTP method
+ * @param url The URL to request
+ * @param timeout Optionally, the timeout for request execution, in milliseconds. Defaults to 500.
+ */
+export function getHttpResponse(method: string, url: string, timeout: number = DEFAULT_REQUEST_TIMEOUT): Promise<XMLHttpRequest> {
     return new Promise<XMLHttpRequest>((resolve: Resolve<XMLHttpRequest>, reject: Reject) => {
         const xhr: XMLHttpRequest = new XMLHttpRequest();
         xhr.timeout = timeout;
         xhr.open(method, url);
         xhr.onreadystatechange = () => {
             if(xhr.readyState === xhr.DONE) {
-                if(xhr.status >= SUCCESS && xhr.status < MULTIPLE_CHOICES) {
+                if(xhr.status >= HTTP_STATUS_SUCCESS && xhr.status < HTTP_STATUS_MULTIPLE_CHOICES) {
                     resolve(xhr);
                 }
                 else {
