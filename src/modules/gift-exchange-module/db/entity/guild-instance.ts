@@ -1,10 +1,11 @@
-import { DataEntity } from "api/db/entity";
-import { lazyInject } from "api/inversion";
-import { ServiceIdentifiers, DataService } from "api/services";
 import { Repository, Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Exchange } from "./exchange";
+import { DataEntity } from '/src/api/db';
+import { lazyInject } from '/src/api/inversion';
+import { ServiceIdentifiers } from '/src/api/services';
+import { DataService } from '/src/core/services';
+import { Exchange } from '/src/modules/gift-exchange-module/db/entity';
 
-@Entity('gex/GuildInstance')
+@Entity('gex/guild_instance')
 export class GuildInstance extends DataEntity {
 
     @lazyInject(ServiceIdentifiers.Data)
@@ -21,6 +22,6 @@ export class GuildInstance extends DataEntity {
     @Column()
     nativeId: string;
 
-    @OneToMany(() => Exchange, exchange => exchange.guild, {cascade: ["remove"]})
+    @OneToMany(() => Exchange, exchange => exchange.guild, {cascade: ['remove']})
     exchanges: Exchange[];
 }
