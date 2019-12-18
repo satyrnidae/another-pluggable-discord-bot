@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import { ModuleService as IModuleService, ServiceIdentifiers, EventService, CommandService } from '/src/api/services';
 import { Module, Command, EventHandler, ModuleInfo, Version } from '/src/api/module';
 import { FsAsync, forEachAsync, arrayToUnion } from '/src/api/utils';
+import { CoreModule } from '/src/core/module';
 
 const MODULE_DIRECTORY = `${__dirname}/../../modules`;
 

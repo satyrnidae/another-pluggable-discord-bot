@@ -16,7 +16,7 @@ export class CoreModule extends Module {
             id: '$core',
             details: {
                 apiVersion: Version,
-                entryPoint: '/src/core/module/core-module',
+                entryPoint: '/src/core/module',
                 authors: [ 'Isabel Maskrey (satyrnidae)' ],
                 description: 'Provides core functionality for the modular discord bot.',
                 website: 'https://github.com/satyrnidae/another-pluggable-discord-bot'
