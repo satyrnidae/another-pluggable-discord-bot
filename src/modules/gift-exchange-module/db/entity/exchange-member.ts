@@ -20,9 +20,6 @@ export class ExchangeMember extends DataEntity {
     @Column()
     nativeId: string;
 
-    @Column({nullable: true})
-    deliveryAddress: string;
-
     @ManyToMany(() => Exchange, exchange => exchange.members)
     @JoinTable({
         name: 'gex/ExchangeMemberSettings',
