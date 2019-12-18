@@ -1,5 +1,12 @@
-import { Repository, EntitySchema } from 'typeorm';
+import { Repository } from 'typeorm';
 
-export default interface DataService {
-    getRepository<T>(target: string | Function | (new () => T) | EntitySchema<T>): Promise<Repository<T>>;
+/**
+ * A service which provides access to the data source.
+ */
+export interface DataService {
+    /**
+     * Gets a new repository instance for a specific target.
+     * @param target The target for which the repository is resolved.
+     */
+    getRepository<T>(target: RepositoryTarget<T>): Promise<Repository<T>>;
 }

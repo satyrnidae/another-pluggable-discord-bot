@@ -1,6 +1,6 @@
 /**
  * The API version.
  */
-const Version = 'r1';
+const Version = '2.0.0-alpha';
 
 export { Version };
