@@ -1,8 +1,8 @@
-import { DataEntityFactory } from 'api/db';
 import { injectable, inject } from 'inversify';
-import { ServiceIdentifiers, DataService } from 'api/services';
 import { User } from 'discord.js';
-import { UserSettings } from 'modules/message-link-embed-module/db/entity';
+import { DataEntityFactory } from '/src/api/db';
+import { ServiceIdentifiers, DataService } from '/src/api/services';
+import { UserSettings } from '/src/modules/message-link-embed-module/db/entity';
 
 @injectable()
 export class UserSettingsFactory implements DataEntityFactory<UserSettings> {
@@ -10,19 +10,19 @@ export class UserSettingsFactory implements DataEntityFactory<UserSettings> {
 
     async load(user: User): Promise<UserSettings> {
         const repository = await this.dataService.getRepository(UserSettings);
-        let object = await repository.findOne({nativeId: user.id});
-        if(!object) {
-            object = new UserSettings();
-            object.nativeId = user.id;
+        let userSettings = await repository.findOne({nativeId: user.id});
+        if(!userSettings) {
+            userSettings = new UserSettings();
+            userSettings.nativeId = user.id;
             // Bots don't have privacy apparently
             if(user.bot) {
-                object.linkFromDMs = true;
-                object.linkFromNonPresent = true;
-                object.linkToDMs = true;
-                object.linkToNonPresent = true;
+                userSettings.linkFromDMs = true;
+                userSettings.linkFromNonPresent = true;
+                userSettings.linkToDMs = true;
+                userSettings.linkToNonPresent = true;
             }
         }
-        object.name = user.username;
-        return object;
+        userSettings.name = user.username;
+        return userSettings;
     }
 }

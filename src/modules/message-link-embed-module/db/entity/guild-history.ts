@@ -1,9 +1,9 @@
-import { DataEntity } from 'api/db';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { lazyInject } from 'api/inversion';
-import { ServiceIdentifiers, DataService, ClientService } from 'api/services';
-import { ChannelHistory } from 'modules/message-link-embed-module/db/entity';
 import { Guild } from 'discord.js';
+import { DataEntity } from '/src/api/db';
+import { lazyInject } from '/src/api/inversion';
+import { ServiceIdentifiers, DataService, ClientService } from '/src/api/services';
+import { ChannelHistory } from '/src/modules/message-link-embed-module/db/entity/channel-history';
 
 @Entity('msg_link_embed/guild_history')
 export class GuildHistory extends DataEntity {
@@ -24,14 +24,14 @@ export class GuildHistory extends DataEntity {
     @Column()
     name: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     nativeId: string;
 
     @OneToMany(() => ChannelHistory, channel => channel.guild)
     channels: ChannelHistory[];
 
     getNativeGuild(): Guild {
-        if(this.nativeId === '@me') {
+        if (this.nativeId === '@me') {
             return null;
         }
         return this.clientService.guilds.find(guild => guild.id === this.nativeId);

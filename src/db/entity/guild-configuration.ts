@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, Repository, OneToMany } from 't
 import { lazyInject } from '/src/api/inversion';
 import { DataEntity } from '/src/api/db';
 import { ServiceIdentifiers, DataService } from '/src/api/services';
-import { ModuleConfiguration } from '/src/db/entity';
+import { ModuleConfiguration } from '/src/db/entity/module-configuration';
 
 @Entity('$guild')
 export class GuildConfiguration extends DataEntity {

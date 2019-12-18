@@ -1,1 +1,1 @@
-export { default as LinkQuoteHandler } from 'modules/message-link-embed-module/handlers/link-quote-handler';
+export * from '/src/modules/message-link-embed-module/handlers/link-quote-handler';

@@ -1,8 +1,8 @@
 import * as i18n from 'i18n';
 import { injectable, inject } from 'inversify';
-import { ServiceIdentifiers, ClientService } from 'api/services';
 import { PartialTextBasedChannelFields } from 'discord.js';
-import { Exchange } from 'modules/gift-exchange-module/db/entity';
+import { ServiceIdentifiers, ClientService } from '/src/api/services';
+import { Exchange } from '/src/modules/gift-exchange-module/db/entity';
 
 @injectable()
 export class MessageService {

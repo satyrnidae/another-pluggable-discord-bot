@@ -1,9 +1,10 @@
-import { DataEntity } from 'api/db';
 import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { lazyInject } from 'api/inversion';
-import { ServiceIdentifiers, DataService, ClientService } from 'api/services';
-import { GuildHistory, MessageHistory } from 'modules/message-link-embed-module/db/entity';
 import { Channel, Guild } from 'discord.js';
+import { DataEntity } from '/src/api/db';
+import { ServiceIdentifiers, DataService, ClientService } from '/src/api/services';
+import { lazyInject } from '/src/api/inversion';
+import { GuildHistory } from '/src/modules/message-link-embed-module/db/entity/guild-history';
+import { MessageHistory } from '/src/modules/message-link-embed-module/db/entity/message-history';
 
 @Entity('msg_link_embed/channel_history')
 export class ChannelHistory extends DataEntity {
@@ -24,10 +25,10 @@ export class ChannelHistory extends DataEntity {
     @Column()
     name: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     nativeId: string;
 
-    @ManyToOne(() => GuildHistory, guild => guild.channels, {cascade: true})
+    @ManyToOne(() => GuildHistory, guild => guild.channels, { cascade: true })
     guild: GuildHistory;
 
     @OneToMany(() => MessageHistory, message => message.channel)
@@ -35,7 +36,7 @@ export class ChannelHistory extends DataEntity {
 
     getNativeChannel(): Channel {
         const myGuild: Guild = this.guild.getNativeGuild();
-        if(!myGuild) {
+        if (!myGuild) {
             return this.clientService.client.channels.find(channel => channel.id === this.nativeId);
         }
         return myGuild.channels.find(channel => channel.id === this.nativeId);

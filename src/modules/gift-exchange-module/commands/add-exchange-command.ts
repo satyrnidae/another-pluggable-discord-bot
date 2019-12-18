@@ -1,11 +1,11 @@
 import * as i18n from 'i18n';
 import { Message } from 'discord.js';
 import { Options, Arguments } from 'yargs-parser';
-import { Command } from 'api/module';
-import { MessageService, ModuleServiceIdentifiers } from 'modules/gift-exchange-module/services';
-import { lazyInject } from 'api/inversion';
-import { Exchange } from 'modules/gift-exchange-module/db/entity';
-import { ExchangeFactory } from 'modules/gift-exchange-module/db/factory';
+import { Command } from '/src/api/module';
+import { ModuleServiceIdentifiers, MessageService } from '/src/modules/gift-exchange-module/services';
+import { ExchangeFactory } from '/src/modules/gift-exchange-module/db/factory';
+import { lazyInject } from '/src/api/inversion';
+import { Exchange } from '/src/modules/gift-exchange-module/db/entity';
 
 export class AddExchangeCommand extends Command {
     readonly friendlyName: string = i18n.__('Add Exchange');

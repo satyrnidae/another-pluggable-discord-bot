@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { EventHandler } from '/src/api/module';
+import { EventHandler } from '/src/api/module/event-handler';
 
 /**
  * Skeleton implementation for an event handler which handles message events.

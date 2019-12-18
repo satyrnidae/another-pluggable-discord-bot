@@ -1,4 +1,4 @@
-import { DataEntity } from '/src/api/db';
+import { DataEntity } from '/src/api/db/entity';
 
 /**
  * Basic model of a data entity factory.

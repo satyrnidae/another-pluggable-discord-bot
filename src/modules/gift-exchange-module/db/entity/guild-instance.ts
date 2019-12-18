@@ -3,7 +3,7 @@ import { DataEntity } from '/src/api/db';
 import { lazyInject } from '/src/api/inversion';
 import { ServiceIdentifiers } from '/src/api/services';
 import { DataService } from '/src/core/services';
-import { Exchange } from '/src/modules/gift-exchange-module/db/entity';
+import { Exchange } from '/src/modules/gift-exchange-module/db/entity/exchange';
 
 @Entity('gex/guild_instance')
 export class GuildInstance extends DataEntity {
@@ -19,7 +19,7 @@ export class GuildInstance extends DataEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({unique: true})
     nativeId: string;
 
     @OneToMany(() => Exchange, exchange => exchange.guild, {cascade: ['remove']})

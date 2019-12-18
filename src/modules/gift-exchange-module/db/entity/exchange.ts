@@ -2,7 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Repository, ManyToMa
 import { DataEntity } from '/src/api/db';
 import { ServiceIdentifiers, DataService } from '/src/api/services';
 import { lazyInject } from '/src/api/inversion';
-import { GuildInstance, ExchangeMember } from '/src/modules/gift-exchange-module/db/entity';
+import { GuildInstance } from '/src/modules/gift-exchange-module/db/entity/guild-instance';
+import { ExchangeMember } from '/src/modules/gift-exchange-module/db/entity/exchange-member';
 
 @Entity('gex/exchange')
 @Unique('gex/name_to_guild', ['name', 'guild'])

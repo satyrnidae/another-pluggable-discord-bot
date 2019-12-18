@@ -1,10 +1,29 @@
-import { WebRequestService, ModuleServiceIdentifiers, ModuleConfigurationService, MessageService } from 'modules/message-link-embed-module/services';
-import { LinkQuoteHandler } from 'modules/message-link-embed-module/handlers';
-import { Container } from 'api/inversion';
-import { Module, Command, EventHandler } from 'api/module';
-import { UserSettingsFactory, GuildHistoryFactory, ChannelHistoryFactory, MessageHistoryFactory } from 'modules/message-link-embed-module/db/factory';
+import { Container } from '/src/api/inversion';
+import { Module, Command, ModuleInfo, EventHandler } from '/src/api/module';
+import { WebRequestService, MessageService, ModuleConfigurationService, ModuleServiceIdentifiers } from '/src/modules/message-link-embed-module/services';
+import { UserSettingsFactory, GuildHistoryFactory, ChannelHistoryFactory, MessageHistoryFactory } from '/src/modules/message-link-embed-module/db/factory';
+import { LinkQuoteHandler } from '/src/modules/message-link-embed-module/handlers';
 
 export default class MessageLinkEmbedModule extends Module {
+
+    private readonly _commands: Command[] = [];
+    private readonly _events: EventHandler[] = [];
+
+    get commands() {
+        return new Array(...this._commands);
+    }
+
+    get events() {
+        return new Array(...this._events);
+    }
+
+    constructor(moduleInfo: ModuleInfo) {
+        super(moduleInfo);
+        this._commands = [];
+        this._events = [
+            new LinkQuoteHandler(moduleInfo.id)
+        ];
+    }
 
     async registerDependencies(): Promise<void> {
         Container.bind<WebRequestService>(ModuleServiceIdentifiers.WebRequest).to(WebRequestService);
@@ -18,15 +37,4 @@ export default class MessageLinkEmbedModule extends Module {
 
         return super.registerDependencies();
     }
-
-    async preInitialize(): Promise<void> {
-        this.events = [
-            new LinkQuoteHandler(this.moduleInfo.id)
-        ];
-        return super.preInitialize();
-    }
-
-    commands: Command[] = [];
-
-    events: EventHandler[] = [];
 }

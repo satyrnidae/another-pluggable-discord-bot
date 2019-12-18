@@ -2,7 +2,7 @@ import { PrimaryGeneratedColumn, Entity, Column, ManyToMany, Repository, JoinTab
 import { DataEntity } from '/src/api/db';
 import { ServiceIdentifiers, DataService } from '/src/api/services';
 import { lazyInject } from '/src/api/inversion';
-import { Exchange } from '/src/modules/gift-exchange-module/db/entity';
+import { Exchange } from '/src/modules/gift-exchange-module/db/entity/exchange';
 
 @Entity('gex/exchange_member')
 export class ExchangeMember extends DataEntity {

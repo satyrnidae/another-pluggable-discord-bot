@@ -1,41 +1,35 @@
-import { Command, EventHandler, Module, ModuleInfo } from 'api/module';
-import { GuildInstanceFactory, ExchangeFactory } from 'modules/gift-exchange-module/db/factory';
-import { Container } from 'api/inversion';
-import { JoinExchangeCommand, AddExchangeCommand } from 'modules/gift-exchange-module/commands';
-import { MessageService, ModuleServiceIdentifiers } from 'modules/gift-exchange-module/services';
+import { Module, Command, EventHandler, ModuleInfo } from '/src/api/module';
+import { Container } from '/src/api/inversion';
+import { JoinExchangeCommand, AddExchangeCommand } from '/src/modules/gift-exchange-module/commands';
+import { MessageService, ModuleServiceIdentifiers } from '/src/modules/gift-exchange-module/services';
+import { GuildInstanceFactory, ExchangeFactory } from '/src/modules/gift-exchange-module/db/factory';
 
 export default class GiftExchangeModule extends Module {
+    private readonly _commands: Command[];
+    private readonly _events: EventHandler[];
 
-    readonly commands: Command[];
-    readonly events: EventHandler[];
+    get commands() {
+        return new Array(...this._commands);
+    }
+
+    get events() {
+        return new Array(...this._events);
+    }
 
     constructor(moduleInfo: ModuleInfo) {
         super(moduleInfo);
-        this.commands = [
+        this._commands = [
             new JoinExchangeCommand(moduleInfo.id),
             new AddExchangeCommand(moduleInfo.id)
         ];
-        this.events = [];
+        this._events = [];
     }
 
     public async registerDependencies(): Promise<void> {
         Container.bind<MessageService>(ModuleServiceIdentifiers.Message).to(MessageService);
-
         Container.bind<GuildInstanceFactory>(GuildInstanceFactory).toSelf();
         Container.bind<ExchangeFactory>(ExchangeFactory).toSelf();
 
         await super.registerDependencies();
-    }
-
-    public async preInitialize(): Promise<void> {
-        return super.preInitialize();
-    }
-
-    public async initialize(): Promise<void> {
-        return super.initialize();
-    }
-
-    public async postInitialize() : Promise<void> {
-        return super.postInitialize();
     }
 }
