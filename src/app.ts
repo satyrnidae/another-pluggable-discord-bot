@@ -1,4 +1,3 @@
-import 'module-alias/register';
 import * as sapi from 'api/services';
 import { Container } from 'api/inversion';
 import { Lifecycle } from 'api/lifecycle';

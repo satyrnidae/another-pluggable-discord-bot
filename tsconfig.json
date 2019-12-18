@@ -1,24 +1,28 @@
 {
-    "compilerOptions": {
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "target": "es2017",
-        "outDir": "./bin",
-        "sourceMap": true,
-        "module": "commonjs",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "baseUrl": "src"
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "target": "es2017",
+    "outDir": "./bin",
+    "sourceMap": true,
+    "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "/*": ["./*"]
     },
-    "include": [
-        "src/**/*.ts",
-        "config/**/*.json",
-        "src/**/*.json",
-        "src/modules/**/*.js"
-    ],
-    "exclude": [
-        "node_modules",
-        "bin",
-        "config/config.init.json"
-    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "config/**/*.json",
+    "src/**/*.json",
+    "src/modules/**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "bin",
+    "config/config.init.json"
+  ]
 }
