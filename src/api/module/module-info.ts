@@ -1,4 +1,4 @@
-import { ModuleDetails } from '/src/api/module';
+import { ModuleDetails } from '/src/api/module/module-details';
 
 /**
  * Models the basic module info file.

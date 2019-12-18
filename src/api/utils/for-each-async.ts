@@ -1,6 +1,6 @@
-import { LoopStateArgs } from '/src/api/utils';
+import { LoopStateArgs } from '/src/api/utils/loop-state-args';
 
-export async function forEachAsync<T>(array: T[], callback: (current: any, index: number, array: T[], loopStateArgs: LoopStateArgs) => Promise<void>) {
+export async function forEachAsync<T>(array: T[], callback: (current: T, index: number, array: T[], loopStateArgs: LoopStateArgs) => Promise<void>) {
     const loopStateArgs: LoopStateArgs = new LoopStateArgs();
 
     for(let index = 0; index < array.length; ++index) {

@@ -1,4 +1,6 @@
-import { Command, EventHandler, ModuleInfo } from '/src/api/module';
+import { Command } from '/src/api/module/command';
+import { EventHandler } from '/src/api/module/event-handler';
+import { ModuleInfo } from '/src/api/module/module-info';
 
 /**
  * The base class for a module implementation.
