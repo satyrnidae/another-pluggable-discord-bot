@@ -1,10 +1,10 @@
 import * as i18n from 'i18n';
 import { injectable, inject } from 'inversify';
-import { Lifecycle } from 'api/lifecycle';
-import { ServiceIdentifiers, ClientService, ModuleService } from 'api/services';
+import { Lifecycle } from '/src/api/lifecycle';
+import { ServiceIdentifiers, ClientService, ModuleService } from '/src/api/services';
 
 @injectable()
-export default class Robot implements Lifecycle {
+export class Robot implements Lifecycle {
 
     public constructor(
         @inject(ServiceIdentifiers.Client) public clientService: ClientService,
