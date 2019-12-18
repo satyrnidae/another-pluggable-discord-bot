@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, Repository, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Repository, OneToMany } from 'typeorm';
 import { lazyInject } from '/src/api/inversion';
 import { DataEntity } from '/src/api/db';
 import { ServiceIdentifiers, DataService } from '/src/api/services';
@@ -24,7 +24,7 @@ export class GuildConfiguration extends DataEntity {
     /**
      * The Discord native ID for the guild
      */
-    @Column()
+    @Column({unique: true})
     nativeId: string;
 
     /**
