@@ -1,9 +1,8 @@
-import { DataEntity } from 'api/db';
 import { PrimaryGeneratedColumn, ManyToOne, ManyToMany, DeleteResult, Entity, JoinTable } from 'typeorm';
-import { MessageHistory } from 'modules/message-link-embed-module/db/entity';
-import { lazyInject } from 'api/inversion';
-import { DataService } from 'core/services';
-import { ServiceIdentifiers } from 'api/services';
+import { DataEntity } from '/src/api/db';
+import { lazyInject } from '/src/api/inversion';
+import { ServiceIdentifiers, DataService } from '/src/api/services';
+import { MessageHistory } from '/src/modules/message-link-embed-module/db/entity/message-history';
 
 @Entity('msg_link_embed/message_link_history')
 export class MessageLinkHistory extends DataEntity {
@@ -31,6 +30,6 @@ export class MessageLinkHistory extends DataEntity {
     originMessage: MessageHistory;
 
     @ManyToMany(() => MessageHistory)
-    @JoinTable({name: 'msg_link_embed/join_messages_to_link_history'})
+    @JoinTable({ name: 'msg_link_embed/join_messages_to_link_history' })
     resultMessages: MessageHistory[];
 }

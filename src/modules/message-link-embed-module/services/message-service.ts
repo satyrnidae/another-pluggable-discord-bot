@@ -1,18 +1,22 @@
 import * as i18n from 'i18n';
 import { inject, injectable } from 'inversify';
-import { RichEmbed, Message, ColorResolvable, GuildMember, MessageAttachment, GroupDMChannel, PartialTextBasedChannelFields, DMChannel, MessageEmbed } from 'discord.js';
-import { ModuleServiceIdentifiers, ModuleConfigurationService, WebRequestService } from 'modules/message-link-embed-module/services';
-import { ServiceIdentifiers, ClientService, ConfigurationService } from 'api/services';
-import { unwrapUnionToArray, forEachAsync } from 'api/utils';
+import {
+    RichEmbed, Message, ColorResolvable, GuildMember, MessageAttachment, GroupDMChannel, PartialTextBasedChannelFields, DMChannel, MessageEmbed
+} from 'discord.js';
+import { ServiceIdentifiers, ClientService, ConfigurationService } from '/src/api/services';
+import { ModuleServiceIdentifiers } from '/src/modules/message-link-embed-module/services/module-service-identifiers';
+import { ModuleConfigurationService } from '/src/modules/message-link-embed-module/services/module-configuration-service';
+import { WebRequestService } from '/src/modules/message-link-embed-module/services/web-request-service';
+import { unionToArray, forEachAsync } from '/src/api/utils';
 
 @injectable()
-export default class MessageService {
+export class MessageService {
 
     constructor(
         @inject(ServiceIdentifiers.Client) private readonly clientService: ClientService,
         @inject(ServiceIdentifiers.Configuration) private readonly configurationService: ConfigurationService,
         @inject(ModuleServiceIdentifiers.Configuration) private readonly moduleConfigurationService: ModuleConfigurationService,
-        @inject(ModuleServiceIdentifiers.WebRequest) private readonly webRequestService: WebRequestService) {}
+        @inject(ModuleServiceIdentifiers.WebRequest) private readonly webRequestService: WebRequestService) { }
 
     async sendDMInaccessibleMessage(channel: PartialTextBasedChannelFields): Promise<void> {
         await this.sendMessage(channel,
@@ -25,7 +29,7 @@ export default class MessageService {
         await this.sendMessage(channel,
             i18n.__('%s Unfortunately, I can\'t access the guild you have linked!', await this.moduleConfigurationService.getRandomGreeting()),
             i18n.__('If you want me to embed future messages, and you have access to add or remove bots in that guild, you can add me from the link:'),
-            `<https://discordapp.com/api/oauth2/authorize?client_id=${this.clientService.userId}&permissions=67495936&scope=bot>`,
+            `<https://discordapp.com/api/oauth2/authorize?client_id=${this.clientService.user.id}&permissions=67495936&scope=bot>`,
             i18n.__('%s %s', await this.moduleConfigurationService.getRandomGratitude(), await this.configurationService.getRandomHeart()));
     }
 
@@ -47,7 +51,7 @@ export default class MessageService {
 
     async sendLinkedMessage(requestMessage: Message, originalMessage: Message): Promise<Message[]> {
         const embed: RichEmbed = await this.getMessageLinkEmbed(requestMessage, originalMessage);
-        const sentMessages: Message[] = unwrapUnionToArray(await requestMessage.channel.send(originalMessage.url, embed));
+        const sentMessages: Message[] = unionToArray(await requestMessage.channel.send(originalMessage.url, embed));
         sentMessages.push(...await this.resendMessageEmbeds(requestMessage.channel, originalMessage));
         return sentMessages;
     }
@@ -56,7 +60,7 @@ export default class MessageService {
         const sentMessages: Message[] = [];
         await forEachAsync(originalMessage.embeds, async (current: MessageEmbed) => {
             const newEmbed: RichEmbed = new RichEmbed(current);
-            sentMessages.push(...unwrapUnionToArray(await channel.send(newEmbed)));
+            sentMessages.push(...unionToArray(await channel.send(newEmbed)));
         });
         return sentMessages;
     }
@@ -83,20 +87,20 @@ export default class MessageService {
             }
             message = message.concat(line);
         });
-        if(message) {
+        if (message) {
             await channel.send(message);
         }
     }
 
     private getOriginGuildName(originMessage: Message) {
-        if(originMessage.guild) {
+        if (originMessage.guild) {
             return originMessage.guild.name;
         }
-        if(originMessage.channel.type === 'group') {
+        if (originMessage.channel.type === 'group') {
             const groupDMChannel: GroupDMChannel = originMessage.channel as GroupDMChannel;
             return groupDMChannel.name;
         }
-        if(originMessage.channel.type === 'dm') {
+        if (originMessage.channel.type === 'dm') {
             const dmChannel: DMChannel = originMessage.channel as DMChannel;
             return i18n.__('a DM between %s and %s', this.clientService.getDisplayName(), dmChannel.recipient.username);
         }
@@ -104,9 +108,9 @@ export default class MessageService {
     }
 
     private getRequestorUserName(requestMessage: Message) {
-        if(requestMessage.guild) {
+        if (requestMessage.guild) {
             const requestor: GuildMember = requestMessage.guild.member(requestMessage.author);
-            if(requestor) {
+            if (requestor) {
                 return requestor.displayName;
             }
         }
@@ -114,9 +118,9 @@ export default class MessageService {
     }
 
     private getSenderUserName(requestMessage: Message, originMessage: Message): string {
-        if(requestMessage.guild) {
+        if (requestMessage.guild) {
             const activeUser: GuildMember = requestMessage.guild.member(originMessage.author);
-            if(activeUser) {
+            if (activeUser) {
                 return activeUser.displayName;
             }
         }
@@ -125,10 +129,10 @@ export default class MessageService {
     }
 
     private getEmbedThumbnailURL(originMessage: Message): string {
-        if(originMessage.guild) {
+        if (originMessage.guild) {
             return originMessage.guild.iconURL;
         }
-        if(originMessage.channel.type === 'group') {
+        if (originMessage.channel.type === 'group') {
             const groupDMChannel: GroupDMChannel = originMessage.channel as GroupDMChannel;
             return groupDMChannel.icon || originMessage.author.displayAvatarURL;
         }
@@ -138,19 +142,19 @@ export default class MessageService {
     private getEmbedColor(requestMessage: Message, originMessage: Message): ColorResolvable {
         let senderInCurrentGuild: GuildMember = null;
         let senderInOriginGuild: GuildMember = null;
-        if(requestMessage.guild) {
+        if (requestMessage.guild) {
             senderInCurrentGuild = requestMessage.guild.member(originMessage.author);
         }
-        if(originMessage.guild) {
+        if (originMessage.guild) {
             senderInOriginGuild = originMessage.guild.member(originMessage.author);
         }
 
-        if(!senderInCurrentGuild) {
-            if(senderInOriginGuild && senderInOriginGuild.colorRole) {
+        if (!senderInCurrentGuild) {
+            if (senderInOriginGuild && senderInOriginGuild.colorRole) {
                 return senderInOriginGuild.displayColor;
             }
         }
-        else if(senderInCurrentGuild.colorRole) {
+        else if (senderInCurrentGuild.colorRole) {
             return senderInCurrentGuild.displayColor;
         }
 
@@ -158,19 +162,19 @@ export default class MessageService {
     }
 
     private async addAttachments(embed: RichEmbed, originMessage: Message): Promise<RichEmbed> {
-        if(originMessage.attachments && originMessage.attachments.size) {
+        if (originMessage.attachments && originMessage.attachments.size) {
             let attachmentsFieldValue = '';
             await forEachAsync(originMessage.attachments.array(), async (attachment: MessageAttachment): Promise<void> => {
-                if(!embed.image) {
+                if (!embed.image) {
                     const contentType = await this.webRequestService.getContentType(attachment.url);
-                    if(contentType.startsWith('image') && !embed.image) {
+                    if (contentType.startsWith('image') && !embed.image) {
                         embed.setImage(attachment.url);
                     }
                 }
                 attachmentsFieldValue = attachmentsFieldValue.concat(attachment.url).concat('\r\n');
             });
 
-            if(attachmentsFieldValue) {
+            if (attachmentsFieldValue) {
                 embed.addField(i18n.__('Attachments'), attachmentsFieldValue);
             }
         }

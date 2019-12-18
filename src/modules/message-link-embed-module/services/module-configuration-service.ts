@@ -1,6 +1,6 @@
 import * as i18n from 'i18n';
 import { injectable } from 'inversify';
-import { readFileAsync } from 'api/utils';
+import { FsAsync } from '/src/api/utils';
 
 const MODULE_CONFIGURATION_PATH = `${__dirname}/../config/config.json`;
 
@@ -11,7 +11,7 @@ interface ModuleConfiguration {
 }
 
 @injectable()
-export default class ModuleConfigurationService {
+export class ModuleConfigurationService {
 
     private config: ModuleConfiguration;
 
@@ -44,7 +44,7 @@ export default class ModuleConfigurationService {
 
     private async loadConfig(): Promise<void> {
         if(!this.config) {
-            const configurationData = await readFileAsync(MODULE_CONFIGURATION_PATH);
+            const configurationData = await FsAsync.readFileAsync(MODULE_CONFIGURATION_PATH);
             this.config = JSON.parse(configurationData.toString()) as ModuleConfiguration;
         }
     }

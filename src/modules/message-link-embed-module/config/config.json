@@ -1,21 +1,21 @@
 {
-    "greetings": [
-        "Hey there!",
-        "Howdy!",
-        "What's up?",
-        "Hey, what's up?",
-        "Hey!",
-        "Hello!"
-    ],
-    "gratitude": [
-        "Thank you!",
-        "Thanks aplenty!",
-        "Thanks!",
-        "Cheers!",
-        "Thanks much!",
-        "Thank you much!",
-        "Thank you so much!",
-        "It's greatly appreciated, thank you!"
-    ],
-    "sendLinkingErrorsToDMs": true
+  "greetings": [
+    "Hey there!",
+    "Howdy!",
+    "What's up?",
+    "Hey, what's up?",
+    "Hey!",
+    "Hello!"
+  ],
+  "gratitude": [
+    "Thank you!",
+    "Thanks aplenty!",
+    "Thanks!",
+    "Cheers!",
+    "Thanks much!",
+    "Thank you much!",
+    "Thank you so much!",
+    "It's greatly appreciated, thank you!"
+  ],
+  "sendLinkingErrorsToDMs": true
 }
