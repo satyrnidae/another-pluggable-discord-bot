@@ -1,1 +1,1 @@
-export { default as GuildConfigurationFactory } from 'db/factory/guild-configuration-factory';
+export * from '/src/db/factory/guild-configuration-factory';
