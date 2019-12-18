@@ -13,7 +13,7 @@ export default class GuildConfigurationFactory extends DataEntityFactory<GuildCo
     @lazyInject(ServiceIdentifiers.Configuration)
     configurationService: ConfigurationService;
 
-    async load(guild: Guild): Promise<GuildConfiguration> {
+    async load(guild: Guild, save = false): Promise<GuildConfiguration> {
         if(!guild) {
             return null;
         }
@@ -26,7 +26,9 @@ export default class GuildConfigurationFactory extends DataEntityFactory<GuildCo
             guildConfiguration.commandPrefix = await this.configurationService.getDefaultPrefix();
             guildConfiguration.welcomeMsgSent = false;
             guildConfiguration.nativeId = guild.id;
-            await guildConfiguration.save();
+            if(save) {
+                await guildConfiguration.save();
+            }
         }
 
         return guildConfiguration;

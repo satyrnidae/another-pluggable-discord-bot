@@ -6,7 +6,7 @@ import { Command } from 'api/module';
 import { lazyInject } from 'api/inversion';
 
 export default class HelpCommand extends Command {
-    name = 'help';
+    friendlyName = i18n.__('Help');
     command = 'help';
     syntax: string[] = [
             'help',
@@ -19,10 +19,12 @@ export default class HelpCommand extends Command {
         alias: {
             command: ['-c'],
             all: ['-a'],
-            moduleId: ['-m','--module']
+            moduleId: ['-m','--module'],
+            page: ['-p']
         },
         string: ['command','moduleId'],
         boolean: ['all'],
+        number: ['page'],
         configuration: {
             'duplicate-arguments-array': false
         }
@@ -35,9 +37,10 @@ export default class HelpCommand extends Command {
         const allParam: boolean = this.isAllParamPresent(args);
         const commandParam: string = this.getCommandNameParam(args);
         const moduleIdParam: string = this.getModuleIdParam(args);
+        const page: number = args['page'] || 1;
 
         if (allParam) {
-            return this.messageService.sendAllHelpMessage(message);
+            return this.messageService.sendAllHelpMessage(message, page);
         }
 
         if (commandParam === undefined) {

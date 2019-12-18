@@ -1,11 +1,13 @@
 import * as i18n from 'i18n';
 import { injectable, inject } from 'inversify';
-import { Guild, Message, Channel, TextChannel, GuildMember, PartialTextBasedChannelFields, GuildChannel } from 'discord.js';
+import { Guild, Message, Channel, TextChannel, GuildMember, PartialTextBasedChannelFields, GuildChannel, RichEmbed } from 'discord.js';
 import { ServiceIdentifiers, ConfigurationService, ClientService, CommandService, ModuleService } from 'api/services';
 import { GuildConfiguration } from 'db/entity';
 import { GuildConfigurationFactory } from 'db/factory';
 import { forEachAsync, LoopStateArgs } from 'api/utils';
 import { Command, Module } from 'api/module';
+
+const MAX_FIELDS = 24;
 
 @injectable()
 export default class MessageService {
@@ -15,25 +17,20 @@ export default class MessageService {
         @inject(ServiceIdentifiers.Command) public commandService: CommandService,
         @inject(ServiceIdentifiers.Module) public moduleService: ModuleService) {}
 
-    async sendGuildWelcomeMessage(guild: Guild): Promise<any> {
+    async sendGuildWelcomeMessage(guild: Guild): Promise<void> {
         const showWelcomeMessage = await this.configuration.shouldShowWelcomeMessage();
-        const guildConfiguration: GuildConfiguration = await new GuildConfigurationFactory().load(guild);
+        const guildConfiguration: GuildConfiguration = await new GuildConfigurationFactory().load(guild, true);
 
         if(!showWelcomeMessage || guildConfiguration.welcomeMsgSent) {
             return;
         }
         const me: GuildMember = guild.members.get(this.clientService.userId);
-        await forEachAsync(
-            guild.channels.array(),
-            async (channel: Channel, _: number, __: Channel[], loopStateArgs: LoopStateArgs): Promise<any> => {
-                if(!(channel instanceof TextChannel)) {
-                    return;
-                }
-                if(channel.memberPermissions(me).has('SEND_MESSAGES')) {
-                    loopStateArgs.break();
-                    return this.sendWelcomeMessage(channel);
-                }
-            });
+        const announceChannel: TextChannel = guild.channels
+            .filter(channel => channel instanceof TextChannel && channel.memberPermissions(me).has('SEND_MESSAGES')).first() as TextChannel;
+        if (announceChannel && await this.sendWelcomeMessage(announceChannel)) {
+            guildConfiguration.welcomeMsgSent = true;
+            await guildConfiguration.save();
+        }
     }
 
     async sendHelpMessage(message: Message): Promise<any> {
@@ -46,15 +43,43 @@ export default class MessageService {
         return message.channel.send(helpMessage);
     }
 
-    async sendAllHelpMessage(message: Message): Promise<any> {
+    async sendAllHelpMessage(message: Message, page = 1): Promise<void> {
         const prefix: string = await this.commandService.getCommandPrefix(message);
-        const commands: Command[] = this.commandService.commands;
+        const modules: Module[] = this.moduleService.modules;
+        const pages: number = Math.ceil(modules.length / MAX_FIELDS);
+        const paginatedModules: Module[] = [];
+        const displayedPage: number = Math.min(pages, page);
 
-        const helpMessage: string = i18n.__('Here\'s a list of all the commands that I can handle:')
-            .concat(await this.getCommandList(message, commands)).concat('\r\n')
-            .concat(i18n.__('You can find out more by specifying a single command:')).concat('\r\n')
-            .concat(i18n.__('> %s%s', prefix, 'help [-c|--command] *command*'));
-        return message.channel.send(helpMessage);
+        if (pages === 0) {
+            await message.channel.send(i18n.__('There are no commands for me to list!'));
+            return;
+        }
+
+        const start: number = (displayedPage - 1) * MAX_FIELDS;
+        const modulesWithCommands: Module[] = modules.filter(module => this.commandService.getAll(module.moduleInfo.id).length);
+        paginatedModules.push(...modulesWithCommands.slice(start, start + MAX_FIELDS));
+
+        const embed: RichEmbed = new RichEmbed()
+            .setTitle(i18n.__('__All Commands__'))
+            .setDescription(i18n.__('Here is a list of all commands grouped by module.'))
+            .setFooter(i18n.__('Page %s of %s', displayedPage.toString(), pages.toString()));
+
+        await forEachAsync(paginatedModules, async (module: Module) => {
+            const commandsForModule: Command[] = this.commandService.getAll(module.moduleInfo.id);
+            if(commandsForModule.length > 0) {
+                embed.addField(i18n.__('**%s**', module.moduleInfo.name), i18n.__('*id: %s*', module.moduleInfo.id)
+                    .concat(await this.getCommandList(message, commandsForModule)), true);
+            }
+        });
+
+        embed.addField(i18n.__('**More Help**'), i18n.__('You may execute the following to see more about a specific command in this list:').concat('\r\n')
+                .concat(i18n.__('> %s%s', prefix, 'help [-c|--command] *command*')).concat('\r\n')
+                .concat(i18n.__('And, to see more about a specific module:')).concat('\r\n')
+                .concat(i18n.__('> %s%s', prefix, 'help [-m|--moduleId] *moduleId*')).concat('\r\n')
+                .concat(i18n.__('Additionally, there may be more pages available; check the footer!')), false);
+
+        await message.channel.send(i18n.__('Here\'s a list of the commands that I can handle:'), embed);
+        return;
     }
 
     async sendModuleCommandListMessage(message: Message, moduleId: string): Promise<any> {
@@ -105,7 +130,7 @@ export default class MessageService {
         if(otherMatchingCommands && otherMatchingCommands.length) {
             return message.channel.send(i18n.__('I could not find the command "%s%s" in the module %s (id: %s), but I did find commands in other modules that matched:',
                 prefix, command, module.moduleInfo.name, module.moduleInfo.id)
-                .concat(await this.getCommandList(message, otherMatchingCommands)));
+                .concat(await this.getCommandList(message, otherMatchingCommands, true)));
         }
         //TODO: stuff here
         return message.channel.send(i18n.__('I could not find the command "%s%s" in the module %s (id: %s).',
@@ -121,7 +146,7 @@ export default class MessageService {
         }
         if(commands.length > 1) {
             const helpMessage: string = i18n.__('Multiple commands matched the given ID %s:', command)
-                .concat(await this.getCommandList(message, commands)).concat('\r\n')
+                .concat(await this.getCommandList(message, commands, true)).concat('\r\n')
                 .concat(i18n.__('You can find out more by specifying a module ID when you call %shelp:', prefix)).concat('\r\n')
                 .concat(i18n.__('> %s%s', prefix, 'help [-c|--command] *command* [-m|--module|--moduleId] *module*')).concat('/r/n')
                 .concat(i18n.__('When you execute the command, be sure to specify the module ID as well:')).concat('\r\n')
@@ -148,33 +173,40 @@ export default class MessageService {
         return channel.send(message);
     }
 
-    private async getCommandList(message: Message, commands: Command[]): Promise<string> {
+    private async getCommandList(message: Message, commands: Command[], showModule = false): Promise<string> {
         let allCommands = '';
         await forEachAsync(commands, async (currentCommand: Command): Promise<void> => {
-            allCommands = allCommands.concat('\r\n').concat(await this.getCommandListEntry(message, currentCommand));
+            allCommands = allCommands.concat('\r\n').concat(await this.getCommandListEntry(message, currentCommand, showModule));
         });
         return allCommands;
     }
 
-    private async getCommandListEntry(message: Message, command: Command): Promise<string> {
+    private async getCommandListEntry(message: Message, command: Command, showModule = false): Promise<string> {
         const prefix: string = await this.commandService.getCommandPrefix(message);
-        const module: Module = this.moduleService.getModuleById(command.moduleId);
-        return i18n.__(this.COMMAND_MODULE_ID_LIST, prefix, command.command, module.moduleInfo.name, module.moduleInfo.id);
+        let commandEntry: string = i18n.__(this.COMMAND_MODULE_ID_LIST, prefix, command.command);
+        if(showModule) {
+            const module = this.moduleService.getModuleById(command.moduleId);
+            commandEntry = commandEntry.concat(i18n.__(' *from module **%s***', module.moduleInfo.name));
+        }
+        return commandEntry;
     }
 
     private async sendCommandUsageMessage(message: Message, command: Command): Promise<any> {
         const prefix: string = await this.commandService.getCommandPrefix(message);
         const module: Module = this.moduleService.getModuleById(command.moduleId);
-        let helpMessage: string = i18n.__('__**"%s%s" Command**__', prefix, command.command).concat('\r\n')
-            .concat(i18n.__('*in module* %s (id: %s)', module.moduleInfo.name, module.moduleInfo.id)).concat('\r\n')
-            .concat('*Description*').concat('\r\n')
-            .concat(i18n.__('> %s', command.description)).concat('\r\n')
-            .concat(i18n.__('*Usage*'));
+        let helpMessage = '';
         await forEachAsync(command.syntax, async (syntax: string): Promise<void> => {
             helpMessage = helpMessage.concat('\r\n')
                 .concat(i18n.__('> • %s%s', prefix, syntax));
         });
-        return message.channel.send(helpMessage);
+
+        const commandEmbed: RichEmbed = new RichEmbed()
+            .setTitle(i18n.__('__%s__', command.friendlyName))
+            .setDescription(i18n.__('*from module %s (id: %s)*', module.moduleInfo.name, module.moduleInfo.id))
+            .addField(i18n.__('**Description**'), command.description || i18n.__('*no description available*'))
+            .addField(i18n.__('**Usage**'), helpMessage || i18n.__('*no usage information available*'));
+
+        return message.channel.send(i18n.__('Help for command `%s%s`:', prefix, command.command), commandEmbed);
     }
 
     private async sendModuleHasNoCommandsHelpMessage(message: Message, module: Module): Promise<any> {
@@ -204,5 +236,5 @@ export default class MessageService {
     }
 
     private readonly MODULE_ID_LIST_STRING: string = '> • %s (id: %s)';
-    private readonly COMMAND_MODULE_ID_LIST: string = '> • %s%s *in module "%s" (id: %s)*';
+    private readonly COMMAND_MODULE_ID_LIST: string = '> • %s%s';
 }

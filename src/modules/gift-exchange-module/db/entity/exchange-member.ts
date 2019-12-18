@@ -1,8 +1,8 @@
 import { DataEntity } from "api/db";
 import { lazyInject } from "api/inversion";
 import { ServiceIdentifiers, DataService } from "api/services";
-import { PrimaryGeneratedColumn, Entity, Column, ManyToMany, JoinColumn, Repository, OneToMany } from "typeorm";
-import { Exchange, ExchangePreferences } from "modules/gift-exchange-module/db/entity";
+import { PrimaryGeneratedColumn, Entity, Column, ManyToMany, JoinColumn, Repository, JoinTable } from "typeorm";
+import { Exchange } from "modules/gift-exchange-module/db/entity";
 
 @Entity('gex/ExchangeMember')
 export class ExchangeMember extends DataEntity {
@@ -23,10 +23,20 @@ export class ExchangeMember extends DataEntity {
     @Column({nullable: true})
     deliveryAddress: string;
 
-    @OneToMany(() => ExchangePreferences, preferences => preferences.member, {cascade: ['remove']})
-    preferences: ExchangePreferences[];
-
     @ManyToMany(() => Exchange, exchange => exchange.members)
-    @JoinColumn({name: 'gex/ExchangeToMember'})
+    @JoinTable({
+        name: 'gex/ExchangeMemberSettings',
+        joinColumn: {
+            name: 'member_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'exchange_id',
+            referencedColumnName: 'id'
+        }
+    })
     exchanges: Exchange[];
+
+    @Column({nullable: true})
+    address: string;
 }
